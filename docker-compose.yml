@@ -8,7 +8,7 @@ services:
     environment:
       PORT: "9000"
       CALLBACK_URL: "http://localhost:5000/callback"
-      ISSUER: ${OIDC_ISSUER}
+      ISSUER: "https://localhost:9000"
 
   oidc-provider-gui:
     image: "docker.pkg.github.com/navikt/pb-oidc-provider-gui/pb-oidc-provider-gui:latest"
