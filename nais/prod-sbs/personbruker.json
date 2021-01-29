@@ -1,8 +1,0 @@
-{
-  "namespace": "personbruker",
-  "ingresses": [
-    "https://mine-saker-api.prod-sbs.nais.io/person/mine-saker-api",
-    "https://mine-saker-api.nais.oera.no/person/mine-saker-api",
-    "https://www.nav.no/person/mine-saker-api"
-  ]
-}
