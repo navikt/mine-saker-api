@@ -1,0 +1,2 @@
+https://personbruker.nais.oera-q.local/person/mine-saker-api/sikret
+https://personbruker.nais.oera-q.local/person/mine-saker-api/usikret

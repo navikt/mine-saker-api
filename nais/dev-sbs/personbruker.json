@@ -1,0 +1,7 @@
+{
+  "namespace": "personbruker",
+  "ingresses": [
+    "https://www.dev.nav.no/person/mine-saker-api",
+    "https://personbruker.nais.oera-q.local/person/mine-saker-api"
+  ]
+}
