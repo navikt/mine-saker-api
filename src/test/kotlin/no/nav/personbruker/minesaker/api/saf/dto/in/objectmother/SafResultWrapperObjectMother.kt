@@ -6,7 +6,7 @@ object SafResultWrapperObjectMother {
 
     fun giveMeOneResult(): SafResultWrapper {
         return SafResultWrapper(
-            DataObjectMother.giveMeOneResult()
+            ResponseDataObjectMother.giveMeOneResult()
         )
     }
 
