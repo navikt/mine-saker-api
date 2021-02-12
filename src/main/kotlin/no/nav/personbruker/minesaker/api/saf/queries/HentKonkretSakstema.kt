@@ -6,8 +6,8 @@ class HentKonkretSakstema(override val variables: Map<String, Any>) : GraphQLReq
 
     override val query: String
         get() = """
-            query(${"$"}temaetSomSkalHentes : Tema) {
-              dokumentoversiktSelvbetjening(tema: [${"$"}temaetSomSkalHentes]) {
+            query(${"$"}ident : String!, ${"$"}temaetSomSkalHentes : Tema) {
+              dokumentoversiktSelvbetjening(ident: ${"$"}ident, tema: [${"$"}temaetSomSkalHentes]) {
                 tema {
                   navn
                   kode
@@ -16,9 +16,14 @@ class HentKonkretSakstema(override val variables: Map<String, Any>) : GraphQLReq
             }
         """.compactJson()
 
-    companion object{
-        fun createRequest(temaSomSkalHentes: String): HentKonkretSakstema {
-            return HentKonkretSakstema(mapOf("temaetSomSkalHentes" to temaSomSkalHentes))
+    companion object {
+        fun createRequest(ident: String, temaSomSkalHentes: String): HentKonkretSakstema {
+            return HentKonkretSakstema(
+                mapOf(
+                    "ident" to ident,
+                    "temaetSomSkalHentes" to temaSomSkalHentes,
+                )
+            )
         }
     }
 

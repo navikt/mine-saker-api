@@ -9,6 +9,7 @@ import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.saf.dto.`in`.SafResultWrapper
 import no.nav.personbruker.minesaker.api.saf.dto.out.Sakstema
 import no.nav.personbruker.minesaker.api.saf.queries.HentKonkretSakstema
+import no.nav.personbruker.minesaker.api.saf.queries.HentSaker
 import java.net.URL
 
 class SafConsumer(
@@ -17,12 +18,17 @@ class SafConsumer(
     private val safEndpoint: URL
 ) {
 
-    suspend fun hentKonkretSakstema(request: HentKonkretSakstema): List<Sakstema> {
-        val responseDto = sendQuery(request)
+    suspend fun hentSaker(request: HentSaker): List<Sakstema> {
+        val responseDto = sendQuery<SafResultWrapper>(request)
         return transformer.toInternal(responseDto.data.dokumentoversiktSelvbetjening.tema)
     }
 
-    private suspend fun sendQuery(request: GraphQLRequest): SafResultWrapper {
+    suspend fun hentKonkretSakstema(request: HentKonkretSakstema): List<Sakstema> {
+        val responseDto = sendQuery<SafResultWrapper>(request)
+        return transformer.toInternal(responseDto.data.dokumentoversiktSelvbetjening.tema)
+    }
+
+    private suspend inline fun <reified T> sendQuery(request: GraphQLRequest): T {
         return try {
             withContext(Dispatchers.IO) {
                 httpClient.post {

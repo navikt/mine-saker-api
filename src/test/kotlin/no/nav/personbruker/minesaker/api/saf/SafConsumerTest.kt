@@ -12,6 +12,7 @@ import no.nav.personbruker.minesaker.api.config.buildJsonSerializer
 import no.nav.personbruker.minesaker.api.saf.dto.`in`.objectmother.SafResultWrapperObjectMother
 import no.nav.personbruker.minesaker.api.saf.dto.out.Sakstema
 import no.nav.personbruker.minesaker.api.saf.queries.HentKonkretSakstema
+import no.nav.personbruker.minesaker.api.saf.queries.HentSaker
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should not be equal to`
@@ -23,16 +24,48 @@ internal class SafConsumerTest {
 
     private val objectMapper = jacksonObjectMapper()
     private val safDummyEndpoint = URL("https://www.dummy.no")
-    private val sakstemaRequest = HentKonkretSakstema.createRequest("FOR")
+    private val dummyIdent = "123"
+
 
     @Test
-    fun `Skal kunne motta data fra SAF og transformere disse til intern DTO`() {
+    fun `Skal kunne hente alle sakstemaer, for en konkret bruker`() {
         val externalResponse = SafResultWrapperObjectMother.giveMeOneResult()
         val safResponseAsJson = objectMapper.writeValueAsString(externalResponse)
         val mockHttpClient = createMockHttpClient {
-            respond(safResponseAsJson, headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()))
+            respond(
+                safResponseAsJson,
+                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            )
         }
         val safConsumerWithResponse = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
+
+        val sakstemaRequest = HentSaker.createRequest(dummyIdent)
+
+        val internalSakstema = runBlocking {
+            safConsumerWithResponse.hentSaker(sakstemaRequest)
+        }
+
+        val externalSakstema = externalResponse.data.dokumentoversiktSelvbetjening.tema
+        internalSakstema.size `should be equal to` externalSakstema.size
+        internalSakstema[0] `should be instance of` Sakstema::class
+        internalSakstema[0].navn `should be equal to` externalSakstema[0].navn
+        internalSakstema[0].kode `should be equal to` externalSakstema[0].kode
+        internalSakstema `should not be equal to` externalSakstema
+    }
+
+    @Test
+    fun `Skal kunne hente all info om et konkret sakstema, for en konkret bruker`() {
+        val externalResponse = SafResultWrapperObjectMother.giveMeOneResult()
+        val safResponseAsJson = objectMapper.writeValueAsString(externalResponse)
+        val mockHttpClient = createMockHttpClient {
+            respond(
+                safResponseAsJson,
+                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            )
+        }
+        val safConsumerWithResponse = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
+
+        val sakstemaRequest = HentKonkretSakstema.createRequest(dummyIdent, "FOR")
 
         val internalSakstema = runBlocking {
             safConsumerWithResponse.hentKonkretSakstema(sakstemaRequest)
@@ -53,6 +86,8 @@ internal class SafConsumerTest {
         }
 
         val safConsumerSomFeiler = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
+
+        val sakstemaRequest = HentKonkretSakstema.createRequest(dummyIdent, "FOR")
 
         val result = runCatching {
             runBlocking {
