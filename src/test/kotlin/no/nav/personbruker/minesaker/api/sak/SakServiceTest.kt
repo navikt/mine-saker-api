@@ -23,7 +23,7 @@ internal class SakServiceTest {
         val parameterSendtVidere = slot<HentKonkretSakstema>()
 
         runBlocking {
-            service.hentAltForSakstema(expectedSakstemakode)
+            service.hentSakstema(expectedSakstemakode)
         }
 
         coVerify(exactly = 1) { consumer.hentKonkretSakstema(capture(parameterSendtVidere)) }
@@ -47,7 +47,7 @@ internal class SakServiceTest {
 
         val result = runCatching {
             runBlocking {
-                service.hentAltForSakstema("dummykode")
+                service.hentSakstema("dummykode")
             }
         }
 
