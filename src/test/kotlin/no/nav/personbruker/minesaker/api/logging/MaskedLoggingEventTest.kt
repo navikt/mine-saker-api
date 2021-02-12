@@ -5,7 +5,7 @@ import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 
-class MaskedLoggingEventTest {
+internal class MaskedLoggingEventTest {
     @Test
     fun `sjekk at fodselsnummer blir maskert`() {
         MaskedLoggingEvent.mask("-12345678901")!! `should contain` MASKED_FNR
