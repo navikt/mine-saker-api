@@ -26,7 +26,7 @@ internal class SafConsumerTest {
     private val sakstemaRequest = HentKonkretSakstema.createRequest("FOR")
 
     @Test
-    internal fun `Skal kunne motta data fra SAF og transformere disse til intern DTO`() {
+    fun `Skal kunne motta data fra SAF og transformere disse til intern DTO`() {
         val externalResponse = SafResultWrapperObjectMother.giveMeOneResult()
         val safResponseAsJson = objectMapper.writeValueAsString(externalResponse)
         val mockHttpClient = createMockHttpClient {
@@ -47,7 +47,7 @@ internal class SafConsumerTest {
     }
 
     @Test
-    internal fun `Skal takle feil mot SAF, lagre kontekst og kaste intern feil videre`() {
+    fun `Skal takle feil mot SAF, lagre kontekst og kaste intern feil videre`() {
         val mockHttpClient = createMockHttpClient {
             respondError(HttpStatusCode.BadRequest)
         }

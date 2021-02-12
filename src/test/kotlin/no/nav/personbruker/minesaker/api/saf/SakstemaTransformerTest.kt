@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class SakstemaTransformerTest {
 
     @Test
-    internal fun `Skal kunne transformere fra ekstern til intern modell`() {
+    fun `Skal kunne transformere fra ekstern til intern modell`() {
         val external = Sakstema("navn", "kode")
 
         val internal = SakstemaTransformer.toInternal(external)
@@ -18,7 +18,7 @@ internal class SakstemaTransformerTest {
     }
 
     @Test
-    internal fun `Skal kunne transformere fra flere eksterne til interne`() {
+    fun `Skal kunne transformere fra flere eksterne til interne`() {
         val externals = listOf(Sakstema("navn1", "kode1"), Sakstema("navn2", "kode2"))
 
         val internals = SakstemaTransformer.toInternal(externals)
