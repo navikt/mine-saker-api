@@ -1,5 +1,4 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin on the JVM.
@@ -57,7 +56,7 @@ dependencies {
 }
 
 application {
-    mainClassName = "io.ktor.server.netty.EngineMain"
+    mainClass.set("io.ktor.server.netty.EngineMain")
 }
 
 tasks {
@@ -87,9 +86,14 @@ tasks {
         environment("SENSU_HOST", "stub")
         environment("SENSU_PORT", "")
 
-        main = application.mainClassName
+        main = application.mainClass.get()
         classpath = sourceSets["main"].runtimeClasspath
     }
 }
+
+// TODO: Fjern følgende work around når Shadow-plugin-et har blitt oppdatert:
+// 'shadowJar' er litt ute av synk med Gradle sin fjerning av property-en mainClassName
+// Dette kan fjernes i det denne er merge-et: https://github.com/johnrengelman/shadow/pull/612
+project.setProperty("mainClassName", application.mainClass.get())
 
 apply(plugin = Shadow.pluginId)
