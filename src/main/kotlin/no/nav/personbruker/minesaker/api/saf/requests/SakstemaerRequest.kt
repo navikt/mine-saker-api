@@ -1,12 +1,12 @@
 package no.nav.personbruker.minesaker.api.saf.requests
 
-import no.nav.dokument.saf.selvbetjening.generated.dto.HENT_SAKER_DTO
+import no.nav.dokument.saf.selvbetjening.generated.dto.HENT_SAKSTEMAER
 import no.nav.personbruker.minesaker.api.saf.GraphQLRequest
 
 class SakstemaerRequest(override val variables: Map<String, Any>) : GraphQLRequest {
 
     override val query: String
-        get() = HENT_SAKER_DTO.compactJson()
+        get() = HENT_SAKSTEMAER.compactJson()
 
     companion object {
         fun create(ident: String): SakstemaerRequest {

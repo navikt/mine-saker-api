@@ -6,8 +6,8 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentKonkretSakstemaDTO
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakerDTO
+import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
+import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
 import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.saf.dto.out.Sakstema
 import no.nav.personbruker.minesaker.api.saf.requests.JournalposterRequest
@@ -16,20 +16,20 @@ import java.net.URL
 
 class SafConsumer(
     private val httpClient: HttpClient,
-    private val sakerTransformer: HentSakerDtoTransformer = HentSakerDtoTransformer,
-    private val konkretTransformer: HentKonkretSakstemaDtoTransformer = HentKonkretSakstemaDtoTransformer,
+    private val sakerTransformer: HentSakstemaerTransformer = HentSakstemaerTransformer,
+    private val konkretTransformer: HentJournalposterTransformer = HentJournalposterTransformer,
     private val safEndpoint: URL
 ) {
 
     suspend fun hentSakstemaer(request: SakstemaerRequest): List<Sakstema> {
-        val responseDto: GraphQLResponse<HentSakerDTO.Result> = sendQuery(request)
-        val data: HentSakerDTO.Result = responseDto.data ?: throw noDataWithContext(responseDto)
+        val responseDto: GraphQLResponse<HentSakstemaer.Result> = sendQuery(request)
+        val data: HentSakstemaer.Result = responseDto.data ?: throw noDataWithContext(responseDto)
         return sakerTransformer.toInternal(data)
     }
 
     suspend fun hentJournalposter(request: JournalposterRequest): List<Sakstema> {
-        val responseDto = sendQuery<GraphQLResponse<HentKonkretSakstemaDTO.Result>>(request)
-        val data: HentKonkretSakstemaDTO.Result =
+        val responseDto = sendQuery<GraphQLResponse<HentJournalposter.Result>>(request)
+        val data: HentJournalposter.Result =
             responseDto.data ?: throw noDataWithContext(responseDto)
         return konkretTransformer.toInternal(data)
     }
