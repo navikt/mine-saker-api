@@ -4,7 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.amshove.kluent.`should contain`
 import org.junit.jupiter.api.Test
 
-internal class SakstemaRequestTest {
+internal class SakstemaerRequestTest {
 
     private val objectMapper = jacksonObjectMapper()
 

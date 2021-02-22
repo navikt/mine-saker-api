@@ -7,7 +7,7 @@ import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.common.sak.SakService
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.saf.requests.JournalposterRequest
-import no.nav.personbruker.minesaker.api.saf.requests.SakstemaRequest
+import no.nav.personbruker.minesaker.api.saf.requests.SakstemaerRequest
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should contain`
@@ -22,7 +22,7 @@ internal class SakServiceTest {
         val consumer = mockk<SafConsumer>(relaxed = true)
         val service = SakService(consumer)
 
-        val parameterSendtVidere = slot<SakstemaRequest>()
+        val parameterSendtVidere = slot<SakstemaerRequest>()
 
         runBlocking {
             service.hentSakstemaer(dummyUser)
@@ -30,7 +30,7 @@ internal class SakServiceTest {
 
         coVerify(exactly = 1) { consumer.hentSakstemaer(capture(parameterSendtVidere)) }
 
-        parameterSendtVidere.captured `should be instance of` SakstemaRequest::class
+        parameterSendtVidere.captured `should be instance of` SakstemaerRequest::class
 
         confirmVerified(consumer)
     }

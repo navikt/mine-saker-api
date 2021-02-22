@@ -11,7 +11,7 @@ import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakerDTO
 import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.saf.dto.out.Sakstema
 import no.nav.personbruker.minesaker.api.saf.requests.JournalposterRequest
-import no.nav.personbruker.minesaker.api.saf.requests.SakstemaRequest
+import no.nav.personbruker.minesaker.api.saf.requests.SakstemaerRequest
 import java.net.URL
 
 class SafConsumer(
@@ -21,7 +21,7 @@ class SafConsumer(
     private val safEndpoint: URL
 ) {
 
-    suspend fun hentSakstemaer(request: SakstemaRequest): List<Sakstema> {
+    suspend fun hentSakstemaer(request: SakstemaerRequest): List<Sakstema> {
         val responseDto: GraphQLResponse<HentSakerDTO.Result> = sendQuery(request)
         val data: HentSakerDTO.Result = responseDto.data ?: throw noDataWithContext(responseDto)
         return sakerTransformer.toInternal(data)

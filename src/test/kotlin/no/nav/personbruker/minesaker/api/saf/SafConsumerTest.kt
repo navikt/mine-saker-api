@@ -13,7 +13,7 @@ import no.nav.personbruker.minesaker.api.saf.dto.`in`.objectmother.HentKonkretSa
 import no.nav.personbruker.minesaker.api.saf.dto.`in`.objectmother.HentSakerDtoObjectMother
 import no.nav.personbruker.minesaker.api.saf.dto.out.Sakstema
 import no.nav.personbruker.minesaker.api.saf.requests.JournalposterRequest
-import no.nav.personbruker.minesaker.api.saf.requests.SakstemaRequest
+import no.nav.personbruker.minesaker.api.saf.requests.SakstemaerRequest
 import org.amshove.kluent.*
 import org.junit.jupiter.api.Test
 import java.net.URL
@@ -36,7 +36,7 @@ internal class SafConsumerTest {
         }
         val safConsumerWithResponse = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val sakstemaRequest = SakstemaRequest.create(dummyIdent)
+        val sakstemaRequest = SakstemaerRequest.create(dummyIdent)
 
         val internalSakstema = runBlocking {
             safConsumerWithResponse.hentSakstemaer(sakstemaRequest)
@@ -114,7 +114,7 @@ internal class SafConsumerTest {
         }
         val safConsumerWithResponse = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val sakstemaRequest = SakstemaRequest.create(dummyIdent)
+        val sakstemaRequest = SakstemaerRequest.create(dummyIdent)
 
 
         val result = runCatching {
@@ -143,7 +143,7 @@ internal class SafConsumerTest {
         }
         val safConsumerWithResponse = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val sakstemaRequest = SakstemaRequest.create(dummyIdent)
+        val sakstemaRequest = SakstemaerRequest.create(dummyIdent)
 
 
         val result = runCatching {
