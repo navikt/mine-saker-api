@@ -10,8 +10,8 @@ import no.nav.dokument.saf.selvbetjening.generated.dto.HentKonkretSakstemaDTO
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakerDTO
 import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.saf.dto.out.Sakstema
-import no.nav.personbruker.minesaker.api.saf.queries.HentJournalposter
-import no.nav.personbruker.minesaker.api.saf.queries.HentSakstema
+import no.nav.personbruker.minesaker.api.saf.requests.JournalposterRequest
+import no.nav.personbruker.minesaker.api.saf.requests.SakstemaRequest
 import java.net.URL
 
 class SafConsumer(
@@ -21,13 +21,13 @@ class SafConsumer(
     private val safEndpoint: URL
 ) {
 
-    suspend fun hentSakstemaer(request: HentSakstema): List<Sakstema> {
+    suspend fun hentSakstemaer(request: SakstemaRequest): List<Sakstema> {
         val responseDto: GraphQLResponse<HentSakerDTO.Result> = sendQuery(request)
         val data: HentSakerDTO.Result = responseDto.data ?: throw noDataWithContext(responseDto)
         return sakerTransformer.toInternal(data)
     }
 
-    suspend fun hentJournalposter(request: HentJournalposter): List<Sakstema> {
+    suspend fun hentJournalposter(request: JournalposterRequest): List<Sakstema> {
         val responseDto = sendQuery<GraphQLResponse<HentKonkretSakstemaDTO.Result>>(request)
         val data: HentKonkretSakstemaDTO.Result =
             responseDto.data ?: throw noDataWithContext(responseDto)

@@ -1,10 +1,10 @@
-package no.nav.personbruker.minesaker.api.saf.queries
+package no.nav.personbruker.minesaker.api.saf.requests
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.amshove.kluent.`should contain`
 import org.junit.jupiter.api.Test
 
-internal class HentSakstemaTest {
+internal class SakstemaRequestTest {
 
     private val objectMapper = jacksonObjectMapper()
 
@@ -17,7 +17,7 @@ internal class HentSakstemaTest {
         val identAsQueryVarible = "\$ident : String!"
         val expectedSakstemaAsInputVariable = """"temaetSomSkalHentes":"$expectedSakstema""""
 
-        val request = HentJournalposter.createRequest(dummyIdent, expectedSakstema)
+        val request = JournalposterRequest.create(dummyIdent, expectedSakstema)
 
         val requestAsJson = objectMapper.writeValueAsString(request)
 

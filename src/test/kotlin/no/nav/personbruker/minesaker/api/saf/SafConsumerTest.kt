@@ -12,8 +12,8 @@ import no.nav.personbruker.minesaker.api.config.buildJsonSerializer
 import no.nav.personbruker.minesaker.api.saf.dto.`in`.objectmother.HentKonkretSakstemaDtoResultObjectMother
 import no.nav.personbruker.minesaker.api.saf.dto.`in`.objectmother.HentSakerDtoObjectMother
 import no.nav.personbruker.minesaker.api.saf.dto.out.Sakstema
-import no.nav.personbruker.minesaker.api.saf.queries.HentJournalposter
-import no.nav.personbruker.minesaker.api.saf.queries.HentSakstema
+import no.nav.personbruker.minesaker.api.saf.requests.JournalposterRequest
+import no.nav.personbruker.minesaker.api.saf.requests.SakstemaRequest
 import org.amshove.kluent.*
 import org.junit.jupiter.api.Test
 import java.net.URL
@@ -36,7 +36,7 @@ internal class SafConsumerTest {
         }
         val safConsumerWithResponse = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val sakstemaRequest = HentSakstema.createRequest(dummyIdent)
+        val sakstemaRequest = SakstemaRequest.create(dummyIdent)
 
         val internalSakstema = runBlocking {
             safConsumerWithResponse.hentSakstemaer(sakstemaRequest)
@@ -62,7 +62,7 @@ internal class SafConsumerTest {
         }
         val safConsumerWithResponse = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val sakstemaRequest = HentJournalposter.createRequest(dummyIdent, "FOR")
+        val sakstemaRequest = JournalposterRequest.create(dummyIdent, "FOR")
 
         val internalSakstema = runBlocking {
             safConsumerWithResponse.hentJournalposter(sakstemaRequest)
@@ -84,7 +84,7 @@ internal class SafConsumerTest {
 
         val safConsumerSomFeiler = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val sakstemaRequest = HentJournalposter.createRequest(dummyIdent, "FOR")
+        val sakstemaRequest = JournalposterRequest.create(dummyIdent, "FOR")
 
         val result = runCatching {
             runBlocking {
@@ -114,7 +114,7 @@ internal class SafConsumerTest {
         }
         val safConsumerWithResponse = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val sakstemaRequest = HentSakstema.createRequest(dummyIdent)
+        val sakstemaRequest = SakstemaRequest.create(dummyIdent)
 
 
         val result = runCatching {
@@ -143,7 +143,7 @@ internal class SafConsumerTest {
         }
         val safConsumerWithResponse = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val sakstemaRequest = HentSakstema.createRequest(dummyIdent)
+        val sakstemaRequest = SakstemaRequest.create(dummyIdent)
 
 
         val result = runCatching {

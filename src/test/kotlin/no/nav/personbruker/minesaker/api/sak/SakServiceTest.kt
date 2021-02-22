@@ -6,8 +6,8 @@ import no.nav.personbruker.minesaker.api.common.AuthenticatedUserObjectMother
 import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.common.sak.SakService
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
-import no.nav.personbruker.minesaker.api.saf.queries.HentJournalposter
-import no.nav.personbruker.minesaker.api.saf.queries.HentSakstema
+import no.nav.personbruker.minesaker.api.saf.requests.JournalposterRequest
+import no.nav.personbruker.minesaker.api.saf.requests.SakstemaRequest
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should contain`
@@ -22,7 +22,7 @@ internal class SakServiceTest {
         val consumer = mockk<SafConsumer>(relaxed = true)
         val service = SakService(consumer)
 
-        val parameterSendtVidere = slot<HentSakstema>()
+        val parameterSendtVidere = slot<SakstemaRequest>()
 
         runBlocking {
             service.hentSakstemaer(dummyUser)
@@ -30,7 +30,7 @@ internal class SakServiceTest {
 
         coVerify(exactly = 1) { consumer.hentSakstemaer(capture(parameterSendtVidere)) }
 
-        parameterSendtVidere.captured `should be instance of` HentSakstema::class
+        parameterSendtVidere.captured `should be instance of` SakstemaRequest::class
 
         confirmVerified(consumer)
     }
@@ -63,7 +63,7 @@ internal class SakServiceTest {
         val consumer = mockk<SafConsumer>(relaxed = true)
         val service = SakService(consumer)
 
-        val parameterSendtVidere = slot<HentJournalposter>()
+        val parameterSendtVidere = slot<JournalposterRequest>()
 
         runBlocking {
             service.hentJournalposterForSakstema(dummyUser, expectedSakstemakode)
@@ -71,7 +71,7 @@ internal class SakServiceTest {
 
         coVerify(exactly = 1) { consumer.hentJournalposter(capture(parameterSendtVidere)) }
 
-        parameterSendtVidere.captured `should be instance of` HentJournalposter::class
+        parameterSendtVidere.captured `should be instance of` JournalposterRequest::class
         parameterSendtVidere.captured.variables.entries.toString() `should contain` expectedSakstemakode
 
         confirmVerified(consumer)

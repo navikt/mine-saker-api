@@ -1,7 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.personbruker.minesaker.api.saf.queries.HentJournalposter
+import no.nav.personbruker.minesaker.api.saf.requests.JournalposterRequest
 import org.amshove.kluent.`should contain`
 import org.amshove.kluent.`should not contain`
 import org.junit.jupiter.api.Test
@@ -20,7 +20,7 @@ internal class HentJournalposterTest {
         val sakstemaAsQueryVarible = "\$temaetSomSkalHentes : Tema"
         val expectedSakstemaAsInputVariable = """"temaetSomSkalHentes":"$expectedSakstema""""
 
-        val request = HentJournalposter.createRequest(dummyIdent, expectedSakstema)
+        val request = JournalposterRequest.create(dummyIdent, expectedSakstema)
 
         val requestAsJson = objectMapper.writeValueAsString(request)
 
@@ -32,7 +32,7 @@ internal class HentJournalposterTest {
 
     @Test
     fun `Sporringen skal vare formatert til kompakt JSON`() {
-        val request = HentJournalposter.createRequest(dummyIdent, "FOR")
+        val request = JournalposterRequest.create(dummyIdent, "FOR")
 
         val requestAsJson = objectMapper.writeValueAsString(request)
 
