@@ -1,9 +1,12 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import com.expediagroup.graphql.plugin.gradle.graphql
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin on the JVM.
     kotlin("jvm").version(Kotlin.version)
     kotlin("plugin.allopen").version(Kotlin.version)
+
+    id(GraphQL.pluginId) version GraphQL.version
 
     id(Shadow.pluginId) version (Shadow.version)
     // Apply the application plugin to add support for building a CLI application.
@@ -24,6 +27,7 @@ repositories {
 }
 
 dependencies {
+    implementation(GraphQL.client)
     implementation(Jackson.dataTypeJsr310)
     implementation(Kotlinx.coroutines)
     implementation(Kotlinx.htmlJvm)
@@ -44,7 +48,6 @@ dependencies {
     implementation(Prometheus.common)
     implementation(Prometheus.hotspot)
     implementation(Prometheus.logback)
-
 
     testImplementation(Junit.api)
     testImplementation(Ktor.clientMock)
@@ -92,6 +95,13 @@ tasks {
 
         main = application.mainClass.get()
         classpath = sourceSets["main"].runtimeClasspath
+    }
+}
+
+graphql {
+    client {
+        sdlEndpoint = "https://navikt.github.io/safselvbetjening/schema.graphqls"
+        packageName = "no.nav.dokument.saf.selvbetjening.generated.dto"
     }
 }
 
