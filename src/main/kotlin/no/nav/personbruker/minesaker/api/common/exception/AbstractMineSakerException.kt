@@ -6,8 +6,9 @@ open class AbstractMineSakerException(message: String, cause: Throwable?) : Exce
 
     val context: MutableMap<String, Any> = mutableMapOf()
 
-    fun addContext(key: String, value: Any) {
+    fun addContext(key: String, value: Any): AbstractMineSakerException {
         context[key] = value
+        return this
     }
 
     override fun toString(): String {

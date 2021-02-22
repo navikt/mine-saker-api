@@ -8,12 +8,14 @@ import io.ktor.client.features.HttpTimeout
 object HttpClientBuilder {
 
     fun build(): HttpClient {
-        return HttpClient(Apache) {
-            install(JsonFeature) {
-                serializer = buildJsonSerializer()
-            }
-            install(HttpTimeout)
+        return config()
+    }
+
+    fun config() = HttpClient(Apache) {
+        install(JsonFeature) {
+            serializer = buildJsonSerializer()
         }
+        install(HttpTimeout)
     }
 
 }
