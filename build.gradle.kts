@@ -89,7 +89,7 @@ tasks {
         environment("OIDC_CLAIM_CONTAINING_THE_IDENTITY", "pid")
         
         environment("NAIS_CLUSTER_NAME", "dev-sbs")
-        environment("NAIS_NAMESPACE", "q1")
+        environment("NAIS_NAMESPACE", "personbruker")
         environment("SENSU_HOST", "stub")
         environment("SENSU_PORT", "")
 
