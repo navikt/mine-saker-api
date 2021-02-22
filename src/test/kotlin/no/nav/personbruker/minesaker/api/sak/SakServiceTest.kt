@@ -6,8 +6,8 @@ import no.nav.personbruker.minesaker.api.common.AuthenticatedUserObjectMother
 import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.common.sak.SakService
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
-import no.nav.personbruker.minesaker.api.saf.queries.HentKonkretSakstema
-import no.nav.personbruker.minesaker.api.saf.queries.HentSaker
+import no.nav.personbruker.minesaker.api.saf.queries.HentJournalposter
+import no.nav.personbruker.minesaker.api.saf.queries.HentSakstema
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should contain`
@@ -22,33 +22,33 @@ internal class SakServiceTest {
         val consumer = mockk<SafConsumer>(relaxed = true)
         val service = SakService(consumer)
 
-        val parameterSendtVidere = slot<HentSaker>()
+        val parameterSendtVidere = slot<HentSakstema>()
 
         runBlocking {
-            service.hentSaker(dummyUser)
+            service.hentSakstemaer(dummyUser)
         }
 
-        coVerify(exactly = 1) { consumer.hentSaker(capture(parameterSendtVidere)) }
+        coVerify(exactly = 1) { consumer.hentSakstemaer(capture(parameterSendtVidere)) }
 
-        parameterSendtVidere.captured `should be instance of` HentSaker::class
+        parameterSendtVidere.captured `should be instance of` HentSakstema::class
 
         confirmVerified(consumer)
     }
 
     @Test
-    fun `Feil som oppstaar ved henting av alle sakstemaer skal kastes videre`() {
+    fun `Feil som oppstaar, ved henting av alle sakstemaer, skal kastes videre`() {
         val expectedException = SafException("Simulert feil i en test")
 
         val consumer = mockk<SafConsumer>(relaxed = true)
         val service = SakService(consumer)
 
         coEvery {
-            consumer.hentSaker(any())
+            consumer.hentSakstemaer(any())
         } throws expectedException
 
         val result = runCatching {
             runBlocking {
-                service.hentSaker(dummyUser)
+                service.hentSakstemaer(dummyUser)
             }
         }
 
@@ -57,40 +57,40 @@ internal class SakServiceTest {
     }
 
     @Test
-    fun `Skal hente alle data for et konkret sakstema`() {
+    fun `Skal hente alle journalposter for et konkret sakstema`() {
         val expectedSakstemakode = "FOR"
 
         val consumer = mockk<SafConsumer>(relaxed = true)
         val service = SakService(consumer)
 
-        val parameterSendtVidere = slot<HentKonkretSakstema>()
+        val parameterSendtVidere = slot<HentJournalposter>()
 
         runBlocking {
-            service.hentSakstema(dummyUser, expectedSakstemakode)
+            service.hentJournalposterForSakstema(dummyUser, expectedSakstemakode)
         }
 
-        coVerify(exactly = 1) { consumer.hentKonkretSakstema(capture(parameterSendtVidere)) }
+        coVerify(exactly = 1) { consumer.hentJournalposter(capture(parameterSendtVidere)) }
 
-        parameterSendtVidere.captured `should be instance of` HentKonkretSakstema::class
+        parameterSendtVidere.captured `should be instance of` HentJournalposter::class
         parameterSendtVidere.captured.variables.entries.toString() `should contain` expectedSakstemakode
 
         confirmVerified(consumer)
     }
 
     @Test
-    fun `Feil som oppstaar ved henting av et konkret sakstema skal kastes videre`() {
+    fun `Feil som oppstaar, ved henting av journalposter for et konkret sakstema, skal kastes videre`() {
         val expectedException = SafException("Simulert feil i en test")
 
         val consumer = mockk<SafConsumer>(relaxed = true)
         val service = SakService(consumer)
 
         coEvery {
-            consumer.hentKonkretSakstema(any())
+            consumer.hentJournalposter(any())
         } throws expectedException
 
         val result = runCatching {
             runBlocking {
-                service.hentSakstema(dummyUser, "dummykode")
+                service.hentJournalposterForSakstema(dummyUser, "dummykode")
             }
         }
 

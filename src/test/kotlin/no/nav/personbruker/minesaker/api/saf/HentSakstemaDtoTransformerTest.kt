@@ -5,7 +5,7 @@ import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.shouldNotBeNull
 import org.junit.jupiter.api.Test
 
-internal class HentSakerDtoTransformerTest {
+internal class HentSakstemaDtoTransformerTest {
 
     @Test
     fun `Skal kunne transformere fra ekstern til intern modell - Hent saker`() {

@@ -14,12 +14,12 @@ fun Route.sakApi(
 
     val log = LoggerFactory.getLogger(SakService::class.java)
 
-    get("/sakstema") {
+    get("/journalposter") {
         try {
-            val sakstemakode: String = call.request.queryParameters["kode"]
+            val sakstemakode: String = call.request.queryParameters["sakstemakode"]
                 ?: throw RuntimeException("Kallet kan ikke utføres uten at tema er valgt.")
 
-            val result = service.hentSakstema(authenticatedUser, sakstemakode)
+            val result = service.hentJournalposterForSakstema(authenticatedUser, sakstemakode)
             call.respond(HttpStatusCode.OK, result)
 
         } catch (exception: Exception) {
@@ -27,9 +27,9 @@ fun Route.sakApi(
         }
     }
 
-    get("/saker") {
+    get("/sakstemaer") {
         try {
-            val result = service.hentSaker(authenticatedUser)
+            val result = service.hentSakstemaer(authenticatedUser)
             call.respond(HttpStatusCode.OK, result)
 
         } catch (exception: Exception) {
