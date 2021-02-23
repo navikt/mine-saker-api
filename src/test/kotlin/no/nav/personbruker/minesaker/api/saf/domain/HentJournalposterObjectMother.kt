@@ -1,4 +1,4 @@
-package no.nav.personbruker.minesaker.api.saf.dto.`in`.objectmother
+package no.nav.personbruker.minesaker.api.saf.domain
 
 import com.expediagroup.graphql.types.GraphQLError
 import com.expediagroup.graphql.types.GraphQLResponse

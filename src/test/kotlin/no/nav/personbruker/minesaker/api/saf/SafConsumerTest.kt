@@ -9,8 +9,8 @@ import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.config.buildJsonSerializer
-import no.nav.personbruker.minesaker.api.saf.dto.`in`.objectmother.HentJournalposterResultObjectMother
-import no.nav.personbruker.minesaker.api.saf.dto.`in`.objectmother.HentSakstemaerObjectMother
+import no.nav.personbruker.minesaker.api.saf.domain.HentJournalposterResultObjectMother
+import no.nav.personbruker.minesaker.api.saf.domain.HentSakstemaerObjectMother
 import no.nav.personbruker.minesaker.api.saf.domain.MinimaltSakstema
 import no.nav.personbruker.minesaker.api.saf.requests.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.requests.SakstemaerRequest

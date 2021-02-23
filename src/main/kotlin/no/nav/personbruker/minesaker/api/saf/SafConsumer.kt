@@ -12,6 +12,8 @@ import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.saf.domain.MinimaltSakstema
 import no.nav.personbruker.minesaker.api.saf.requests.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.requests.SakstemaerRequest
+import no.nav.personbruker.minesaker.api.saf.transformers.HentJournalposterTransformer
+import no.nav.personbruker.minesaker.api.saf.transformers.HentSakstemaerTransformer
 import java.net.URL
 
 class SafConsumer(

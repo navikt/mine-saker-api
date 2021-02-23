@@ -1,4 +1,4 @@
-package no.nav.personbruker.minesaker.api.saf
+package no.nav.personbruker.minesaker.api.saf.requests
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.personbruker.minesaker.api.saf.requests.JournalposterRequest
@@ -6,7 +6,7 @@ import org.amshove.kluent.`should contain`
 import org.amshove.kluent.`should not contain`
 import org.junit.jupiter.api.Test
 
-internal class HentJournalposterTest {
+internal class JournalposterRequestTest {
 
     private val objectMapper = jacksonObjectMapper()
 

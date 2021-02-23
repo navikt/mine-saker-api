@@ -1,4 +1,4 @@
-package no.nav.personbruker.minesaker.api.saf
+package no.nav.personbruker.minesaker.api.saf.transformers
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
 import org.amshove.kluent.`should be equal to`
