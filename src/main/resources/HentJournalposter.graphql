@@ -3,6 +3,27 @@ query($ident : String!, $temaetSomSkalHentes : Tema) {
         tema {
             navn
             kode
+            journalposter{
+                tittel
+                journalpostId
+                journalposttype
+                avsenderMottaker {
+                    id
+                    type
+                }
+                relevanteDatoer {
+                    dato
+                    datotype
+                }
+                dokumenter {
+                    tittel
+                    dokumentvarianter{
+                        variantformat
+                        filuuid
+                        brukerHarTilgang
+                    }
+                }
+            }
         }
     }
 }

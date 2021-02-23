@@ -10,7 +10,7 @@ internal class HentJournalposterTransformerTest {
 
     @Test
     fun `Skal kunne transformere fra ekstern til intern modell - Hent konkret sakstema`() {
-        val external = HentJournalposter.Sakstema("navn", "kode")
+        val external = HentJournalposter.Sakstema("navn", "kode", emptyList())
 
         val internal = HentJournalposterTransformer.toInternal(external)
 
@@ -21,8 +21,8 @@ internal class HentJournalposterTransformerTest {
     @Test
     fun `Skal kunne transformere fra flere eksterne til interne - Hent konkret sakstema`() {
         val externals = listOf(
-            HentJournalposter.Sakstema("navn1", "kode1"),
-            HentJournalposter.Sakstema("navn2", "kode2")
+            HentJournalposter.Sakstema("navn1", "kode1", emptyList()),
+            HentJournalposter.Sakstema("navn2", "kode2", emptyList())
         )
 
         val internals = HentJournalposterTransformer.toInternal(externals)

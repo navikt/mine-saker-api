@@ -1,7 +1,6 @@
 package no.nav.personbruker.minesaker.api.saf.requests
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.personbruker.minesaker.api.saf.requests.JournalposterRequest
 import org.amshove.kluent.`should contain`
 import org.amshove.kluent.`should not contain`
 import org.junit.jupiter.api.Test
@@ -15,7 +14,7 @@ internal class JournalposterRequestTest {
     @Test
     fun `Skal bygge opp en korrekt sporring`() {
         val expectedSakstema = "FOR"
-        val expectedFields = "tema { navn kode }"
+        val expectedFirstJournalpostFields = """journalposter{ tittel journalpostId journalposttype"""
         val identAsQueryVarible = "\$ident : String!"
         val sakstemaAsQueryVarible = "\$temaetSomSkalHentes : Tema"
         val expectedSakstemaAsInputVariable = """"temaetSomSkalHentes":"$expectedSakstema""""
@@ -24,7 +23,7 @@ internal class JournalposterRequestTest {
 
         val requestAsJson = objectMapper.writeValueAsString(request)
 
-        requestAsJson `should contain` expectedFields
+        requestAsJson `should contain` expectedFirstJournalpostFields
         requestAsJson `should contain` identAsQueryVarible
         requestAsJson `should contain` sakstemaAsQueryVarible
         requestAsJson `should contain` expectedSakstemaAsInputVariable
