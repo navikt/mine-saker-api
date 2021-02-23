@@ -9,7 +9,7 @@ import kotlinx.coroutines.withContext
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
 import no.nav.personbruker.minesaker.api.common.exception.SafException
-import no.nav.personbruker.minesaker.api.saf.dto.out.Sakstema
+import no.nav.personbruker.minesaker.api.saf.domain.MinimaltSakstema
 import no.nav.personbruker.minesaker.api.saf.requests.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.requests.SakstemaerRequest
 import java.net.URL
@@ -21,13 +21,13 @@ class SafConsumer(
     private val safEndpoint: URL
 ) {
 
-    suspend fun hentSakstemaer(request: SakstemaerRequest): List<Sakstema> {
+    suspend fun hentSakstemaer(request: SakstemaerRequest): List<MinimaltSakstema> {
         val responseDto: GraphQLResponse<HentSakstemaer.Result> = sendQuery(request)
         val data: HentSakstemaer.Result = responseDto.data ?: throw noDataWithContext(responseDto)
         return sakerTransformer.toInternal(data)
     }
 
-    suspend fun hentJournalposter(request: JournalposterRequest): List<Sakstema> {
+    suspend fun hentJournalposter(request: JournalposterRequest): List<MinimaltSakstema> {
         val responseDto = sendQuery<GraphQLResponse<HentJournalposter.Result>>(request)
         val data: HentJournalposter.Result =
             responseDto.data ?: throw noDataWithContext(responseDto)
