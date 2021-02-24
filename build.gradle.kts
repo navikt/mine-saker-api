@@ -1,14 +1,20 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.expediagroup.graphql.plugin.gradle.graphql
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin on the JVM.
     kotlin("jvm").version(Kotlin.version)
     kotlin("plugin.allopen").version(Kotlin.version)
 
+    id(GraphQL.pluginId) version GraphQL.version
+
     id(Shadow.pluginId) version (Shadow.version)
     // Apply the application plugin to add support for building a CLI application.
     application
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions.jvmTarget = "13"
 }
 
 repositories {
@@ -21,6 +27,7 @@ repositories {
 }
 
 dependencies {
+    implementation(GraphQL.client)
     implementation(Jackson.dataTypeJsr310)
     implementation(Kotlinx.coroutines)
     implementation(Kotlinx.htmlJvm)
@@ -42,7 +49,6 @@ dependencies {
     implementation(Prometheus.hotspot)
     implementation(Prometheus.logback)
 
-
     testImplementation(Junit.api)
     testImplementation(Ktor.clientMock)
     testImplementation(Ktor.clientMockJvm)
@@ -57,7 +63,7 @@ dependencies {
 }
 
 application {
-    mainClassName = "io.ktor.server.netty.EngineMain"
+    mainClass.set("io.ktor.server.netty.EngineMain")
 }
 
 tasks {
@@ -83,13 +89,25 @@ tasks {
         environment("OIDC_CLAIM_CONTAINING_THE_IDENTITY", "pid")
         
         environment("NAIS_CLUSTER_NAME", "dev-sbs")
-        environment("NAIS_NAMESPACE", "q1")
+        environment("NAIS_NAMESPACE", "personbruker")
         environment("SENSU_HOST", "stub")
         environment("SENSU_PORT", "")
 
-        main = application.mainClassName
+        main = application.mainClass.get()
         classpath = sourceSets["main"].runtimeClasspath
     }
 }
+
+graphql {
+    client {
+        sdlEndpoint = "https://navikt.github.io/safselvbetjening/schema.graphqls"
+        packageName = "no.nav.dokument.saf.selvbetjening.generated.dto"
+    }
+}
+
+// TODO: Fjern følgende work around når Shadow-plugin-et har blitt oppdatert:
+// 'shadowJar' er litt ute av synk med Gradle sin fjerning av property-en mainClassName
+// Dette kan fjernes i det denne er merge-et: https://github.com/johnrengelman/shadow/pull/612
+project.setProperty("mainClassName", application.mainClass.get())
 
 apply(plugin = Shadow.pluginId)
