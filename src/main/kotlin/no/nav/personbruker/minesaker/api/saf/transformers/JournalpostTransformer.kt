@@ -6,6 +6,12 @@ import no.nav.personbruker.minesaker.api.saf.domain.Journalpost
 
 object JournalpostTransformer {
 
+    fun toInternal(externals: List<HentJournalposter.Journalpost?>): List<Journalpost> {
+        return externals
+            .filterNotNull()
+            .map { external -> toInternal(external) }
+    }
+
     fun toInternal(external: HentJournalposter.Journalpost): Journalpost {
         val journalposttype = JournalposttypeTransformer.toInternal(external.journalposttype)
         return Journalpost(

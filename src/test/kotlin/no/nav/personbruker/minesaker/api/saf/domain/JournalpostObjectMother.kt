@@ -19,6 +19,21 @@ object JournalpostObjectMother {
         )
     }
 
+    fun giveMeOneUtgaaendeDokument(): HentJournalposter.Journalpost {
+        val relevanteDatoer = listOf(
+            RelevantDatoObjectMother.giveMeDatoForInngaaendeDokument(),
+            RelevantDatoObjectMother.giveMeDatoForUtgaaendeDokument()
+        )
+        return HentJournalposter.Journalpost(
+            "Dummytittel Utgående",
+            "dummyId-Utgående",
+            HentJournalposter.Journalposttype.U,
+            AvsenderMottakerObjectMother.giveMePersonSomAvsender("123"),
+            relevanteDatoer,
+            listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertVariant())
+        )
+    }
+
     fun giveMeUtenTittel(): HentJournalposter.Journalpost {
         val relevanteDatoer = listOf(
             RelevantDatoObjectMother.giveMeDatoForInngaaendeDokument(),
