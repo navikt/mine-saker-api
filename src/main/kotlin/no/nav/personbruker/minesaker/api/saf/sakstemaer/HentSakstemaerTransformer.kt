@@ -19,10 +19,4 @@ object HentSakstemaerTransformer {
         )
     }
 
-    fun toInternal(externalData: HentSakstemaer.Result): List<Sakstema> {
-        return externalData.dokumentoversiktSelvbetjening.tema.map { external ->
-            toInternal(external)
-        }
-    }
-
 }
