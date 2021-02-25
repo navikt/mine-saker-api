@@ -20,19 +20,6 @@ internal class AvsenderMottakerTransformerTest {
     }
 
     @Test
-    fun `Skal kaste feil hvis id-feltet ikke er satt`() {
-        val external = AvsenderMottakerObjectMother.giveMePersonUtenIdSatt()
-
-        val result = runCatching {
-            AvsenderMottakerTransformer.toInternal(external)
-        }
-        result.isFailure `should be equal to` true
-        result.exceptionOrNull() `should be instance of` MissingFieldException::class
-        val mfe = result.exceptionOrNull() as MissingFieldException
-        mfe.context["feltnavn"] `should be equal to` "id"
-    }
-
-    @Test
     fun `Skal kaste feil hvis input er null`() {
         val result = runCatching {
             AvsenderMottakerTransformer.toInternal(null)

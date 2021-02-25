@@ -10,7 +10,7 @@ object AvsenderMottakerTransformer {
         if (external == null) throw MissingFieldException("avsenderMottaker")
 
         return AvsenderMottaker(
-            external.id ?: throw MissingFieldException("id"),
+            external.id,
             AvsenderMottakerTypeTransformer.toInternal(external.type)
         )
     }
