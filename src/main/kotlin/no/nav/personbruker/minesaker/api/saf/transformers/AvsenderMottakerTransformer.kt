@@ -6,13 +6,12 @@ import no.nav.personbruker.minesaker.api.saf.domain.AvsenderMottaker
 
 object AvsenderMottakerTransformer {
 
-    fun toInternal(external: HentJournalposter.AvsenderMottaker): AvsenderMottaker {
-        val externalType: HentJournalposter.AvsenderMottakerIdType = external.type ?: throw MissingFieldException("type")
-        val interalType = AvsenderMottakerTypeTransformer.toInternal(externalType)
+    fun toInternal(external: HentJournalposter.AvsenderMottaker?): AvsenderMottaker {
+        if (external == null) throw MissingFieldException("avsenderMottaker")
 
         return AvsenderMottaker(
             external.id ?: throw MissingFieldException("id"),
-            interalType
+            AvsenderMottakerTypeTransformer.toInternal(external.type)
         )
     }
 

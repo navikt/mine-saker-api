@@ -7,7 +7,7 @@ object AvsenderMottakerObjectMother {
     fun giveMePersonSomAvsender(ident: String) =
         HentJournalposter.AvsenderMottaker(ident, HentJournalposter.AvsenderMottakerIdType.FNR)
 
-    fun giveMeAvsenderUtenType() =
-        HentJournalposter.AvsenderMottaker("123", null)
+    fun giveMePersonUtenIdSatt() =
+        HentJournalposter.AvsenderMottaker(null, HentJournalposter.AvsenderMottakerIdType.FNR)
 
 }

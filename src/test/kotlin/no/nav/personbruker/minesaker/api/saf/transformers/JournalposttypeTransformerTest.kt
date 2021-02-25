@@ -2,9 +2,11 @@ package no.nav.personbruker.minesaker.api.saf.transformers
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter.Journalposttype.*
 import no.nav.personbruker.minesaker.api.common.exception.MissingFieldException
+import no.nav.personbruker.minesaker.api.common.exception.UnknownValueException
 import no.nav.personbruker.minesaker.api.saf.domain.Journalposttype
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be instance of`
+import org.amshove.kluent.`should not be null`
 import org.junit.jupiter.api.Test
 
 internal class JournalposttypeTransformerTest {
@@ -22,7 +24,21 @@ internal class JournalposttypeTransformerTest {
             JournalposttypeTransformer.toInternal(__UNKNOWN_VALUE)
         }
         result.isFailure `should be equal to` true
+        result.exceptionOrNull() `should be instance of` UnknownValueException::class
+        val mfe = result.exceptionOrNull() as UnknownValueException
+        mfe.context["feltnavn"] `should be equal to` "journalposttype"
+    }
+
+    @Test
+    fun `Skal kaste feil hvis input-en til metoden er null`() {
+        val result = runCatching {
+            JournalposttypeTransformer.toInternal(null)
+        }
+        result.isFailure `should be equal to` true
+        result.exceptionOrNull().`should not be null`()
         result.exceptionOrNull() `should be instance of` MissingFieldException::class
+        val mfe = result.exceptionOrNull() as MissingFieldException
+        mfe.context["feltnavn"] `should be equal to` "journalposttype"
     }
 
 }

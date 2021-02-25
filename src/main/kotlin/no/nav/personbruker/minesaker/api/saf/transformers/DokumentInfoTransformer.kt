@@ -9,15 +9,19 @@ object DokumentInfoTransformer {
     /**
      * Er kun interessert i den arkivert versjonen av dokumentet, da det er denne som er mest vanlig.
      */
-    fun toInternal(externals: List<HentJournalposter.DokumentInfo>): List<Dokumentinfo> {
+    fun toInternal(externals: List<HentJournalposter.DokumentInfo?>?): List<Dokumentinfo> {
+        if (externals == null) throw MissingFieldException("dokumenter")
+
         val internals = mutableListOf<Dokumentinfo>()
-        externals.forEach { externalDokument ->
-            val externalArkivertDokumentVariant = externalDokument.getEventuellArkivertVariant()
-            if (externalArkivertDokumentVariant != null) {
-                val internal = toInternal(externalDokument, externalArkivertDokumentVariant)
-                internals.add(internal)
+        externals
+            .filterNotNull()
+            .forEach { externalDokument ->
+                val externalArkivertDokumentVariant = externalDokument.getEventuellArkivertVariant()
+                if (externalArkivertDokumentVariant != null) {
+                    val internal = toInternal(externalDokument, externalArkivertDokumentVariant)
+                    internals.add(internal)
+                }
             }
-        }
         return internals
     }
 

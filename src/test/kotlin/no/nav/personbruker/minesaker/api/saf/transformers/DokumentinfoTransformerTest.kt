@@ -38,6 +38,17 @@ internal class DokumentinfoTransformerTest {
     }
 
     @Test
+    fun `Skal kaste feil hvis dokumentlisten er null`() {
+        val result = runCatching {
+            DokumentInfoTransformer.toInternal(null)
+        }
+        result.isFailure `should be equal to` true
+        result.exceptionOrNull() `should be instance of` MissingFieldException::class
+        val mfe = result.exceptionOrNull() as MissingFieldException
+        mfe.context["feltnavn"] `should be equal to` "dokumenter"
+    }
+
+    @Test
     fun `Skal kaste feil hvis tittel-feltet mangler`() {
         val externals = listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertVariantMenUtenTittel())
 
