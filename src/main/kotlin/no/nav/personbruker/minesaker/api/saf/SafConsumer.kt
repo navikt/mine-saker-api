@@ -10,10 +10,8 @@ import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
 import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstema
-import no.nav.personbruker.minesaker.api.saf.requests.JournalposterRequest
-import no.nav.personbruker.minesaker.api.saf.requests.SakstemaerRequest
-import no.nav.personbruker.minesaker.api.saf.transformers.HentSakstemaerTransformer
-import no.nav.personbruker.minesaker.api.saf.transformers.ResultTransformer
+import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
+import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import java.net.URL
 
 class SafConsumer(

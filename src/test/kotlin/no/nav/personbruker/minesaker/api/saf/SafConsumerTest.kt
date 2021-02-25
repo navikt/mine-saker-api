@@ -9,11 +9,11 @@ import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.config.buildJsonSerializer
-import no.nav.personbruker.minesaker.api.saf.domain.HentJournalposterResultObjectMother
-import no.nav.personbruker.minesaker.api.saf.domain.HentSakstemaerObjectMother
+import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.HentJournalposterResultObjectMother
+import no.nav.personbruker.minesaker.api.saf.sakstemaer.HentSakstemaerObjectMother
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstema
-import no.nav.personbruker.minesaker.api.saf.requests.JournalposterRequest
-import no.nav.personbruker.minesaker.api.saf.requests.SakstemaerRequest
+import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
+import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import org.amshove.kluent.*
 import org.junit.jupiter.api.Test
 import java.net.URL
