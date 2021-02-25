@@ -11,7 +11,7 @@ suspend fun respondWithError(call: ApplicationCall, log: Logger, exception: Exce
     when(exception) {
         is SafException -> {
             call.respond(HttpStatusCode.ServiceUnavailable)
-            log.warn("Klarte ikke å hente data fra SAF. Returnerer feilkode til frontend", exception)
+            log.warn("Klarte ikke å hente data fra SAF. Returnerer feilkode til frontend. context={}", exception.context, exception)
         }
         else -> {
             call.respond(HttpStatusCode.InternalServerError)
