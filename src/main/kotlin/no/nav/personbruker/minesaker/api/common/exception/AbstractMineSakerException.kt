@@ -4,9 +4,9 @@ open class AbstractMineSakerException(message: String, cause: Throwable?) : Exce
 
     constructor(message: String) : this(message, null)
 
-    val context: MutableMap<String, Any> = mutableMapOf()
+    val context: MutableMap<String, Any?> = mutableMapOf()
 
-    fun addContext(key: String, value: Any): AbstractMineSakerException {
+    fun addContext(key: String, value: Any?): AbstractMineSakerException {
         context[key] = value
         return this
     }
