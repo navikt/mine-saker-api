@@ -1,6 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf.transformers
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
+import org.amshove.kluent.`should be empty`
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.shouldNotBeNull
 import org.junit.jupiter.api.Test
@@ -15,6 +16,7 @@ internal class HentSakstemaerTransformerTest {
 
         internal.navn `should be equal to` external.navn
         internal.kode `should be equal to` external.kode
+        internal.journalposter.`should be empty`()
     }
 
     @Test
