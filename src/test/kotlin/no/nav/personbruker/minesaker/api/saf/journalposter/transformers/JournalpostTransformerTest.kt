@@ -35,7 +35,7 @@ internal class JournalpostTransformerTest {
 
         internal.arkiverteDokumenter.shouldNotBeEmpty()
         internal.avsenderMottaker.shouldNotBeNull()
-        internal.datoRegistert.shouldNotBeNull()
+        internal.relevanteDatoer.shouldNotBeNull()
         internal.journalposttype.shouldNotBeNull()
     }
 

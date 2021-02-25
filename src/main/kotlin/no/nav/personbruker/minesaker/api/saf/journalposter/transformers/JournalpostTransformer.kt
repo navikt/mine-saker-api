@@ -19,7 +19,7 @@ object JournalpostTransformer {
             external.journalpostId,
             journalposttype,
             AvsenderMottakerTransformer.toInternal(external.avsenderMottaker),
-            RelevantDatoTransformer.toInternal(external.relevanteDatoer, journalposttype),
+            RelevantDatoTransformer.toInternal(external.relevanteDatoer),
             DokumentInfoTransformer.toInternal(external.dokumenter)
         )
     }
