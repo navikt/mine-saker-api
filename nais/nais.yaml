@@ -27,8 +27,6 @@ spec:
 {{#each ingresses}}
   - "{{this}}"
 {{/each}}
-  vault:
-    enabled: true
   resources:
     limits:
       cpu: "3"
