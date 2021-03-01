@@ -1,17 +1,14 @@
-package no.nav.personbruker.minesaker.api.saf.domain
+package no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers
 
 import com.expediagroup.graphql.types.GraphQLError
 import com.expediagroup.graphql.types.GraphQLResponse
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
+import no.nav.personbruker.minesaker.api.saf.ResultObjectMother
 
 object HentJournalposterResultObjectMother {
 
     fun giveMeOneResult(): GraphQLResponse<HentJournalposter.Result> {
-        val tema1 = HentJournalposter.Sakstema("navn1", "kode1")
-        val tema2 = HentJournalposter.Sakstema("navn2", "kode2")
-        val tema = listOf(tema1, tema2)
-        val dokOver = HentJournalposter.Dokumentoversikt(tema)
-        val data = HentJournalposter.Result(dokOver)
+        val data = ResultObjectMother.giveMeHentJournalposterResult()
         return GraphQLResponse(data)
     }
 

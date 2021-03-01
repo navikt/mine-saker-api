@@ -1,7 +1,7 @@
-package no.nav.personbruker.minesaker.api.saf.requests
+package no.nav.personbruker.minesaker.api.saf.sakstemaer
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.jsonMapper
+import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import org.amshove.kluent.`should contain`
 import org.junit.jupiter.api.Test
 

@@ -1,4 +1,4 @@
-package no.nav.personbruker.minesaker.api.saf.requests
+package no.nav.personbruker.minesaker.api.saf.journalposter
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HENT_JOURNALPOSTER
 import no.nav.personbruker.minesaker.api.saf.GraphQLRequest

@@ -6,8 +6,8 @@ import no.nav.personbruker.minesaker.api.common.AuthenticatedUserObjectMother
 import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.common.sak.SakService
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
-import no.nav.personbruker.minesaker.api.saf.requests.JournalposterRequest
-import no.nav.personbruker.minesaker.api.saf.requests.SakstemaerRequest
+import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
+import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should contain`
