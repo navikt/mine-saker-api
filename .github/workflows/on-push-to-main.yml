@@ -50,31 +50,31 @@ jobs:
           git push origin $TAG
 
       - name: Sjekk om prodsetting er mulig
-        run: echo "PROD_SBS_VARS_TEMPLATE_DEFINED=$([[ -f ./nais/prod-sbs/personbruker.json ]] && echo 'true' || echo 'false')" >> $GITHUB_ENV
+        run: echo "PROD_GCP_VARS_TEMPLATE_DEFINED=$([[ -f ./nais/prod-gcp/personbruker.json ]] && echo 'true' || echo 'false')" >> $GITHUB_ENV
 
-      - name: 'Deploy-er til default i prod-sbs'
-        if: env.PROD_SBS_VARS_TEMPLATE_DEFINED == 'true'
+      - name: 'Deploy-er til default i prod-gcp'
+        if: env.PROD_GCP_VARS_TEMPLATE_DEFINED == 'true'
         uses: 'nais/deploy/actions/deploy@v1'
         env:
           REF: ${{ github.sha }}
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: prod-sbs
+          CLUSTER: prod-gcp
           RESOURCE: ./nais/nais.yaml
-          VARS: ./nais/prod-sbs/personbruker.json
+          VARS: ./nais/prod-gcp/personbruker.json
           VAR: version=${{ env.IMAGE }}
           PRINT_PAYLOAD: true
 
       - name: Sjekk om deploy til personbruker i dev er mulig
-        run: echo "DEV_SBS_PERSONBRUKER_CONFIG_DEFINED=$([[ -f ./nais/dev-sbs/personbruker.json ]] && echo 'true' || echo 'false')" >> $GITHUB_ENV
+        run: echo "DEV_GCP_PERSONBRUKER_CONFIG_DEFINED=$([[ -f ./nais/dev-gcp/personbruker.json ]] && echo 'true' || echo 'false')" >> $GITHUB_ENV
 
-      - name: 'Deploy-er til personbruker i dev-sbs'
-        if: env.DEV_SBS_PERSONBRUKER_CONFIG_DEFINED == 'true'
+      - name: 'Deploy-er til personbruker i dev-gcp'
+        if: env.DEV_GCP_PERSONBRUKER_CONFIG_DEFINED == 'true'
         uses: 'nais/deploy/actions/deploy@v1'
         env:
           REF: ${{ github.sha }}
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: dev-sbs
+          CLUSTER: dev-gcp
           RESOURCE: ./nais/nais.yaml
-          VARS: ./nais/dev-sbs/personbruker.json
+          VARS: ./nais/dev-gcp/personbruker.json
           VAR: version=${{ env.IMAGE }}
           PRINT_PAYLOAD: true
