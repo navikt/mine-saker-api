@@ -8,6 +8,7 @@ metadata:
 spec:
   envFrom:
     - configmap: loginservice-idporten
+    - secret: mine-saker-api-secrets
   image: {{version}}
   port: 8080
   liveness:
@@ -27,8 +28,6 @@ spec:
 {{#each ingresses}}
   - "{{this}}"
 {{/each}}
-  vault:
-    enabled: true
   resources:
     limits:
       cpu: "3"
