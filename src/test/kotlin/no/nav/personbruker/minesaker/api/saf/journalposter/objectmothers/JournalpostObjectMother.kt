@@ -4,49 +4,26 @@ import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 
 object JournalpostObjectMother {
 
-    fun giveMeOneInngaaendeDokument(): HentJournalposter.Journalpost {
-        val relevanteDatoer = listOf(
+    fun giveMeOneInngaaendeDokument(
+        tittel: String? = "Dummytittel Inngående",
+        journalpostId: String = "dummyId-Inngående",
+        journalposttype: HentJournalposter.Journalposttype? = HentJournalposter.Journalposttype.I,
+        avsenderMottaker: HentJournalposter.AvsenderMottaker? = AvsenderMottakerObjectMother.giveMePersonSomAvsender("123"),
+        relevanteDatoer: List<HentJournalposter.RelevantDato?> = listOf(
             RelevantDatoObjectMother.giveMeDatoForInngaaendeDokument(),
             RelevantDatoObjectMother.giveMeDatoForUtgaaendeDokument()
-        )
-        return HentJournalposter.Journalpost(
-            "Dummytittel Inngående",
-            "dummyId-Inngående",
-            HentJournalposter.Journalposttype.I,
-            AvsenderMottakerObjectMother.giveMePersonSomAvsender("123"),
-            relevanteDatoer,
-            listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertVariant())
-        )
-    }
+        ),
+        journalposter: List<HentJournalposter.DokumentInfo?>? = listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertVariant())
+    ) = HentJournalposter.Journalpost(
+        tittel,
+        journalpostId,
+        journalposttype,
+        avsenderMottaker,
+        relevanteDatoer,
+        journalposter
+    )
 
-    fun giveMeOneUtgaaendeDokument(): HentJournalposter.Journalpost {
-        val relevanteDatoer = listOf(
-            RelevantDatoObjectMother.giveMeDatoForInngaaendeDokument(),
-            RelevantDatoObjectMother.giveMeDatoForUtgaaendeDokument()
-        )
-        return HentJournalposter.Journalpost(
-            "Dummytittel Utgående",
-            "dummyId-Utgående",
-            HentJournalposter.Journalposttype.U,
-            AvsenderMottakerObjectMother.giveMePersonSomAvsender("123"),
-            relevanteDatoer,
-            listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertVariant())
-        )
-    }
-
-    fun giveMeUtenTittel(): HentJournalposter.Journalpost {
-        val relevanteDatoer = listOf(
-            RelevantDatoObjectMother.giveMeDatoForInngaaendeDokument(),
-            RelevantDatoObjectMother.giveMeDatoForUtgaaendeDokument()
-        )
-        return HentJournalposter.Journalpost(
-            null,
-            "dummyId-Utgående",
-            HentJournalposter.Journalposttype.U,
-            AvsenderMottakerObjectMother.giveMePersonSomAvsender("123"),
-            relevanteDatoer,
-            listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertVariant())
-        )
-    }
+    fun giveMeOneUtgaaendeDokument() =
+        giveMeOneInngaaendeDokument(journalposttype = HentJournalposter.Journalposttype.U)
 
 }

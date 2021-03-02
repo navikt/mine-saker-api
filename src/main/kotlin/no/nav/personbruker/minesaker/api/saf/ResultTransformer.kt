@@ -3,17 +3,13 @@ package no.nav.personbruker.minesaker.api.saf
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstema
-import no.nav.personbruker.minesaker.api.saf.journalposter.transformers.SakstemaTransformer
-import no.nav.personbruker.minesaker.api.saf.sakstemaer.HentSakstemaerTransformer
+import no.nav.personbruker.minesaker.api.saf.journalposter.transformers.toInternal
+import no.nav.personbruker.minesaker.api.saf.sakstemaer.toInternal
 
-object ResultTransformer {
+fun HentSakstemaer.Result.toInternal(): List<Sakstema> {
+    return dokumentoversiktSelvbetjening.tema.map { externalTema -> externalTema.toInternal() }
+}
 
-    fun toInternal(external: HentJournalposter.Result): List<Sakstema> {
-        return SakstemaTransformer.toInternal(external.dokumentoversiktSelvbetjening.tema)
-    }
-
-    fun toInternal(external: HentSakstemaer.Result): List<Sakstema> {
-        return HentSakstemaerTransformer.toInternal(external.dokumentoversiktSelvbetjening.tema)
-    }
-
+fun HentJournalposter.Result.toInternal(): List<Sakstema> {
+    return dokumentoversiktSelvbetjening.tema.map { externalTeama -> externalTeama.toInternal() }
 }

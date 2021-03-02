@@ -17,8 +17,8 @@ object JournalpostTransformer {
 fun HentJournalposter.Journalpost.toInternal() = Journalpost(
     tittel ?: throw MissingFieldException("tittel"),
     journalpostId,
-    JournalposttypeTransformer.toInternal(journalposttype),
-    AvsenderMottakerTransformer.toInternal(avsenderMottaker),
-    RelevantDatoTransformer.toInternal(relevanteDatoer),
+    journalposttype?.toInternal() ?: throw MissingFieldException("journalposttype"),
+    avsenderMottaker?.toInternal() ?: throw MissingFieldException("avsenderMottaker"),
+    relevanteDatoer.filterNotNull().map { external -> external.toInternal() },
     DokumentInfoTransformer.toInternal(dokumenter)
 )

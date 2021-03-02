@@ -16,20 +16,19 @@ import java.net.URL
 
 class SafConsumer(
     private val httpClient: HttpClient,
-    private val resultTransformer: ResultTransformer = ResultTransformer,
     private val safEndpoint: URL
 ) {
 
     suspend fun hentSakstemaer(request: SakstemaerRequest): List<Sakstema> {
         val responseDto: GraphQLResponse<HentSakstemaer.Result> = sendQuery(request)
         val data: HentSakstemaer.Result = responseDto.data ?: throw noDataWithContext(responseDto)
-        return resultTransformer.toInternal(data)
+        return data.toInternal()
     }
 
     suspend fun hentJournalposter(request: JournalposterRequest): List<Sakstema> {
         val responseDto = sendQuery<GraphQLResponse<HentJournalposter.Result>>(request)
         val data: HentJournalposter.Result = responseDto.data ?: throw noDataWithContext(responseDto)
-        return resultTransformer.toInternal(data)
+        return data.toInternal()
     }
 
     private fun noDataWithContext(responseDto: GraphQLResponse<*>) =

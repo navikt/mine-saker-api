@@ -19,14 +19,4 @@ internal class RelevantDatoTransformerTest {
         internal.type `should be equal to` Datotype.REGISTRERT
     }
 
-    @Test
-    fun `Skal transformere fra flere eksterne til flere interne`() {
-        val externals = RelevantDatoObjectMother.giveMeOneOfEachEkspederRegistertAndOpprettet()
-
-        val internals = RelevantDatoTransformer.toInternal(externals)
-
-        internals.shouldNotBeNull()
-        internals.size `should be equal to` externals.size
-    }
-
 }
