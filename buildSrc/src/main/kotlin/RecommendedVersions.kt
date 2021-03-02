@@ -55,7 +55,7 @@ object Kluent {
 }
 
 object Kotlin {
-    const val version = "1.4.30"
+    const val version = "1.4.31"
     private const val groupId = "org.jetbrains.kotlin"
 
     const val reflect = "$groupId:kotlin-reflect:$version"

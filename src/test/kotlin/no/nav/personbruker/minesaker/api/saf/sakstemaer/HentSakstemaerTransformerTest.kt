@@ -13,7 +13,7 @@ internal class HentSakstemaerTransformerTest {
 
         val internal = external.toInternal()
 
-        internal.navn `should be equal to` external.navn
+        internal.navn.value `should be equal to` external.navn
         internal.kode `should be equal to` external.kode
         internal.journalposter.`should be empty`()
     }
