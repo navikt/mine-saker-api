@@ -28,13 +28,11 @@ object DokumentInfoTransformer {
     private fun toInternal(
         external: HentJournalposter.DokumentInfo,
         externalVariant: HentJournalposter.Dokumentvariant
-    ): Dokumentinfo {
-        return Dokumentinfo(
-            external.tittel ?: throw MissingFieldException("tittel"),
-            externalVariant.filuuid ?: throw MissingFieldException("filuuid"),
-            externalVariant.brukerHarTilgang == true
-        )
-    }
+    ) = Dokumentinfo(
+        external.tittel ?: throw MissingFieldException("tittel"),
+        externalVariant.filuuid ?: throw MissingFieldException("filuuid"),
+        externalVariant.brukerHarTilgang == true
+    )
 
 }
 

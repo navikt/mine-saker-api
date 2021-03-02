@@ -12,7 +12,7 @@ internal class RelevantDatoTransformerTest {
     fun `Skal transformere fra ekstern til intern modell`() {
         val external = RelevantDatoObjectMother.giveMeDatoForInngaaendeDokument()
 
-        val internal = RelevantDatoTransformer.toInternal(external)
+        val internal = external.toInternal()
 
         internal.shouldNotBeNull()
         internal.dato.shouldNotBeNull()

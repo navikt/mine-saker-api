@@ -9,10 +9,12 @@ object AvsenderMottakerTransformer {
     fun toInternal(external: HentJournalposter.AvsenderMottaker?): AvsenderMottaker {
         if (external == null) throw MissingFieldException("avsenderMottaker")
 
-        return AvsenderMottaker(
-            external.id,
-            AvsenderMottakerTypeTransformer.toInternal(external.type)
-        )
+        return external.toInternal()
     }
 
 }
+
+fun HentJournalposter.AvsenderMottaker.toInternal() = AvsenderMottaker(
+    id,
+    AvsenderMottakerTypeTransformer.toInternal(type)
+)

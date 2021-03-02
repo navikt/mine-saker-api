@@ -27,7 +27,7 @@ internal class JournalpostTransformerTest {
     fun `Skal transformere til intern type`() {
         val external = JournalpostObjectMother.giveMeOneInngaaendeDokument()
 
-        val internal = JournalpostTransformer.toInternal(external)
+        val internal = external.toInternal()
 
         internal.shouldNotBeNull()
         internal.tittel `should be equal to` external.tittel
@@ -44,7 +44,7 @@ internal class JournalpostTransformerTest {
         val external = JournalpostObjectMother.giveMeUtenTittel()
 
         val result = runCatching {
-            JournalpostTransformer.toInternal(external)
+            external.toInternal()
         }
 
         result.isFailure `should be equal to` true

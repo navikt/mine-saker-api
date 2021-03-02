@@ -12,7 +12,7 @@ internal class SakstemaTransformerTest {
     fun `Skal kunne transformere fra ekstern til intern modell - Hent konkret sakstema`() {
         val external = SakstemaObjectMother.giveMeSakstemaWithInngaaendeDokument()
 
-        val internal = SakstemaTransformer.toInternal(external)
+        val internal = external.toInternal()
 
         internal.navn `should be equal to` external.navn
         internal.kode `should be equal to` external.kode

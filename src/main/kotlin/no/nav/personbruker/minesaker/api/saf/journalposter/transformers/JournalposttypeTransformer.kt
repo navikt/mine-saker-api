@@ -9,13 +9,16 @@ object JournalposttypeTransformer {
 
     fun toInternal(external: HentJournalposter.Journalposttype?): Journalposttype {
         if (external == null) throw MissingFieldException("journalposttype")
-
-        return when (external) {
-            HentJournalposter.Journalposttype.I -> Journalposttype.INNGAAENDE
-            HentJournalposter.Journalposttype.U -> Journalposttype.UTGAAENDE
-            HentJournalposter.Journalposttype.N -> Journalposttype.NOTAT
-            HentJournalposter.Journalposttype.__UNKNOWN_VALUE -> throw UnknownValueException("journalposttype")
-        }
+        return external.toInternal()
     }
 
+}
+
+fun HentJournalposter.Journalposttype.toInternal(): Journalposttype {
+    return when (this) {
+        HentJournalposter.Journalposttype.I -> Journalposttype.INNGAAENDE
+        HentJournalposter.Journalposttype.U -> Journalposttype.UTGAAENDE
+        HentJournalposter.Journalposttype.N -> Journalposttype.NOTAT
+        HentJournalposter.Journalposttype.__UNKNOWN_VALUE -> throw UnknownValueException("journalposttype")
+    }
 }

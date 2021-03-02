@@ -9,19 +9,16 @@ object JournalpostTransformer {
     fun toInternal(externals: List<HentJournalposter.Journalpost?>): List<Journalpost> {
         return externals
             .filterNotNull()
-            .map { external -> toInternal(external) }
-    }
-
-    fun toInternal(external: HentJournalposter.Journalpost): Journalpost {
-        val journalposttype = JournalposttypeTransformer.toInternal(external.journalposttype)
-        return Journalpost(
-            external.tittel ?: throw MissingFieldException("tittel"),
-            external.journalpostId,
-            journalposttype,
-            AvsenderMottakerTransformer.toInternal(external.avsenderMottaker),
-            RelevantDatoTransformer.toInternal(external.relevanteDatoer),
-            DokumentInfoTransformer.toInternal(external.dokumenter)
-        )
+            .map { external -> external.toInternal() }
     }
 
 }
+
+fun HentJournalposter.Journalpost.toInternal() = Journalpost(
+    tittel ?: throw MissingFieldException("tittel"),
+    journalpostId,
+    JournalposttypeTransformer.toInternal(journalposttype),
+    AvsenderMottakerTransformer.toInternal(avsenderMottaker),
+    RelevantDatoTransformer.toInternal(relevanteDatoer),
+    DokumentInfoTransformer.toInternal(dokumenter)
+)

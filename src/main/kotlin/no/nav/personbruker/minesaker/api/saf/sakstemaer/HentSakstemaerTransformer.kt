@@ -8,15 +8,15 @@ object HentSakstemaerTransformer {
 
     fun toInternal(externalTemaer: List<HentSakstemaer.Sakstema>): List<Sakstema> {
         return externalTemaer.map { external ->
-            toInternal(external)
+            external.toInternal()
         }
     }
 
-    fun toInternal(external: HentSakstemaer.Sakstema): Sakstema {
-        return Sakstema(
-            external.navn ?: throw MissingFieldException("navn"),
-            external.kode ?: throw MissingFieldException("kode")
-        )
-    }
+}
 
+fun HentSakstemaer.Sakstema.toInternal(): Sakstema {
+    return Sakstema(
+        navn ?: throw MissingFieldException("navn"),
+        kode ?: throw MissingFieldException("kode")
+    )
 }

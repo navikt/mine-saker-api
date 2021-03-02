@@ -11,7 +11,7 @@ internal class HentSakstemaerTransformerTest {
     fun `Skal kunne transformere fra ekstern til intern modell - Hent saker`() {
         val external = SakstemaObjectMother.giveMeOneSakstema()
 
-        val internal = HentSakstemaerTransformer.toInternal(external)
+        val internal = external.toInternal()
 
         internal.navn `should be equal to` external.navn
         internal.kode `should be equal to` external.kode

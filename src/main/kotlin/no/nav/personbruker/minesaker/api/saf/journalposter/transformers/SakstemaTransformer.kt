@@ -8,16 +8,14 @@ object SakstemaTransformer {
 
     fun toInternal(externalTemaer: List<HentJournalposter.Sakstema>): List<Sakstema> {
         return externalTemaer.map { external ->
-            toInternal(external)
+            external.toInternal()
         }
     }
 
-    fun toInternal(external: HentJournalposter.Sakstema): Sakstema {
-        return Sakstema(
-            external.navn ?: throw MissingFieldException("navn"),
-            external.kode ?: throw MissingFieldException("kode"),
-            JournalpostTransformer.toInternal(external.journalposter)
-        )
-    }
-
 }
+
+fun HentJournalposter.Sakstema.toInternal() = Sakstema(
+    navn ?: throw MissingFieldException("navn"),
+    kode ?: throw MissingFieldException("kode"),
+    JournalpostTransformer.toInternal(journalposter)
+)

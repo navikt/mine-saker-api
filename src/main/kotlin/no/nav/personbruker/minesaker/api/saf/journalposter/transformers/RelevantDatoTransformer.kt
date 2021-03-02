@@ -9,15 +9,13 @@ object RelevantDatoTransformer {
         return relevanteDatoer
             .filterNotNull()
             .map { external ->
-                toInternal(external)
+                external.toInternal()
             }
     }
 
-    internal fun toInternal(external: HentJournalposter.RelevantDato): RelevantDato {
-        return RelevantDato(
-            DateTimeTransformer.toInternal(external.dato),
-            DatotypeTransformer.toInternal(external.datotype)
-        )
-    }
-
 }
+
+fun HentJournalposter.RelevantDato.toInternal() = RelevantDato(
+    dato.toInternal(),
+    datotype.toInternal()
+)

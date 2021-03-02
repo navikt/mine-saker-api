@@ -13,7 +13,7 @@ internal class AvsenderMottakerTransformerTest {
     fun `Skal transformere alle gyldige verdier, fra ekstern til intern verdi`() {
         val external = AvsenderMottakerObjectMother.giveMePersonSomAvsender("123")
 
-        val internal = AvsenderMottakerTransformer.toInternal(external)
+        val internal = external.toInternal()
 
         internal.id `should be equal to` external.id
         internal.type.shouldNotBeNull()
