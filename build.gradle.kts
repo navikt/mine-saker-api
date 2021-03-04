@@ -1,5 +1,6 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import com.expediagroup.graphql.plugin.gradle.graphql
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin on the JVM.
@@ -13,8 +14,9 @@ plugins {
     application
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "13"
+    kotlinOptions.freeCompilerArgs = listOf("-Xinline-classes")
 }
 
 repositories {

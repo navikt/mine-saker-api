@@ -12,21 +12,11 @@ internal class RelevantDatoTransformerTest {
     fun `Skal transformere fra ekstern til intern modell`() {
         val external = RelevantDatoObjectMother.giveMeDatoForInngaaendeDokument()
 
-        val internal = RelevantDatoTransformer.toInternal(external)
+        val internal = external.toInternal()
 
         internal.shouldNotBeNull()
         internal.dato.shouldNotBeNull()
         internal.type `should be equal to` Datotype.REGISTRERT
-    }
-
-    @Test
-    fun `Skal transformere fra flere eksterne til flere interne`() {
-        val externals = RelevantDatoObjectMother.giveMeOneOfEachEkspederRegistertAndOpprettet()
-
-        val internals = RelevantDatoTransformer.toInternal(externals)
-
-        internals.shouldNotBeNull()
-        internals.size `should be equal to` externals.size
     }
 
 }

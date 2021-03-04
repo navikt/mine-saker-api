@@ -9,15 +9,19 @@ object AvsenderMottakerTypeTransformer {
     fun toInternal(external: HentJournalposter.AvsenderMottakerIdType?): AvsenderMottakerType {
         if (external == null) throw MissingFieldException("avsenderMottakerIdType")
 
-        return when(external) {
-            HentJournalposter.AvsenderMottakerIdType.FNR -> AvsenderMottakerType.PERSON
-            HentJournalposter.AvsenderMottakerIdType.HPRNR -> AvsenderMottakerType.HELSEPERSONELL
-            HentJournalposter.AvsenderMottakerIdType.ORGNR -> AvsenderMottakerType.ORGANISASJON
-            HentJournalposter.AvsenderMottakerIdType.UTL_ORG -> AvsenderMottakerType.ORGANISASJON
-            HentJournalposter.AvsenderMottakerIdType.NULL -> AvsenderMottakerType.UKJENT
-            HentJournalposter.AvsenderMottakerIdType.UKJENT -> AvsenderMottakerType.UKJENT
-            HentJournalposter.AvsenderMottakerIdType.__UNKNOWN_VALUE -> AvsenderMottakerType.UKJENT
-        }
+        return external.toInternal()
     }
 
+}
+
+fun HentJournalposter.AvsenderMottakerIdType.toInternal(): AvsenderMottakerType {
+    return when (this) {
+        HentJournalposter.AvsenderMottakerIdType.FNR -> AvsenderMottakerType.PERSON
+        HentJournalposter.AvsenderMottakerIdType.HPRNR -> AvsenderMottakerType.HELSEPERSONELL
+        HentJournalposter.AvsenderMottakerIdType.ORGNR -> AvsenderMottakerType.ORGANISASJON
+        HentJournalposter.AvsenderMottakerIdType.UTL_ORG -> AvsenderMottakerType.ORGANISASJON
+        HentJournalposter.AvsenderMottakerIdType.NULL -> AvsenderMottakerType.UKJENT
+        HentJournalposter.AvsenderMottakerIdType.UKJENT -> AvsenderMottakerType.UKJENT
+        HentJournalposter.AvsenderMottakerIdType.__UNKNOWN_VALUE -> AvsenderMottakerType.UKJENT
+    }
 }

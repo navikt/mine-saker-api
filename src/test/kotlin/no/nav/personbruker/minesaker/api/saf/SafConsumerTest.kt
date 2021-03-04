@@ -45,7 +45,7 @@ internal class SafConsumerTest {
         val externalSakstema = externalResponse.data!!.dokumentoversiktSelvbetjening.tema
         internalSakstema.size `should be equal to` externalSakstema.size
         internalSakstema[0] `should be instance of` Sakstema::class
-        internalSakstema[0].navn `should be equal to` externalSakstema[0].navn
+        internalSakstema[0].navn.value `should be equal to` externalSakstema[0].navn
         internalSakstema[0].kode.`should be equal to`(externalSakstema[0].kode)
         internalSakstema `should not be equal to` externalSakstema
     }
@@ -71,7 +71,7 @@ internal class SafConsumerTest {
         val externalSakstema = externalResponse.data!!.dokumentoversiktSelvbetjening.tema
         internalSakstema.size `should be equal to` externalSakstema.size
         internalSakstema[0] `should be instance of` Sakstema::class
-        internalSakstema[0].navn `should be equal to` externalSakstema[0].navn
+        internalSakstema[0].navn.value `should be equal to` externalSakstema[0].navn
         internalSakstema[0].kode `should be equal to` externalSakstema[0].kode
         internalSakstema `should not be equal to` externalSakstema
     }

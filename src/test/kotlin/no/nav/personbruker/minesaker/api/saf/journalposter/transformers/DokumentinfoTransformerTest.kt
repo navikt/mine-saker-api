@@ -32,8 +32,8 @@ internal class DokumentinfoTransformerTest {
 
         internals.shouldNotBeEmpty()
         internals.size `should be equal to` 1
-        internals[0].tittel `should be equal to` expectedDokument.tittel
-        internals[0].filuuid `should be equal to` expectedDokumentVariant?.filuuid
+        internals[0].tittel.value `should be equal to` expectedDokument.tittel
+        internals[0].filuuid.value `should be equal to` expectedDokumentVariant?.filuuid
         internals[0].brukerHarTilgang `should be equal to` expectedDokumentVariant?.brukerHarTilgang
     }
 

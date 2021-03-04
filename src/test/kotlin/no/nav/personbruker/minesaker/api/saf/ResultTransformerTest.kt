@@ -9,7 +9,7 @@ internal class ResultTransformerTest {
     fun `Skal transformere et SAF-resultat for aa hente inn sakstemaer`() {
         val hentSakstemaer = ResultObjectMother.giveMeHentSakstemaResult()
 
-        val internal = ResultTransformer.toInternal(hentSakstemaer)
+        val internal = hentSakstemaer.toInternal()
 
         internal.`should not be null`()
     }
@@ -18,7 +18,7 @@ internal class ResultTransformerTest {
     fun `Skal transformere et SAF-resultat for aa hente inn journalposter`() {
         val hentJournalposter = ResultObjectMother.giveMeHentJournalposterResult()
 
-        val internal = ResultTransformer.toInternal(hentJournalposter)
+        val internal = hentJournalposter.toInternal()
 
         internal.`should not be null`()
     }

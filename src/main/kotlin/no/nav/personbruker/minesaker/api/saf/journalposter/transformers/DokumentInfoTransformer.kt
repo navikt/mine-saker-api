@@ -3,6 +3,8 @@ package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.personbruker.minesaker.api.common.exception.MissingFieldException
 import no.nav.personbruker.minesaker.api.saf.domain.Dokumentinfo
+import no.nav.personbruker.minesaker.api.saf.domain.FilUUID
+import no.nav.personbruker.minesaker.api.saf.domain.Tittel
 
 object DokumentInfoTransformer {
 
@@ -28,13 +30,11 @@ object DokumentInfoTransformer {
     private fun toInternal(
         external: HentJournalposter.DokumentInfo,
         externalVariant: HentJournalposter.Dokumentvariant
-    ): Dokumentinfo {
-        return Dokumentinfo(
-            external.tittel ?: throw MissingFieldException("tittel"),
-            externalVariant.filuuid ?: throw MissingFieldException("filuuid"),
-            externalVariant.brukerHarTilgang == true
-        )
-    }
+    ) = Dokumentinfo(
+        Tittel(external.tittel ?: throw MissingFieldException("tittel")),
+        FilUUID(externalVariant.filuuid ?: throw MissingFieldException("filuuid")),
+        externalVariant.brukerHarTilgang == true
+    )
 
 }
 

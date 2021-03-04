@@ -16,7 +16,7 @@ internal class DateTimeTransformerTest {
         val expectedSeconds = 50
         val external = "$expectedYear-$expectedMonth-${expectedDay}T$expectedHour:$expectedMinutes:$expectedSeconds"
 
-        val internal = DateTimeTransformer.toInternal(external)
+        val internal = external.toInternal()
 
         internal.`should not be null`()
         internal.year `should be equal to` expectedYear

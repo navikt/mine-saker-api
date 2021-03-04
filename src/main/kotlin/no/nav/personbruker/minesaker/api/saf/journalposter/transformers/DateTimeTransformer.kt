@@ -4,11 +4,7 @@ import no.nav.dokument.saf.selvbetjening.generated.dto.DateTime
 import java.time.ZonedDateTime
 
 object DateTimeTransformer {
-
-    private val timeZoneUTC = "+00:00"
-
-    fun toInternal(dato: DateTime): ZonedDateTime {
-        return ZonedDateTime.parse("$dato$timeZoneUTC")
-    }
-
+    val timeZoneUTC = "+00:00"
 }
+
+fun DateTime.toInternal() = ZonedDateTime.parse("$this${DateTimeTransformer.timeZoneUTC}")
