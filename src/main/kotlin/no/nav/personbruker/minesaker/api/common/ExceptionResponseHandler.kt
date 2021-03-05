@@ -11,19 +11,13 @@ suspend fun ApplicationCall.respondWithError(log: Logger, exception: Exception) 
     when (exception) {
         is InvalidRequestException -> {
             respond(HttpStatusCode.BadRequest)
-            log.warn(
-                "Mottok en request med feil input. context={}",
-                exception.context,
-                exception
-            )
+            val msg = "Mottok en request med feil input. context={}"
+            log.warn(msg, exception.context, exception)
         }
         is SafException -> {
             respond(HttpStatusCode.ServiceUnavailable)
-            log.warn(
-                "Klarte ikke å hente data fra SAF. Returnerer feilkode til frontend. context={}",
-                exception.context,
-                exception
-            )
+            val msg = "Klarte ikke å hente data fra SAF. Returnerer feilkode til frontend. context={}"
+            log.warn(msg, exception.context, exception)
         }
         else -> {
             respond(HttpStatusCode.InternalServerError)
