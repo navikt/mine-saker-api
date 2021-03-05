@@ -1,26 +1,62 @@
 package no.nav.personbruker.minesaker.api.saf
 
+import no.nav.personbruker.minesaker.api.common.exception.MissingFieldException
+import no.nav.personbruker.minesaker.api.common.exception.SafException
+import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should not be null`
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.fail
 
 internal class ResultTransformerTest {
 
     @Test
     fun `Skal transformere et SAF-resultat for aa hente inn sakstemaer`() {
-        val hentSakstemaer = ResultObjectMother.giveMeHentSakstemaResult()
+        val external = ResultObjectMother.giveMeHentSakstemaResult()
 
-        val internal = hentSakstemaer.toInternal()
+        val internal = external.toInternal()
 
         internal.`should not be null`()
     }
 
     @Test
     fun `Skal transformere et SAF-resultat for aa hente inn journalposter`() {
-        val hentJournalposter = ResultObjectMother.giveMeHentJournalposterResult()
+        val external = ResultObjectMother.giveMeHentJournalposterResult()
 
-        val internal = hentJournalposter.toInternal()
+        val internal = external.toInternal()
 
         internal.`should not be null`()
+    }
+
+    @Test
+    fun `Skal kaste en SAFException hvis det skjer en feil ved henting av sakstemaer`() {
+        val eksternalMedValideringsfeil = ResultObjectMother.giveMeHentSakstemaResultMedUfullstendigeData()
+
+        runCatching {
+            eksternalMedValideringsfeil.toInternal()
+
+        }.onFailure { exception ->
+            exception `should be instance of` SafException::class
+            exception.cause `should be instance of` MissingFieldException::class
+
+        }.onSuccess {
+            fail("Denne testen skal kaste en feil")
+        }
+    }
+
+    @Test
+    fun `Skal kaste en SAFException hvis det skjer en feil ved henting av journalposter`() {
+        val eksternalMedValideringsfeil = ResultObjectMother.giveMeHentJournalposterResultMedUfullstendigeData()
+
+        runCatching {
+            eksternalMedValideringsfeil.toInternal()
+
+        }.onFailure { exception ->
+            exception `should be instance of` SafException::class
+            exception.cause `should be instance of` MissingFieldException::class
+
+        }.onSuccess {
+            fail("Denne testen skal kaste en feil")
+        }
     }
 
 }

@@ -6,6 +6,7 @@ import no.nav.personbruker.minesaker.api.common.AuthenticatedUserObjectMother
 import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.common.sak.SakService
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
+import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import org.amshove.kluent.`should be equal to`
@@ -58,7 +59,7 @@ internal class SakServiceTest {
 
     @Test
     fun `Skal hente alle journalposter for et konkret sakstema`() {
-        val expectedSakstemakode = "FOR"
+        val expectedSakstemakode = Sakstemakode.FOR
 
         val consumer = mockk<SafConsumer>(relaxed = true)
         val service = SakService(consumer)
@@ -72,7 +73,7 @@ internal class SakServiceTest {
         coVerify(exactly = 1) { consumer.hentJournalposter(capture(parameterSendtVidere)) }
 
         parameterSendtVidere.captured `should be instance of` JournalposterRequest::class
-        parameterSendtVidere.captured.variables.entries.toString() `should contain` expectedSakstemakode
+        parameterSendtVidere.captured.variables.entries.toString() `should contain` expectedSakstemakode.toString()
 
         confirmVerified(consumer)
     }
@@ -90,7 +91,8 @@ internal class SakServiceTest {
 
         val result = runCatching {
             runBlocking {
-                service.hentJournalposterForSakstema(dummyUser, "dummykode")
+                val dummykode = Sakstemakode.FOR
+                service.hentJournalposterForSakstema(dummyUser, dummykode)
             }
         }
 

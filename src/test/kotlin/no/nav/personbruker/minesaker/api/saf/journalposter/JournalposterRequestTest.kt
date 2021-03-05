@@ -1,6 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
 import org.amshove.kluent.`should contain`
 import org.amshove.kluent.`should not contain`
 import org.junit.jupiter.api.Test
@@ -13,7 +14,7 @@ internal class JournalposterRequestTest {
 
     @Test
     fun `Skal bygge opp en korrekt sporring`() {
-        val expectedSakstema = "FOR"
+        val expectedSakstema = Sakstemakode.valueOf("FOR")
         val expectedFirstJournalpostFields = """journalposter{ tittel journalpostId journalposttype"""
         val identAsQueryVarible = "\$ident : String!"
         val sakstemaAsQueryVarible = "\$temaetSomSkalHentes : Tema"
@@ -31,7 +32,7 @@ internal class JournalposterRequestTest {
 
     @Test
     fun `Sporringen skal vare formatert til kompakt JSON`() {
-        val request = JournalposterRequest.create(dummyIdent, "FOR")
+        val request = JournalposterRequest.create(dummyIdent, Sakstemakode.valueOf("FOR"))
 
         val requestAsJson = objectMapper.writeValueAsString(request)
 

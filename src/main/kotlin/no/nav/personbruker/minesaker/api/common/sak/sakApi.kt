@@ -4,8 +4,12 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.util.pipeline.*
+import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.common.respondWithError
 import no.nav.personbruker.minesaker.api.config.authenticatedUser
+import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
+import no.nav.personbruker.minesaker.api.saf.domain.toInternalSaktemakode
 import org.slf4j.LoggerFactory
 
 fun Route.sakApi(
@@ -16,14 +20,12 @@ fun Route.sakApi(
 
     get("/journalposter") {
         try {
-            val sakstemakode: String = call.request.queryParameters["sakstemakode"]
-                ?: throw RuntimeException("Kallet kan ikke utføres uten at tema er valgt.")
-
-            val result = service.hentJournalposterForSakstema(authenticatedUser, sakstemakode)
+            val sakstema = extractOnsketSakstema()
+            val result = service.hentJournalposterForSakstema(authenticatedUser, sakstema)
             call.respond(HttpStatusCode.OK, result)
 
         } catch (exception: Exception) {
-            respondWithError(call, log, exception)
+            call.respondWithError(log, exception)
         }
     }
 
@@ -33,8 +35,22 @@ fun Route.sakApi(
             call.respond(HttpStatusCode.OK, result)
 
         } catch (exception: Exception) {
-            respondWithError(call, log, exception)
+            call.respondWithError(log, exception)
         }
     }
 
+}
+
+private fun PipelineContext<Unit, ApplicationCall>.extractOnsketSakstema(): Sakstemakode {
+    val sakstemakode: String = call.request.queryParameters["sakstemakode"]
+            ?: throw InvalidRequestException("Kallet kan ikke utføres uten at tema er valgt.")
+
+    val sakstema = runCatching {
+        sakstemakode.toInternalSaktemakode()
+
+    }.onFailure { cause ->
+        throw InvalidRequestException("Ugyldig sakstemakode ble brukt", cause)
+    }
+
+    return sakstema.getOrThrow()
 }

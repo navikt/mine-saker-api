@@ -11,10 +11,10 @@ object SakstemaObjectMother {
         )
     }
 
-    fun giveMeSakstemaWithUtgaaendeDokument() =
-        HentJournalposter.Sakstema("navn1", "kode1", listOf(JournalpostObjectMother.giveMeOneInngaaendeDokument()))
+    fun giveMeSakstemaWithUtgaaendeDokument(navn: String? = "navn1", kode: String? = "AAP") =
+        HentJournalposter.Sakstema(navn, kode, listOf(JournalpostObjectMother.giveMeOneInngaaendeDokument()))
 
-    fun giveMeSakstemaWithInngaaendeDokument() =
-        HentJournalposter.Sakstema("navn2", "kode2", listOf(JournalpostObjectMother.giveMeOneUtgaaendeDokument()))
+    fun giveMeSakstemaWithInngaaendeDokument(navn: String? = "navn2", kode: String? = "KON") =
+        HentJournalposter.Sakstema(navn, kode, listOf(JournalpostObjectMother.giveMeOneUtgaaendeDokument()))
 
 }
