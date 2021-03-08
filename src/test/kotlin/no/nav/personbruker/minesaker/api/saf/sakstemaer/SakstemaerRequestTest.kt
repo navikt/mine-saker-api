@@ -1,7 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf.sakstemaer
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
+import no.nav.personbruker.minesaker.api.saf.domain.ID
 import org.amshove.kluent.`should contain`
 import org.junit.jupiter.api.Test
 
@@ -9,7 +9,7 @@ internal class SakstemaerRequestTest {
 
     private val objectMapper = jacksonObjectMapper()
 
-    private val dummyIdent = "123"
+    private val dummyIdent = ID("123")
 
     @Test
     fun `Skal bygge opp en korrekt sporring`() {

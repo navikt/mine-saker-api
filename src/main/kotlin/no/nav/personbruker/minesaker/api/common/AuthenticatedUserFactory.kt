@@ -2,6 +2,7 @@ package no.nav.personbruker.minesaker.api.common
 
 import io.ktor.application.*
 import io.ktor.auth.*
+import no.nav.personbruker.minesaker.api.saf.domain.ID
 import no.nav.security.token.support.core.jwt.JwtToken
 import no.nav.security.token.support.ktor.TokenValidationContextPrincipal
 import java.time.Instant
@@ -33,7 +34,7 @@ object AuthenticatedUserFactory {
                 token
             )
 
-        return AuthenticatedUser(ident, loginLevel, token.tokenAsString, expirationTime, essoToken)
+        return AuthenticatedUser(ID(ident), loginLevel, token.tokenAsString, expirationTime, essoToken)
     }
 
     fun createNewAuthenticatedUser(call: ApplicationCall): AuthenticatedUser {
