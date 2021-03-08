@@ -12,6 +12,7 @@ import no.nav.personbruker.minesaker.api.config.buildJsonSerializer
 import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.HentJournalposterResultObjectMother
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.HentSakstemaerObjectMother
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstema
+import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import org.amshove.kluent.*
@@ -46,7 +47,7 @@ internal class SafConsumerTest {
         internalSakstema.size `should be equal to` externalSakstema.size
         internalSakstema[0] `should be instance of` Sakstema::class
         internalSakstema[0].navn.value `should be equal to` externalSakstema[0].navn
-        internalSakstema[0].kode.`should be equal to`(externalSakstema[0].kode)
+        internalSakstema[0].kode.toString() `should be equal to` externalSakstema[0].kode.toString()
         internalSakstema `should not be equal to` externalSakstema
     }
 
@@ -62,7 +63,7 @@ internal class SafConsumerTest {
         }
         val safConsumerWithResponse = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val sakstemaRequest = JournalposterRequest.create(dummyIdent, "FOR")
+        val sakstemaRequest = JournalposterRequest.create(dummyIdent, Sakstemakode.FOR)
 
         val internalSakstema = runBlocking {
             safConsumerWithResponse.hentJournalposter(sakstemaRequest)
@@ -72,7 +73,7 @@ internal class SafConsumerTest {
         internalSakstema.size `should be equal to` externalSakstema.size
         internalSakstema[0] `should be instance of` Sakstema::class
         internalSakstema[0].navn.value `should be equal to` externalSakstema[0].navn
-        internalSakstema[0].kode `should be equal to` externalSakstema[0].kode
+        internalSakstema[0].kode.toString() `should be equal to` externalSakstema[0].kode.toString()
         internalSakstema `should not be equal to` externalSakstema
     }
 
@@ -84,7 +85,7 @@ internal class SafConsumerTest {
 
         val safConsumerSomFeiler = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val sakstemaRequest = JournalposterRequest.create(dummyIdent, "FOR")
+        val sakstemaRequest = JournalposterRequest.create(dummyIdent, Sakstemakode.FOR)
 
         val result = runCatching {
             runBlocking {

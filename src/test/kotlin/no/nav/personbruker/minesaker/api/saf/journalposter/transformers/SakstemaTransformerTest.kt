@@ -14,7 +14,7 @@ internal class SakstemaTransformerTest {
         val internal = external.toInternal()
 
         internal.navn.value `should be equal to` external.navn
-        internal.kode `should be equal to` external.kode
+        internal.kode.toString() `should be equal to` external.kode.toString()
         internal.journalposter.`should not be empty`()
         internal.journalposter.size `should be equal to` 1
     }
