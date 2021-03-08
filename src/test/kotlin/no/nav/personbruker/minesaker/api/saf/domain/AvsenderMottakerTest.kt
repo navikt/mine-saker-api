@@ -15,8 +15,8 @@ internal class AvsenderMottakerTest {
 
         val toStringContents = avsender.toString()
 
-        toStringContents `should not contain` avsender.id!!
-        toStringContents `should contain` "id='***'"
+        toStringContents `should not contain` avsender.id?.value.toString()
+        toStringContents `should contain` "id=***"
         toStringContents `should contain` avsender.type.toString()
     }
 
@@ -26,7 +26,7 @@ internal class AvsenderMottakerTest {
 
         val avsenderAsJson = objectMapper.writeValueAsString(avsender)
 
-        avsenderAsJson `should not contain` avsender.id!!
+        avsenderAsJson `should not contain` avsender.id.toString()
         avsenderAsJson `should not contain` """"id""""
         avsenderAsJson `should contain` avsender.type.toString()
     }

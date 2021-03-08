@@ -3,11 +3,6 @@ package no.nav.personbruker.minesaker.api.saf.domain
 import com.fasterxml.jackson.annotation.JsonIgnore
 
 data class AvsenderMottaker(
-    @JsonIgnore val id: String?,
+    @JsonIgnore val id: ID?,
     val type: AvsenderMottakerType
-) {
-    override fun toString(): String {
-        return "AvsenderMottaker(id='***', type=$type)"
-    }
-
-}
+)
