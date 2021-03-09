@@ -1,14 +1,14 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import no.nav.personbruker.minesaker.api.common.exception.MissingFieldException
-import no.nav.personbruker.minesaker.api.saf.domain.ID
+import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
 import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.JournalpostObjectMother
 import org.amshove.kluent.*
 import org.junit.jupiter.api.Test
 
 internal class JournalpostTransformerTest {
 
-    private val dummyIdent = ID("123")
+    private val dummyIdent = Fodselsnummer("123")
 
     @Test
     fun `Skal transformere til intern type`() {

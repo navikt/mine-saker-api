@@ -8,7 +8,7 @@ inline class FilUUID(val value: String)
 
 inline class JournalpostId(val value: String)
 
-inline class ID(val value: String) {
+inline class Fodselsnummer(val value: String) {
     override fun toString(): String {
         return "***"
     }

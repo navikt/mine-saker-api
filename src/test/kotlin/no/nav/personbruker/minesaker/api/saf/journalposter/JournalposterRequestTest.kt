@@ -1,7 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.personbruker.minesaker.api.saf.domain.ID
+import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
 import org.amshove.kluent.`should contain`
 import org.amshove.kluent.`should not contain`
@@ -11,7 +11,7 @@ internal class JournalposterRequestTest {
 
     private val objectMapper = jacksonObjectMapper()
 
-    private val dummyIdent = ID("123")
+    private val dummyIdent = Fodselsnummer("123")
 
     @Test
     fun `Skal bygge opp en korrekt sporring`() {

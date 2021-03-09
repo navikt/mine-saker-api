@@ -1,11 +1,11 @@
 package no.nav.personbruker.minesaker.api.common
 
-import no.nav.personbruker.minesaker.api.saf.domain.ID
+import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
 data class AuthenticatedUser (
-    val ident: ID,
+    val ident: Fodselsnummer,
     val loginLevel: Int,
     val token: String,
     val tokenExpirationTime: Instant,

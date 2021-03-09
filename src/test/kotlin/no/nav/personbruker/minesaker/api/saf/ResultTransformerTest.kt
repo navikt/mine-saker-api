@@ -2,7 +2,7 @@ package no.nav.personbruker.minesaker.api.saf
 
 import no.nav.personbruker.minesaker.api.common.exception.MissingFieldException
 import no.nav.personbruker.minesaker.api.common.exception.SafException
-import no.nav.personbruker.minesaker.api.saf.domain.ID
+import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should not be null`
 import org.junit.jupiter.api.Test
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.fail
 
 internal class ResultTransformerTest {
 
-    private val dummyInnloggetBruker = ID("123")
+    private val dummyInnloggetBruker = Fodselsnummer("123")
 
     @Test
     fun `Skal transformere et SAF-resultat for aa hente inn sakstemaer`() {

@@ -1,7 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import no.nav.personbruker.minesaker.api.common.exception.MissingFieldException
-import no.nav.personbruker.minesaker.api.saf.domain.ID
+import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
 import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.AvsenderMottakerObjectMother
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be instance of`
@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Test
 
 internal class AvsenderMottakerTransformerTest {
 
-    private val dummyIdent = ID("123")
+    private val dummyIdent = Fodselsnummer("123")
 
     @Test
     fun `Skal transformere fra ekstern til intern verdi, i tilfeller hvor innlogget bruker er avsender`() {
         val expextedIdent = "123"
-        val innloggetBruker = ID(expextedIdent)
+        val innloggetBruker = Fodselsnummer(expextedIdent)
         val external = AvsenderMottakerObjectMother.giveMePersonSomAvsender(expextedIdent)
 
         val internal = external.toInternal(innloggetBruker)
@@ -26,7 +26,7 @@ internal class AvsenderMottakerTransformerTest {
 
     @Test
     fun `Skal transformere fra ekstern til intern verdi, i tilfeller hvor innlogget bruker IKKE er avsender`() {
-        val innloggetBruker = ID("456")
+        val innloggetBruker = Fodselsnummer("456")
         val external = AvsenderMottakerObjectMother.giveMePersonSomAvsender("123")
 
         val internal = external.toInternal(innloggetBruker)
