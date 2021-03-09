@@ -41,7 +41,7 @@ class SafConsumer(
         return try {
             withContext(Dispatchers.IO) {
                 httpClient.post {
-                    url(safEndpoint)
+                    url("$safEndpoint/graphql")
                     method = HttpMethod.Post
                     header(Authorization, "Bearer $accessToken")
                     contentType(ContentType.Application.Json)
