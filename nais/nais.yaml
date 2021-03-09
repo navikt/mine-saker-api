@@ -2,12 +2,11 @@ apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
   name: mine-saker-api
-  namespace: {{namespace}}
+  namespace: personbruker
   labels:
     team: personbruker
 spec:
   envFrom:
-    - configmap: loginservice-idporten
     - secret: mine-saker-api-secrets
   image: {{version}}
   port: 8080
@@ -24,6 +23,20 @@ spec:
     min: 2
     max: 4
   webproxy: true
+  idporten:
+    enabled: true
+  tokenx:
+    enabled: true
+  accessPolicy:
+    outbound:
+      external:
+      {{#each outboundHost}}
+       - host: "{{this}}"
+      {{/each}}
+      rules:
+        - application: safselvbetjening
+          namespace: teamdokumenthandtering
+          cluster: dev-fss
   ingresses:
 {{#each ingresses}}
   - "{{this}}"

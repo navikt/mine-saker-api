@@ -24,6 +24,7 @@ internal class SafConsumerTest {
 
     private val objectMapper = jacksonObjectMapper()
     private val safDummyEndpoint = URL("https://www.dummy.no")
+    private val dummyToken = "<access_token>"
     private val dummyIdent = Fodselsnummer("123")
 
     @Test
@@ -41,7 +42,7 @@ internal class SafConsumerTest {
         val sakstemaRequest = SakstemaerRequest.create(dummyIdent)
 
         val internalSakstema = runBlocking {
-            safConsumerWithResponse.hentSakstemaer(sakstemaRequest)
+            safConsumerWithResponse.hentSakstemaer(sakstemaRequest, dummyToken)
         }
 
         val externalSakstema = externalResponse.data!!.dokumentoversiktSelvbetjening.tema
@@ -67,7 +68,7 @@ internal class SafConsumerTest {
         val sakstemaRequest = JournalposterRequest.create(dummyIdent, Sakstemakode.FOR)
 
         val internalSakstema = runBlocking {
-            safConsumerWithResponse.hentJournalposter(dummyIdent, sakstemaRequest)
+            safConsumerWithResponse.hentJournalposter(dummyIdent, sakstemaRequest, dummyToken)
         }
 
         val externalSakstema = externalResponse.data!!.dokumentoversiktSelvbetjening.tema
@@ -90,7 +91,7 @@ internal class SafConsumerTest {
 
         val result = runCatching {
             runBlocking {
-                safConsumerSomFeiler.hentJournalposter(dummyIdent, sakstemaRequest)
+                safConsumerSomFeiler.hentJournalposter(dummyIdent, sakstemaRequest, dummyToken)
             }
         }
 
@@ -121,7 +122,7 @@ internal class SafConsumerTest {
 
         val result = runCatching {
             runBlocking {
-                safConsumerWithResponse.hentSakstemaer(sakstemaRequest)
+                safConsumerWithResponse.hentSakstemaer(sakstemaRequest, dummyToken)
             }
         }
 
@@ -150,7 +151,7 @@ internal class SafConsumerTest {
 
         val result = runCatching {
             runBlocking {
-                safConsumerWithResponse.hentSakstemaer(sakstemaRequest)
+                safConsumerWithResponse.hentSakstemaer(sakstemaRequest, dummyToken)
             }
         }
 

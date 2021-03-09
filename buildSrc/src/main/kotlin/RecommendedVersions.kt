@@ -143,6 +143,16 @@ object TestContainers {
     const val testContainers = "$groupId:testcontainers:$version"
 }
 
+object Tms {
+    object KtorTokenSupport {
+        private const val version = "2021.03.08-13.46-05d56d008268"
+        private const val groupId = "com.github.navikt.tms-ktor-token-support"
+
+        const val idporten = "$groupId:token-support-idporten:$version"
+        const val tokendingsExchange = "$groupId:token-support-tokendings-exchange:$version"
+    }
+}
+
 object Unleash {
     private const val version = "3.3.1"
     private const val groupId = "no.finn.unleash"

@@ -2,26 +2,42 @@ package no.nav.personbruker.minesaker.api.sak
 
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
-import no.nav.personbruker.minesaker.api.common.AuthenticatedUserObjectMother
+import no.nav.personbruker.minesaker.api.common.IdportenUserObjectMother
 import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.common.sak.SakService
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
+import no.nav.personbruker.minesaker.api.tokenx.TokendingsServiceWrapper
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should contain`
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class SakServiceTest {
 
-    private val dummyUser = AuthenticatedUserObjectMother.createAuthenticatedUser()
+    private val dummyUser = IdportenUserObjectMother.createIdportenUser()
+    private val tokendingsWrapper: TokendingsServiceWrapper = mockk()
+
+    private val dummyToken = "<access_token>"
+
+    @BeforeEach
+    fun setup() {
+        coEvery { tokendingsWrapper.exchangeTokenForSafSelvbetjening(any()) } returns dummyToken
+    }
+
+    @AfterEach
+    fun cleanup() {
+        clearMocks(tokendingsWrapper)
+    }
 
     @Test
     fun `Skal hente alle sakstemaer for en konkret bruker`() {
         val consumer = mockk<SafConsumer>(relaxed = true)
-        val service = SakService(consumer)
+        val service = SakService(consumer, tokendingsWrapper)
 
         val parameterSendtVidere = slot<SakstemaerRequest>()
 
@@ -29,7 +45,7 @@ internal class SakServiceTest {
             service.hentSakstemaer(dummyUser)
         }
 
-        coVerify(exactly = 1) { consumer.hentSakstemaer(capture(parameterSendtVidere)) }
+        coVerify(exactly = 1) { consumer.hentSakstemaer(capture(parameterSendtVidere), dummyToken) }
 
         parameterSendtVidere.captured `should be instance of` SakstemaerRequest::class
 
@@ -41,10 +57,10 @@ internal class SakServiceTest {
         val expectedException = SafException("Simulert feil i en test")
 
         val consumer = mockk<SafConsumer>(relaxed = true)
-        val service = SakService(consumer)
+        val service = SakService(consumer, tokendingsWrapper)
 
         coEvery {
-            consumer.hentSakstemaer(any())
+            consumer.hentSakstemaer(any(), dummyToken)
         } throws expectedException
 
         val result = runCatching {
@@ -62,7 +78,7 @@ internal class SakServiceTest {
         val expectedSakstemakode = Sakstemakode.FOR
 
         val consumer = mockk<SafConsumer>(relaxed = true)
-        val service = SakService(consumer)
+        val service = SakService(consumer, tokendingsWrapper)
 
         val parameterSendtVidere = slot<JournalposterRequest>()
 
@@ -70,7 +86,7 @@ internal class SakServiceTest {
             service.hentJournalposterForSakstema(dummyUser, expectedSakstemakode)
         }
 
-        coVerify(exactly = 1) { consumer.hentJournalposter(dummyUser.ident, capture(parameterSendtVidere)) }
+        coVerify(exactly = 1) { consumer.hentJournalposter(dummyUser.ident, capture(parameterSendtVidere), dummyToken) }
 
         parameterSendtVidere.captured `should be instance of` JournalposterRequest::class
         parameterSendtVidere.captured.variables.entries.toString() `should contain` expectedSakstemakode.toString()
@@ -83,10 +99,10 @@ internal class SakServiceTest {
         val expectedException = SafException("Simulert feil i en test")
 
         val consumer = mockk<SafConsumer>(relaxed = true)
-        val service = SakService(consumer)
+        val service = SakService(consumer, tokendingsWrapper)
 
         coEvery {
-            consumer.hentJournalposter(dummyUser.ident, any())
+            consumer.hentJournalposter(dummyUser.ident, any(), any())
         } throws expectedException
 
         val result = runCatching {

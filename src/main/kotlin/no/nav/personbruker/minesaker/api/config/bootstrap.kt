@@ -10,11 +10,10 @@ import io.ktor.routing.*
 import io.ktor.util.*
 import io.ktor.util.pipeline.*
 import io.prometheus.client.hotspot.DefaultExports
-import no.nav.personbruker.minesaker.api.common.AuthenticatedUser
-import no.nav.personbruker.minesaker.api.common.AuthenticatedUserFactory
 import no.nav.personbruker.minesaker.api.common.sak.sakApi
 import no.nav.personbruker.minesaker.api.health.healthApi
-import no.nav.security.token.support.ktor.tokenValidationSupport
+import no.nav.tms.token.support.idporten.installIdPortenAuth
+import no.nav.tms.token.support.idporten.user.IdportenUserFactory
 
 @KtorExperimentalAPI
 fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()) {
@@ -29,10 +28,9 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
         header(HttpHeaders.ContentType)
     }
 
-    val config = this.environment.config
-
-    install(Authentication) {
-        tokenValidationSupport(config = config)
+    installIdPortenAuth {
+        tokenCookieName = "mine_saker_api_token"
+        setAsDefault = true
     }
 
     install(ContentNegotiation) {
@@ -58,5 +56,4 @@ private fun Application.configureShutdownHook(httpClient: HttpClient) {
     }
 }
 
-val PipelineContext<Unit, ApplicationCall>.authenticatedUser: AuthenticatedUser
-    get() = AuthenticatedUserFactory.createNewAuthenticatedUser(call)
+val PipelineContext<*, ApplicationCall>.idportenUser get() = IdportenUserFactory.createIdportenUser(call)
