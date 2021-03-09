@@ -6,16 +6,16 @@ import no.nav.personbruker.minesaker.api.saf.domain.AvsenderMottaker
 import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
 
 fun HentJournalposter.AvsenderMottaker.toInternal(innloggetBruker: Fodselsnummer) = AvsenderMottaker(
-    erSelvAvsender(innloggetBruker),
+    innloggetBrukerErAvsender(innloggetBruker),
     type?.toInternal() ?: throw MissingFieldException("avsenderMottakerIdType")
 )
 
-fun HentJournalposter.AvsenderMottaker.erSelvAvsender(innloggetBruker: Fodselsnummer): Boolean {
-    var erSelvAvsender = false
+fun HentJournalposter.AvsenderMottaker.innloggetBrukerErAvsender(innloggetBruker: Fodselsnummer): Boolean {
+    var innloggetBrukerErAvsender = false
     if (avsenderMottakerErEnPrivatperson()) {
-        erSelvAvsender = id.equals(innloggetBruker.value)
+        innloggetBrukerErAvsender = id.equals(innloggetBruker.value)
     }
-    return erSelvAvsender
+    return innloggetBrukerErAvsender
 }
 
 private fun HentJournalposter.AvsenderMottaker.avsenderMottakerErEnPrivatperson() =

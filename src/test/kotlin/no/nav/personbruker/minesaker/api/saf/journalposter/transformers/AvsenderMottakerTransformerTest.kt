@@ -20,7 +20,7 @@ internal class AvsenderMottakerTransformerTest {
 
         val internal = external.toInternal(innloggetBruker)
 
-        internal.erSelvAvsender `should be equal to` true
+        internal.innloggetBrukerErAvsender `should be equal to` true
         internal.type.shouldNotBeNull()
     }
 
@@ -31,7 +31,7 @@ internal class AvsenderMottakerTransformerTest {
 
         val internal = external.toInternal(innloggetBruker)
 
-        internal.erSelvAvsender `should be equal to` false
+        internal.innloggetBrukerErAvsender `should be equal to` false
         internal.type.shouldNotBeNull()
     }
 
@@ -50,12 +50,12 @@ internal class AvsenderMottakerTransformerTest {
     }
 
     @Test
-    fun `Hvis ID ikke er satt, saa skal erSelvAvsender settes til false`() {
+    fun `Hvis ID ikke er satt, saa skal innloggetBrukerErAvsender settes til false`() {
         val externalUtenTypeSatt = AvsenderMottakerObjectMother.giveMePersonSomAvsender(ident = null)
 
         val internal = externalUtenTypeSatt.toInternal(dummyIdent)
 
-        internal.erSelvAvsender `should be equal to` false
+        internal.innloggetBrukerErAvsender `should be equal to` false
         internal.type.shouldNotBeNull()
     }
 
