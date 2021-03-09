@@ -67,7 +67,7 @@ internal class SafConsumerTest {
         val sakstemaRequest = JournalposterRequest.create(dummyIdent, Sakstemakode.FOR)
 
         val internalSakstema = runBlocking {
-            safConsumerWithResponse.hentJournalposter(sakstemaRequest)
+            safConsumerWithResponse.hentJournalposter(dummyIdent, sakstemaRequest)
         }
 
         val externalSakstema = externalResponse.data!!.dokumentoversiktSelvbetjening.tema
@@ -90,7 +90,7 @@ internal class SafConsumerTest {
 
         val result = runCatching {
             runBlocking {
-                safConsumerSomFeiler.hentJournalposter(sakstemaRequest)
+                safConsumerSomFeiler.hentJournalposter(dummyIdent, sakstemaRequest)
             }
         }
 

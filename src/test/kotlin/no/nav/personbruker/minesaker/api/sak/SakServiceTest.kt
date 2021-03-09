@@ -70,7 +70,7 @@ internal class SakServiceTest {
             service.hentJournalposterForSakstema(dummyUser, expectedSakstemakode)
         }
 
-        coVerify(exactly = 1) { consumer.hentJournalposter(capture(parameterSendtVidere)) }
+        coVerify(exactly = 1) { consumer.hentJournalposter(dummyUser.ident, capture(parameterSendtVidere)) }
 
         parameterSendtVidere.captured `should be instance of` JournalposterRequest::class
         parameterSendtVidere.captured.variables.entries.toString() `should contain` expectedSakstemakode.toString()
@@ -86,7 +86,7 @@ internal class SakServiceTest {
         val service = SakService(consumer)
 
         coEvery {
-            consumer.hentJournalposter(any())
+            consumer.hentJournalposter(dummyUser.ident, any())
         } throws expectedException
 
         val result = runCatching {

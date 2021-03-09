@@ -1,33 +1,20 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import no.nav.personbruker.minesaker.api.common.exception.MissingFieldException
+import no.nav.personbruker.minesaker.api.saf.domain.ID
 import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.JournalpostObjectMother
 import org.amshove.kluent.*
 import org.junit.jupiter.api.Test
 
 internal class JournalpostTransformerTest {
 
-    @Test
-    fun `Skal transformere til interne typer`() {
-        val externals = listOf(
-            JournalpostObjectMother.giveMeOneInngaaendeDokument(),
-            JournalpostObjectMother.giveMeOneUtgaaendeDokument()
-        )
-
-        val internals = JournalpostTransformer.toInternal(externals)
-
-        internals.`should not be null`()
-        internals.size `should be equal to` externals.size
-        internals.forEach { internal ->
-            internal.shouldNotBeNull()
-        }
-    }
+    private val dummyIdent = ID("123")
 
     @Test
     fun `Skal transformere til intern type`() {
         val external = JournalpostObjectMother.giveMeOneInngaaendeDokument()
 
-        val internal = external.toInternal()
+        val internal = external.toInternal(dummyIdent)
 
         internal.shouldNotBeNull()
         internal.tittel.value `should be equal to` external.tittel
@@ -44,7 +31,7 @@ internal class JournalpostTransformerTest {
         val external = JournalpostObjectMother.giveMeOneInngaaendeDokument(tittel = null)
 
         val result = runCatching {
-            external.toInternal()
+            external.toInternal(dummyIdent)
         }
 
         result.isFailure `should be equal to` true
@@ -58,7 +45,7 @@ internal class JournalpostTransformerTest {
         val external = JournalpostObjectMother.giveMeOneInngaaendeDokument(avsenderMottaker = null)
 
         val result = runCatching {
-            external.toInternal()
+            external.toInternal(dummyIdent)
         }
 
         result.isFailure `should be equal to` true
@@ -72,7 +59,7 @@ internal class JournalpostTransformerTest {
         val external = JournalpostObjectMother.giveMeOneInngaaendeDokument(journalposttype = null)
 
         val result = runCatching {
-            external.toInternal()
+            external.toInternal(dummyIdent)
         }
 
         result.isFailure `should be equal to` true
