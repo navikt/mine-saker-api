@@ -26,10 +26,10 @@ class SafConsumer(
         return data.toInternal()
     }
 
-    suspend fun hentJournalposter(innloggetBrukerIdent: Fodselsnummer, request: JournalposterRequest): List<Sakstema> {
+    suspend fun hentJournalposter(innloggetBruker: Fodselsnummer, request: JournalposterRequest): List<Sakstema> {
         val responseDto = sendQuery<GraphQLResponse<HentJournalposter.Result>>(request)
         val data: HentJournalposter.Result = responseDto.data ?: throw noDataWithContext(responseDto)
-        return data.toInternal(innloggetBrukerIdent)
+        return data.toInternal(innloggetBruker)
     }
 
     private fun noDataWithContext(responseDto: GraphQLResponse<*>) =

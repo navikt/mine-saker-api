@@ -20,9 +20,9 @@ fun HentSakstemaer.Result.toInternal(): List<Sakstema> {
     return result.getOrThrow()
 }
 
-fun HentJournalposter.Result.toInternal(identInnloggetBruker: Fodselsnummer): List<Sakstema> {
+fun HentJournalposter.Result.toInternal(innloggetBruker: Fodselsnummer): List<Sakstema> {
     val result = runCatching {
-        dokumentoversiktSelvbetjening.tema.map { externalTeama -> externalTeama.toInternal(identInnloggetBruker) }
+        dokumentoversiktSelvbetjening.tema.map { externalTeama -> externalTeama.toInternal(innloggetBruker) }
 
     }.onFailure { cause ->
         throw SafException("Klarte ikke å oversette svaret fra SAF til den interne domenemodellen.", cause)

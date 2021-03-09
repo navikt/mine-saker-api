@@ -5,15 +5,15 @@ import no.nav.personbruker.minesaker.api.common.exception.MissingFieldException
 import no.nav.personbruker.minesaker.api.saf.domain.AvsenderMottaker
 import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
 
-fun HentJournalposter.AvsenderMottaker.toInternal(identInnloggetBruker: Fodselsnummer) = AvsenderMottaker(
-    erSelvAvsender(identInnloggetBruker),
+fun HentJournalposter.AvsenderMottaker.toInternal(innloggetBruker: Fodselsnummer) = AvsenderMottaker(
+    erSelvAvsender(innloggetBruker),
     type?.toInternal() ?: throw MissingFieldException("avsenderMottakerIdType")
 )
 
-fun HentJournalposter.AvsenderMottaker.erSelvAvsender(identInnloggetBruker: Fodselsnummer): Boolean {
+fun HentJournalposter.AvsenderMottaker.erSelvAvsender(innloggetBruker: Fodselsnummer): Boolean {
     var erSelvAvsender = false
     if (avsenderMottakerErEnPrivatperson()) {
-        erSelvAvsender = id.equals(identInnloggetBruker.value)
+        erSelvAvsender = id.equals(innloggetBruker.value)
     }
     return erSelvAvsender
 }

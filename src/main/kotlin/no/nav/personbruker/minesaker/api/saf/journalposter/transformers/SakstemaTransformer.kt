@@ -7,8 +7,8 @@ import no.nav.personbruker.minesaker.api.saf.domain.Navn
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstema
 import no.nav.personbruker.minesaker.api.saf.domain.toInternalSaktemakode
 
-fun HentJournalposter.Sakstema.toInternal(identInnloggetBruker: Fodselsnummer) = Sakstema(
+fun HentJournalposter.Sakstema.toInternal(innloggetBruker: Fodselsnummer) = Sakstema(
     Navn(navn ?: throw MissingFieldException("navn")),
     kode?.toInternalSaktemakode() ?: throw MissingFieldException("kode"),
-    journalposter.filterNotNull().map { external -> external.toInternal(identInnloggetBruker) }
+    journalposter.filterNotNull().map { external -> external.toInternal(innloggetBruker) }
 )

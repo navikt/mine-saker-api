@@ -7,11 +7,11 @@ import no.nav.personbruker.minesaker.api.saf.domain.Journalpost
 import no.nav.personbruker.minesaker.api.saf.domain.JournalpostId
 import no.nav.personbruker.minesaker.api.saf.domain.Tittel
 
-fun HentJournalposter.Journalpost.toInternal(identInnloggetBruker: Fodselsnummer) = Journalpost(
+fun HentJournalposter.Journalpost.toInternal(innloggetBruker: Fodselsnummer) = Journalpost(
     Tittel(tittel ?: throw MissingFieldException("tittel")),
     JournalpostId(journalpostId),
     journalposttype?.toInternal() ?: throw MissingFieldException("journalposttype"),
-    avsenderMottaker?.toInternal(identInnloggetBruker) ?: throw MissingFieldException("avsenderMottaker"),
+    avsenderMottaker?.toInternal(innloggetBruker) ?: throw MissingFieldException("avsenderMottaker"),
     relevanteDatoer.filterNotNull().map { external -> external.toInternal() },
     DokumentInfoTransformer.toInternal(dokumenter)
 )
