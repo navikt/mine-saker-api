@@ -9,6 +9,7 @@ import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.config.buildJsonSerializer
+import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
 import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.HentJournalposterResultObjectMother
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.HentSakstemaerObjectMother
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstema
@@ -23,7 +24,7 @@ internal class SafConsumerTest {
 
     private val objectMapper = jacksonObjectMapper()
     private val safDummyEndpoint = URL("https://www.dummy.no")
-    private val dummyIdent = "123"
+    private val dummyIdent = Fodselsnummer("123")
 
     @Test
     fun `Skal kunne hente alle sakstemaer, for en konkret bruker`() {
@@ -66,7 +67,7 @@ internal class SafConsumerTest {
         val sakstemaRequest = JournalposterRequest.create(dummyIdent, Sakstemakode.FOR)
 
         val internalSakstema = runBlocking {
-            safConsumerWithResponse.hentJournalposter(sakstemaRequest)
+            safConsumerWithResponse.hentJournalposter(dummyIdent, sakstemaRequest)
         }
 
         val externalSakstema = externalResponse.data!!.dokumentoversiktSelvbetjening.tema
@@ -89,7 +90,7 @@ internal class SafConsumerTest {
 
         val result = runCatching {
             runBlocking {
-                safConsumerSomFeiler.hentJournalposter(sakstemaRequest)
+                safConsumerSomFeiler.hentJournalposter(dummyIdent, sakstemaRequest)
             }
         }
 

@@ -18,7 +18,7 @@ class SakService(
 
     suspend fun hentJournalposterForSakstema(user: AuthenticatedUser, sakstema: Sakstemakode): List<Sakstema> {
         val journalposterRequest = JournalposterRequest.create(user.ident, sakstema)
-        return safConsumer.hentJournalposter(journalposterRequest)
+        return safConsumer.hentJournalposter(user.ident, journalposterRequest)
     }
 
 }
