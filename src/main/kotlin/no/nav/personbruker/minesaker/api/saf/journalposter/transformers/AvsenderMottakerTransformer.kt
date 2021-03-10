@@ -11,11 +11,11 @@ fun HentJournalposter.AvsenderMottaker.toInternal(innloggetBruker: Fodselsnummer
 )
 
 fun HentJournalposter.AvsenderMottaker.innloggetBrukerErAvsender(innloggetBruker: Fodselsnummer): Boolean {
-    var innloggetBrukerErAvsender = false
-    if (avsenderMottakerErEnPrivatperson()) {
-        innloggetBrukerErAvsender = id.equals(innloggetBruker.value)
+    return if (avsenderMottakerErEnPrivatperson()) {
+        id.equals(innloggetBruker.value)
+    } else {
+        false
     }
-    return innloggetBrukerErAvsender
 }
 
 private fun HentJournalposter.AvsenderMottaker.avsenderMottakerErEnPrivatperson() =
