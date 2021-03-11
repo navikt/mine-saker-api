@@ -6,6 +6,7 @@ import no.nav.personbruker.minesaker.api.saf.domain.Sakstema
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
+import no.nav.personbruker.minesaker.api.tokenx.AccessToken
 import no.nav.personbruker.minesaker.api.tokenx.TokendingsServiceWrapper
 import no.nav.tms.token.support.idporten.user.IdportenUser
 
@@ -28,7 +29,7 @@ class SakService(
         return safConsumer.hentJournalposter(fodselsnummer, journalposterRequest, exchangedToken)
     }
 
-    private suspend fun exchangeToken(user: IdportenUser): String {
+    private suspend fun exchangeToken(user: IdportenUser): AccessToken {
         return tokendingsWrapper.exchangeTokenForSafSelvbetjening(user.tokenString)
     }
 

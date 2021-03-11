@@ -6,7 +6,7 @@ class TokendingsServiceWrapper(
         private val tokendingsService: TokendingsService,
         private val safselvbetjeningClientId: String
 ){
-    suspend fun exchangeTokenForSafSelvbetjening(token: String): String {
-        return tokendingsService.exchangeToken(token, safselvbetjeningClientId)
+    suspend fun exchangeTokenForSafSelvbetjening(token: String): AccessToken {
+        return AccessToken(tokendingsService.exchangeToken(token, safselvbetjeningClientId))
     }
 }

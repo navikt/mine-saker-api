@@ -16,6 +16,7 @@ import no.nav.personbruker.minesaker.api.saf.domain.Sakstema
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
+import no.nav.personbruker.minesaker.api.tokenx.AccessToken
 import org.amshove.kluent.*
 import org.junit.jupiter.api.Test
 import java.net.URL
@@ -24,7 +25,7 @@ internal class SafConsumerTest {
 
     private val objectMapper = jacksonObjectMapper()
     private val safDummyEndpoint = URL("https://www.dummy.no")
-    private val dummyToken = "<access_token>"
+    private val dummyToken = AccessToken("<access_token>")
     private val dummyIdent = Fodselsnummer("123")
 
     @Test
