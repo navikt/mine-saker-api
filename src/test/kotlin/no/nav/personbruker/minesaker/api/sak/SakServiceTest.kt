@@ -6,6 +6,7 @@ import no.nav.personbruker.minesaker.api.common.IdportenUserObjectMother
 import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.common.sak.SakService
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
+import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
@@ -86,7 +87,7 @@ internal class SakServiceTest {
             service.hentJournalposterForSakstema(dummyUser, expectedSakstemakode)
         }
 
-        coVerify(exactly = 1) { consumer.hentJournalposter(dummyUser.ident, capture(parameterSendtVidere), dummyToken) }
+        coVerify(exactly = 1) { consumer.hentJournalposter(Fodselsnummer(dummyUser.ident), capture(parameterSendtVidere), dummyToken) }
 
         parameterSendtVidere.captured `should be instance of` JournalposterRequest::class
         parameterSendtVidere.captured.variables.entries.toString() `should contain` expectedSakstemakode.toString()
@@ -102,7 +103,7 @@ internal class SakServiceTest {
         val service = SakService(consumer, tokendingsWrapper)
 
         coEvery {
-            consumer.hentJournalposter(dummyUser.ident, any(), any())
+            consumer.hentJournalposter(Fodselsnummer(dummyUser.ident), any(), any())
         } throws expectedException
 
         val result = runCatching {

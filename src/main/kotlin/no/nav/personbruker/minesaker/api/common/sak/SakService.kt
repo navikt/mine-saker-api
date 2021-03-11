@@ -1,6 +1,7 @@
 package no.nav.personbruker.minesaker.api.common.sak
 
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
+import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstema
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
@@ -15,14 +16,16 @@ class SakService(
 
     suspend fun hentSakstemaer(user: IdportenUser): List<Sakstema> {
         val exchangedToken = exchangeToken(user)
-        val sakstemaerRequest = SakstemaerRequest.create(user.ident)
+        val fodselsnummer =  Fodselsnummer(user.ident)
+        val sakstemaerRequest = SakstemaerRequest.create(fodselsnummer)
         return safConsumer.hentSakstemaer(sakstemaerRequest, exchangedToken)
     }
 
     suspend fun hentJournalposterForSakstema(user: IdportenUser, sakstema: Sakstemakode): List<Sakstema> {
         val exchangedToken = exchangeToken(user)
-        val journalposterRequest = JournalposterRequest.create(user.ident, sakstema)
-        return safConsumer.hentJournalposter(user.ident, journalposterRequest, exchangedToken)
+        val fodselsnummer = Fodselsnummer(user.ident)
+        val journalposterRequest = JournalposterRequest.create(fodselsnummer, sakstema)
+        return safConsumer.hentJournalposter(fodselsnummer, journalposterRequest, exchangedToken)
     }
 
     private suspend fun exchangeToken(user: IdportenUser): String {
