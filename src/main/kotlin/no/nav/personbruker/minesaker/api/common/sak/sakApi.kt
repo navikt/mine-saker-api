@@ -7,7 +7,7 @@ import io.ktor.routing.*
 import io.ktor.util.pipeline.*
 import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.common.respondWithError
-import no.nav.personbruker.minesaker.api.config.authenticatedUser
+import no.nav.personbruker.minesaker.api.config.idportenUser
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.domain.toInternalSaktemakode
 import org.slf4j.LoggerFactory
@@ -21,7 +21,7 @@ fun Route.sakApi(
     get("/journalposter") {
         try {
             val sakstema = extractOnsketSakstema()
-            val result = service.hentJournalposterForSakstema(authenticatedUser, sakstema)
+            val result = service.hentJournalposterForSakstema(idportenUser, sakstema)
             call.respond(HttpStatusCode.OK, result)
 
         } catch (exception: Exception) {
@@ -31,7 +31,7 @@ fun Route.sakApi(
 
     get("/sakstemaer") {
         try {
-            val result = service.hentSakstemaer(authenticatedUser)
+            val result = service.hentSakstemaer(idportenUser)
             call.respond(HttpStatusCode.OK, result)
 
         } catch (exception: Exception) {

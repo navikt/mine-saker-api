@@ -4,7 +4,8 @@ import java.net.URL
 
 data class Environment(
     val corsAllowedOrigins: String = getEnvVar("CORS_ALLOWED_ORIGINS"),
-    val safEndpoint: URL = URL(getEnvVar("SAF_API_URL"))
+    val safEndpoint: URL = URL(getEnvVar("SAF_API_URL")),
+    val safClientId: String = getEnvVar("SAF_CLIENT_ID")
 )
 
 fun getEnvVar(varName: String): String {

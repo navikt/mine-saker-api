@@ -7,10 +7,10 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import no.nav.personbruker.minesaker.api.common.AuthenticatedUser
+import no.nav.tms.token.support.idporten.user.IdportenUser
 import java.net.URL
 
-suspend inline fun <reified T> HttpClient.get(url: URL, user: AuthenticatedUser): T = withContext(Dispatchers.IO) {
+suspend inline fun <reified T> HttpClient.get(url: URL, user: IdportenUser): T = withContext(Dispatchers.IO) {
     request {
         url(url)
         method = HttpMethod.Get
@@ -18,7 +18,7 @@ suspend inline fun <reified T> HttpClient.get(url: URL, user: AuthenticatedUser)
     }
 }
 
-suspend inline fun <reified T> HttpClient.getExtendedTimeout(url: URL, user: AuthenticatedUser): T = withContext(Dispatchers.IO) {
+suspend inline fun <reified T> HttpClient.getExtendedTimeout(url: URL, user: IdportenUser): T = withContext(Dispatchers.IO) {
     request {
         url(url)
         method = HttpMethod.Get
@@ -28,17 +28,5 @@ suspend inline fun <reified T> HttpClient.getExtendedTimeout(url: URL, user: Aut
             connectTimeoutMillis = 10000
             requestTimeoutMillis = 40000
         }
-    }
-}
-
-suspend inline fun <reified T> HttpClient.getWithEssoTokenHeader(url: URL, user: AuthenticatedUser): T = withContext(Dispatchers.IO) {
-    require(user.auxiliaryEssoToken != null) {
-        "Prøvde å sette esso-token som header, men fant det ikke for innlogget bruker."
-    }
-    request {
-        url(url)
-        method = HttpMethod.Get
-        header(HttpHeaders.Authorization, user.createAuthenticationHeader())
-        header("nav-esso", user.auxiliaryEssoToken)
     }
 }
