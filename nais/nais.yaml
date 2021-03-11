@@ -30,17 +30,15 @@ spec:
   accessPolicy:
     outbound:
       external:
-      {{#each outboundHost}}
+      {{#each outboundHosts}}
        - host: "{{this}}"
       {{/each}}
       rules:
         - application: safselvbetjening
           namespace: teamdokumenthandtering
-          cluster: dev-fss
+          cluster: {{safselvbetjeningCluster}}
   ingresses:
-{{#each ingresses}}
-  - "{{this}}"
-{{/each}}
+    - {{ingress}}
   resources:
     limits:
       cpu: "3"
