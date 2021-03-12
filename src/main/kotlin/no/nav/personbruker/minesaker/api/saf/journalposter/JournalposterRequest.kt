@@ -14,7 +14,7 @@ class JournalposterRequest(override val variables: Map<String, Any>) : GraphQLRe
         fun create(ident: Fodselsnummer, temaSomSkalHentes: Sakstemakode): JournalposterRequest {
             return JournalposterRequest(
                 mapOf(
-                    "ident" to ident,
+                    "ident" to ident.value,
                     "temaetSomSkalHentes" to temaSomSkalHentes.toString(),
                 )
             )

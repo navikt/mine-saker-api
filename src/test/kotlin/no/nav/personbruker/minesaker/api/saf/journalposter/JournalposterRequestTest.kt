@@ -29,6 +29,7 @@ internal class JournalposterRequestTest {
         requestAsJson `should contain` identAsQueryVarible
         requestAsJson `should contain` sakstemaAsQueryVarible
         requestAsJson `should contain` expectedSakstemaAsInputVariable
+        requestAsJson `should contain` """"ident":"${dummyIdent.value}"""
     }
 
     @Test

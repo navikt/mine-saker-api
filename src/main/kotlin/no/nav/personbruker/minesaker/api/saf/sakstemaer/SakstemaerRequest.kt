@@ -13,7 +13,7 @@ class SakstemaerRequest(override val variables: Map<String, Any>) : GraphQLReque
         fun create(ident: Fodselsnummer): SakstemaerRequest {
             return SakstemaerRequest(
                 mapOf(
-                    "ident" to ident
+                    "ident" to ident.value
                 )
             )
         }

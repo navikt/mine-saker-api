@@ -23,6 +23,7 @@ internal class SakstemaerRequestTest {
         requestAsJson `should contain` expectedFields
         requestAsJson `should contain` identAsQueryVarible
         requestAsJson `should contain` expectedAllSakstemar
+        requestAsJson `should contain` """"ident":"${dummyIdent.value}"""
     }
 
 }
