@@ -18,12 +18,32 @@ import no.nav.personbruker.minesaker.api.saf.domain.Sakstema
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.personbruker.minesaker.api.tokenx.AccessToken
+import org.slf4j.LoggerFactory
 import java.net.URL
 
 class SafConsumer(
     private val httpClient: HttpClient,
     private val safEndpoint: URL
 ) {
+
+    private val log = LoggerFactory.getLogger(SafConsumer::class.java)
+
+    suspend fun hentSakstemaerTriggFeil(request: SakstemaerRequest, accessToken: AccessToken): List<Sakstema> {
+        val responseDto: String = runCatching {
+            val response: HttpResponse = sendQuery(request, accessToken)
+            val graphQLResponseDto = response.receive<String>()
+            graphQLResponseDto
+
+        }.onFailure { cause ->
+            throw SafException("Klarte ikke å utføre spørring mot SAF", cause)
+                .addContext("query", request.query)
+                .addContext("variables", request.variables)
+
+        }.getOrThrow()
+        log.info("Mottatt response:\n$responseDto")
+
+        return emptyList()
+    }
 
     suspend fun hentSakstemaer(request: SakstemaerRequest, accessToken: AccessToken): List<Sakstema> {
         val responseDto: GraphQLResponse<HentSakstemaer.Result> = fetchResultAndHandleErrors(request, accessToken)

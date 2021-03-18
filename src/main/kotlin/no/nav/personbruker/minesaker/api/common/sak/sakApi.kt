@@ -39,6 +39,16 @@ fun Route.sakApi(
         }
     }
 
+    get("/triggfeil") {
+        try {
+            val result = service.hentSakstemaerTriggFeil(idportenUser)
+            call.respond(HttpStatusCode.OK, result)
+
+        } catch (exception: Exception) {
+            call.respondWithError(log, exception)
+        }
+    }
+
 }
 
 private fun PipelineContext<Unit, ApplicationCall>.extractOnsketSakstema(): Sakstemakode {
