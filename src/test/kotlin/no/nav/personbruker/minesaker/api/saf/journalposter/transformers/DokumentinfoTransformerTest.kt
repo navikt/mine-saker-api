@@ -45,7 +45,7 @@ internal class DokumentinfoTransformerTest {
         result.isFailure `should be equal to` true
         result.exceptionOrNull() `should be instance of` MissingFieldException::class
         val mfe = result.exceptionOrNull() as MissingFieldException
-        mfe.context["feltnavn"] `should be equal to` "dokumenter"
+        mfe.feltnavn `should be equal to` "dokumenter"
     }
 
     @Test
@@ -58,7 +58,7 @@ internal class DokumentinfoTransformerTest {
         result.isFailure `should be equal to` true
         result.exceptionOrNull() `should be instance of` MissingFieldException::class
         val mfe = result.exceptionOrNull() as MissingFieldException
-        mfe.context["feltnavn"] `should be equal to` "tittel"
+        mfe.feltnavn `should be equal to` "tittel"
     }
 
     @Test
@@ -71,7 +71,7 @@ internal class DokumentinfoTransformerTest {
         result.isFailure `should be equal to` true
         result.exceptionOrNull() `should be instance of` MissingFieldException::class
         val mfe = result.exceptionOrNull() as MissingFieldException
-        mfe.context["feltnavn"] `should be equal to` "filuuid"
+        mfe.feltnavn `should be equal to` "filuuid"
     }
 
     @Test

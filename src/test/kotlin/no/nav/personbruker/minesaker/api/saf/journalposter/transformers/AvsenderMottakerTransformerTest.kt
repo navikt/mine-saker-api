@@ -46,7 +46,7 @@ internal class AvsenderMottakerTransformerTest {
         result.isFailure `should be equal to` true
         result.exceptionOrNull() `should be instance of` MissingFieldException::class
         val mfe = result.exceptionOrNull() as MissingFieldException
-        mfe.context["feltnavn"] `should be equal to` "avsenderMottakerIdType"
+        mfe.feltnavn `should be equal to` "avsenderMottakerIdType"
     }
 
     @Test
