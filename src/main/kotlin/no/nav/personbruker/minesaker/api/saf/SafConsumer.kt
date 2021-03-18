@@ -71,9 +71,14 @@ class SafConsumer(
         graphQLResponseDto
 
     }.onFailure { cause ->
-        throw SafException("Klarte ikke å utføre spørring mot SAF", cause)
+        val se = SafException("Klarte ikke å utføre spørring mot SAF", cause)
             .addContext("query", request.query)
             .addContext("variables", request.variables)
+        if (cause is GraphQLResultException) {
+            se.addContext("errors", cause.errors)
+            se.addContext("extensions", cause.extensions)
+        }
+        throw se
 
     }.getOrThrow()
 
