@@ -1,20 +1,24 @@
 package no.nav.personbruker.minesaker.api.saf
 
+import com.expediagroup.graphql.types.GraphQLResponse
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.*
 import io.ktor.client.engine.mock.*
 import io.ktor.client.features.json.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.utils.io.*
 import kotlinx.coroutines.runBlocking
+import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
+import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.config.buildJsonSerializer
 import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
-import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.HentJournalposterResultObjectMother
-import no.nav.personbruker.minesaker.api.saf.sakstemaer.HentSakstemaerObjectMother
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstema
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
+import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.HentJournalposterResultObjectMother
+import no.nav.personbruker.minesaker.api.saf.sakstemaer.HentSakstemaerObjectMother
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.personbruker.minesaker.api.tokenx.AccessToken
 import org.amshove.kluent.*
@@ -29,7 +33,7 @@ internal class SafConsumerTest {
     private val dummyIdent = Fodselsnummer("123")
 
     @Test
-    fun `Skal kunne hente alle sakstemaer, for en konkret bruker`() {
+    fun `Skal kunne hente sakstemaer`() {
         val externalResponse = HentSakstemaerObjectMother.giveMeOneResult()
         val safResponseAsJson = objectMapper.writeValueAsString(externalResponse)
         val mockHttpClient = createMockHttpClient {
@@ -38,12 +42,12 @@ internal class SafConsumerTest {
                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             )
         }
-        val safConsumerWithResponse = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
+        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val sakstemaRequest = SakstemaerRequest.create(dummyIdent)
+        val request = SakstemaerRequest.create(dummyIdent)
 
         val internalSakstema = runBlocking {
-            safConsumerWithResponse.hentSakstemaer(sakstemaRequest, dummyToken)
+            consumer.hentSakstemaer(request, dummyToken)
         }
 
         val externalSakstema = externalResponse.data!!.dokumentoversiktSelvbetjening.tema
@@ -55,7 +59,7 @@ internal class SafConsumerTest {
     }
 
     @Test
-    fun `Skal kunne hente all info om et konkret sakstema, for en konkret bruker`() {
+    fun `Skal kunne hente journalposter`() {
         val externalResponse = HentJournalposterResultObjectMother.giveMeOneResult()
         val safResponseAsJson = objectMapper.writeValueAsString(externalResponse)
         val mockHttpClient = createMockHttpClient {
@@ -64,12 +68,12 @@ internal class SafConsumerTest {
                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             )
         }
-        val safConsumerWithResponse = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
+        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val sakstemaRequest = JournalposterRequest.create(dummyIdent, Sakstemakode.FOR)
+        val request = JournalposterRequest.create(dummyIdent, Sakstemakode.FOR)
 
         val internalSakstema = runBlocking {
-            safConsumerWithResponse.hentJournalposter(dummyIdent, sakstemaRequest, dummyToken)
+            consumer.hentJournalposter(dummyIdent, request, dummyToken)
         }
 
         val externalSakstema = externalResponse.data!!.dokumentoversiktSelvbetjening.tema
@@ -81,33 +85,28 @@ internal class SafConsumerTest {
     }
 
     @Test
-    fun `Skal takle feil mot SAF, lagre kontekst og kaste intern feil videre`() {
+    fun `Skal takle at det oppstaar en http-feil, og kaste en intern feil videre`() {
         val mockHttpClient = createMockHttpClient {
             respondError(HttpStatusCode.BadRequest)
         }
 
-        val safConsumerSomFeiler = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
+        val failingConsumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val sakstemaRequest = JournalposterRequest.create(dummyIdent, Sakstemakode.FOR)
+        val request = SakstemaerRequest.create(dummyIdent)
 
         val result = runCatching {
             runBlocking {
-                safConsumerSomFeiler.hentJournalposter(dummyIdent, sakstemaRequest, dummyToken)
+                failingConsumer.hentSakstemaer(request, dummyToken)
             }
         }
 
         result.isFailure `should be equal to` true
-        val receivedException = result.exceptionOrNull()
-        receivedException `should be instance of` SafException::class
-        val se = receivedException as SafException
-        se.context.shouldHaveKey("query")
-        se.context.shouldHaveKey("variables")
-        se.context["query"] `should be equal to` sakstemaRequest.query
-        se.context["variables"] `should be equal to` sakstemaRequest.variables
+        val exception = result.exceptionOrNull()
+        exception `should be instance of` SafException::class
     }
 
     @Test
-    fun `Skal kaste intern feil videre ved tomt data-felt for ved henting av konkret sakstema`() {
+    fun `Skal takle at graphQL rapporterer en feil, skal da kaste en intern feil videre`() {
         val externalErrorResponse = HentJournalposterResultObjectMother.giveMeResponseWithError()
         val safErrorResponseAsJson = objectMapper.writeValueAsString(externalErrorResponse)
         val mockHttpClient = createMockHttpClient {
@@ -116,28 +115,52 @@ internal class SafConsumerTest {
                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             )
         }
-        val safConsumerWithResponse = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
+        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val sakstemaRequest = SakstemaerRequest.create(dummyIdent)
-
+        val request = SakstemaerRequest.create(dummyIdent)
 
         val result = runCatching {
             runBlocking {
-                safConsumerWithResponse.hentSakstemaer(sakstemaRequest, dummyToken)
+                consumer.hentSakstemaer(request, dummyToken)
             }
         }
 
         result.isFailure `should be equal to` true
-        result.exceptionOrNull() `should be instance of` SafException::class
-        val safException = result.exceptionOrNull() as SafException
-        val expectedKey = "response"
-        safException.context shouldHaveKey expectedKey
-        safException.context[expectedKey].shouldNotBeNull()
+        val exception = result.exceptionOrNull()
+        exception `should be instance of` SafException::class
+        val cause = exception?.cause
+        cause `should be instance of` GraphQLResultException::class
+        cause as GraphQLResultException
+        cause.errors?.size `should be equal to` externalErrorResponse.errors?.size
+        cause.extensions?.size `should be equal to` externalErrorResponse.extensions?.size
     }
 
     @Test
-    fun `Skal kaste intern feil videre ved tomt data-felt for henting av alle sakstemaer`() {
-        val externalErrorResponse = HentSakstemaerObjectMother.giveMeResponseWithError()
+    fun `Skal takle uventede feil, og kaste en intern feil videre`() {
+        val mockHttpClient = createMockHttpClient {
+            respond(
+                """{"invalid:"json"}""",
+                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            )
+        }
+        val consumerConsistentlyFailing = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
+
+        val request = SakstemaerRequest.create(dummyIdent)
+
+        val result = runCatching {
+            runBlocking {
+                consumerConsistentlyFailing.hentSakstemaer(request, dummyToken)
+            }
+        }
+
+        result.isFailure `should be equal to` true
+        val exception = result.exceptionOrNull()
+        exception?.printStack()
+    }
+
+    @Test
+    fun `Skal kaste intern feil videre ved tomt data-felt, selv om graphQL ikke har feil i feillisten`() {
+        val externalErrorResponse = GraphQLResponse<HentJournalposter.Result>(data = null)
         val safErrorResponseAsJson = objectMapper.writeValueAsString(externalErrorResponse)
         val mockHttpClient = createMockHttpClient {
             respond(
@@ -145,23 +168,23 @@ internal class SafConsumerTest {
                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             )
         }
-        val safConsumerWithResponse = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
+        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val sakstemaRequest = SakstemaerRequest.create(dummyIdent)
+        val request = SakstemaerRequest.create(dummyIdent)
 
 
         val result = runCatching {
             runBlocking {
-                safConsumerWithResponse.hentSakstemaer(sakstemaRequest, dummyToken)
+                consumer.hentSakstemaer(request, dummyToken)
             }
         }
 
         result.isFailure `should be equal to` true
-        result.exceptionOrNull() `should be instance of` SafException::class
-        val safException = result.exceptionOrNull() as SafException
-        val expectedKey = "response"
-        safException.context shouldHaveKey expectedKey
-        safException.context[expectedKey].shouldNotBeNull()
+        val exception = result.exceptionOrNull()
+        exception `should be instance of` SafException::class
+        exception as SafException
+        exception.context `should have key` "errors"
+        exception.context `should have key` "extensions"
     }
 
     private fun createMockHttpClient(respond: MockRequestHandleScope.() -> HttpResponseData): HttpClient {

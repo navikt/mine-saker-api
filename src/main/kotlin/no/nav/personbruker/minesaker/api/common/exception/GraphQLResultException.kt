@@ -4,8 +4,8 @@ import com.expediagroup.graphql.types.GraphQLError
 
 open class GraphQLResultException(
     message: String,
-    private val errors: List<GraphQLError>?,
-    private val extensions: Map<Any, Any>?
+    internal val errors: List<GraphQLError>?,
+    internal val extensions: Map<Any, Any>?
 ) : AbstractMineSakerException(message) {
 
     override fun toString(): String {
