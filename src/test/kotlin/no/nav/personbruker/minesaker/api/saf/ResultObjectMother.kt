@@ -6,30 +6,31 @@ import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.Sakstem
 
 object ResultObjectMother {
 
-    private const val defaultCode = "Alt ok"
+    private const val defaultResultStatusCode = "ok"
 
     fun giveMeHentSakstemaResult(): HentSakstemaer.Result {
         val temaer = no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaObjectMother.giveMeListOfSakstema()
-        val dokumentoversikt = HentSakstemaer.Dokumentoversikt(defaultCode, temaer)
+        val dokumentoversikt = HentSakstemaer.Dokumentoversikt(defaultResultStatusCode, temaer)
         return HentSakstemaer.Result(dokumentoversikt)
     }
 
     fun giveMeHentSakstemaResultMedUfullstendigeData(): HentSakstemaer.Result {
         val sakstemaUtenKodeSatt =
             no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaObjectMother.giveMeOneSakstema(kode = null)
-        val dokumentoversikt = HentSakstemaer.Dokumentoversikt(defaultCode, listOf(sakstemaUtenKodeSatt))
+        val dokumentoversikt = HentSakstemaer.Dokumentoversikt(defaultResultStatusCode, listOf(sakstemaUtenKodeSatt))
         return HentSakstemaer.Result(dokumentoversikt)
     }
 
     fun giveMeHentJournalposterResult(): HentJournalposter.Result {
         val temaer = SakstemaObjectMother.giveMeListOfSakstemaer()
-        val dokumentoversikt = HentJournalposter.Dokumentoversikt(defaultCode, temaer)
+        val dokumentoversikt = HentJournalposter.Dokumentoversikt(defaultResultStatusCode, temaer)
         return HentJournalposter.Result(dokumentoversikt)
     }
 
     fun giveMeHentJournalposterResultMedUfullstendigeData(): HentJournalposter.Result {
         val sakstemaUtenKodeSatt = SakstemaObjectMother.giveMeSakstemaWithUtgaaendeDokument(kode = null)
-        val dokumentoversikt = HentJournalposter.Dokumentoversikt(defaultCode, listOf(sakstemaUtenKodeSatt))
+        val responseCodeIndicatingError = "not_found"
+        val dokumentoversikt = HentJournalposter.Dokumentoversikt(responseCodeIndicatingError, listOf(sakstemaUtenKodeSatt))
         return HentJournalposter.Result(dokumentoversikt)
     }
 
