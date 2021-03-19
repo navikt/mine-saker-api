@@ -1,5 +1,6 @@
 query($ident : String!, $temaetSomSkalHentes : Tema) {
     dokumentoversiktSelvbetjening(ident: $ident, tema: [$temaetSomSkalHentes]) {
+        code
         tema {
             navn
             kode

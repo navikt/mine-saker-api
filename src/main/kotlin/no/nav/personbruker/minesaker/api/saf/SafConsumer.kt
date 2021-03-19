@@ -29,9 +29,10 @@ class SafConsumer(
     private val log = LoggerFactory.getLogger(SafConsumer::class.java)
 
     suspend fun hentSakstemaerTriggFeil(request: SakstemaerRequest, accessToken: AccessToken): List<Sakstema> {
-        val responseDto: String = runCatching {
+        val responseDto: GraphQLResponse<HentSakstemaer.Result> = runCatching {
             val response: HttpResponse = sendQuery(request, accessToken)
-            val graphQLResponseDto = response.receive<String>()
+            val graphQLResponseDto = response.receive<GraphQLResponse<HentSakstemaer.Result>>()
+            log.info("Feilkode: ${graphQLResponseDto.data?.dokumentoversiktSelvbetjening?.code}")
             graphQLResponseDto
 
         }.onFailure { cause ->
@@ -40,14 +41,15 @@ class SafConsumer(
                 .addContext("variables", request.variables)
 
         }.getOrThrow()
-        log.info("Mottatt response:\n$responseDto")
 
-        return emptyList()
+        val external: HentSakstemaer.Result = responseDto.data ?: throw noDataWithContext(responseDto)
+        return external.toInternal()
     }
 
     suspend fun hentSakstemaer(request: SakstemaerRequest, accessToken: AccessToken): List<Sakstema> {
         val responseDto: GraphQLResponse<HentSakstemaer.Result> = fetchResultAndHandleErrors(request, accessToken)
         val external: HentSakstemaer.Result = responseDto.data ?: throw noDataWithContext(responseDto)
+        log.info("Feilkode: ${external.dokumentoversiktSelvbetjening.code}")
         return external.toInternal()
     }
 
@@ -58,6 +60,7 @@ class SafConsumer(
     ): List<Sakstema> {
         val responseDto: GraphQLResponse<HentJournalposter.Result> = fetchResultAndHandleErrors(request, accessToken)
         val external: HentJournalposter.Result = responseDto.data ?: throw noDataWithContext(responseDto)
+        log.info("Feilkode: ${external.dokumentoversiktSelvbetjening.code}")
         return external.toInternal(innloggetBruker)
     }
 
