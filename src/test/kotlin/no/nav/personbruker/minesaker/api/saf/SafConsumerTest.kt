@@ -7,9 +7,8 @@ import io.ktor.client.engine.mock.*
 import io.ktor.client.features.json.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.utils.io.*
 import kotlinx.coroutines.runBlocking
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
+import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
 import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.config.buildJsonSerializer
@@ -107,7 +106,7 @@ internal class SafConsumerTest {
 
     @Test
     fun `Skal takle at graphQL rapporterer en feil, skal da kaste en intern feil videre`() {
-        val externalErrorResponse = HentJournalposterResultObjectMother.giveMeResponseWithError()
+        val externalErrorResponse = HentSakstemaerObjectMother.giveMeResponseWithError()
         val safErrorResponseAsJson = objectMapper.writeValueAsString(externalErrorResponse)
         val mockHttpClient = createMockHttpClient {
             respond(
@@ -127,12 +126,10 @@ internal class SafConsumerTest {
 
         result.isFailure `should be equal to` true
         val exception = result.exceptionOrNull()
-        exception `should be instance of` SafException::class
-        val cause = exception?.cause
-        cause `should be instance of` GraphQLResultException::class
-        cause as GraphQLResultException
-        cause.errors?.size `should be equal to` externalErrorResponse.errors?.size
-        cause.extensions?.size `should be equal to` externalErrorResponse.extensions?.size
+        exception `should be instance of` GraphQLResultException::class
+        exception as GraphQLResultException
+        exception.errors?.size `should be equal to` externalErrorResponse.errors?.size
+        exception.extensions?.size `should be equal to` externalErrorResponse.extensions?.size
     }
 
     @Test
@@ -155,12 +152,15 @@ internal class SafConsumerTest {
 
         result.isFailure `should be equal to` true
         val exception = result.exceptionOrNull()
-        exception?.printStack()
+        exception `should be instance of` SafException::class
+        exception as SafException
+        exception.context `should have key` "query"
+        exception.context `should have key` "variables"
     }
 
     @Test
     fun `Skal kaste intern feil videre ved tomt data-felt, selv om graphQL ikke har feil i feillisten`() {
-        val externalErrorResponse = GraphQLResponse<HentJournalposter.Result>(data = null)
+        val externalErrorResponse = GraphQLResponse<HentSakstemaer.Result>(data = null)
         val safErrorResponseAsJson = objectMapper.writeValueAsString(externalErrorResponse)
         val mockHttpClient = createMockHttpClient {
             respond(
@@ -172,7 +172,6 @@ internal class SafConsumerTest {
 
         val request = SakstemaerRequest.create(dummyIdent)
 
-
         val result = runCatching {
             runBlocking {
                 consumer.hentSakstemaer(request, dummyToken)
@@ -181,10 +180,32 @@ internal class SafConsumerTest {
 
         result.isFailure `should be equal to` true
         val exception = result.exceptionOrNull()
-        exception `should be instance of` SafException::class
-        exception as SafException
-        exception.context `should have key` "errors"
-        exception.context `should have key` "extensions"
+        exception `should be instance of` GraphQLResultException::class
+    }
+
+    @Test
+    fun `Skal returnere data til bruker, hvis det mottas baade data og det rapporteres feil fra SAF`() {
+        val externalResponseWithDataAndError = HentSakstemaerObjectMother.giveMeResponseWithDataAndError()
+        val safErrorResponseAsJson = objectMapper.writeValueAsString(externalResponseWithDataAndError)
+        val mockHttpClient = createMockHttpClient {
+            respond(
+                safErrorResponseAsJson,
+                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            )
+        }
+        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
+
+        val request = SakstemaerRequest.create(dummyIdent)
+
+        val result = runCatching {
+            runBlocking {
+                consumer.hentSakstemaer(request, dummyToken)
+            }
+        }
+
+        result.isSuccess `should be equal to` true
+        val dto = result.getOrThrow()
+        dto.size `should be equal to`  externalResponseWithDataAndError.data?.dokumentoversiktSelvbetjening?.tema?.size
     }
 
     private fun createMockHttpClient(respond: MockRequestHandleScope.() -> HttpResponseData): HttpClient {
