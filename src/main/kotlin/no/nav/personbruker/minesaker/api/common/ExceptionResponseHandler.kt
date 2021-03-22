@@ -17,12 +17,12 @@ suspend fun ApplicationCall.respondWithError(log: Logger, exception: Exception) 
         }
         is GraphQLResultException -> {
             respond(HttpStatusCode.ServiceUnavailable)
-            val msg = "Klarte ikke å hente data fra SAF. Returnerer feilkode til frontend. context=${exception.context}"
+            val msg = "Klarte ikke å hente data fra SAF. Returnerer feilkode til frontend. $exception"
             log.warn(msg, exception)
         }
         is SafException -> {
             respond(HttpStatusCode.ServiceUnavailable)
-            val msg = "Klarte ikke å hente data fra SAF. Returnerer feilkode til frontend. context=${exception.context}"
+            val msg = "Klarte ikke å hente data fra SAF. Returnerer feilkode til frontend. $exception"
             log.warn(msg, exception)
         }
         else -> {
