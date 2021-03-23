@@ -2,9 +2,7 @@ package no.nav.personbruker.minesaker.api.saf
 
 import com.expediagroup.graphql.types.GraphQLResponse
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.HttpHeaders.Authorization
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +16,7 @@ import no.nav.personbruker.minesaker.api.saf.domain.Sakstema
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.personbruker.minesaker.api.tokenx.AccessToken
+import org.slf4j.LoggerFactory
 import java.net.URL
 
 class SafConsumer(
@@ -25,10 +24,15 @@ class SafConsumer(
     private val safEndpoint: URL
 ) {
 
+    private val log = LoggerFactory.getLogger(SafConsumer::class.java)
+
     suspend fun hentSakstemaer(request: SakstemaerRequest, accessToken: AccessToken): List<Sakstema> {
-        val responseDto: GraphQLResponse<HentSakstemaer.Result> = fetchResultAndHandleErrors(request, accessToken)
-        val external: HentSakstemaer.Result = responseDto.data ?: throw noDataWithContext(responseDto)
-        return external.toInternal()
+        val responseDto: GraphQLResponse<HentSakstemaer.Result> = sendQuery(request, accessToken)
+        val external = responseDto.extractData()
+        logIfContainsDataAndErrors(responseDto)
+        val internals = external.toInternal()
+        logAdditionalResponseInfoInCaseOfEmptyResultSet(internals, responseDto)
+        return internals
     }
 
     suspend fun hentJournalposter(
@@ -36,49 +40,58 @@ class SafConsumer(
         request: JournalposterRequest,
         accessToken: AccessToken
     ): List<Sakstema> {
-        val responseDto: GraphQLResponse<HentJournalposter.Result> = fetchResultAndHandleErrors(request, accessToken)
-        val external: HentJournalposter.Result = responseDto.data ?: throw noDataWithContext(responseDto)
-        return external.toInternal(innloggetBruker)
+        val responseDto: GraphQLResponse<HentJournalposter.Result> = sendQuery(request, accessToken)
+        val external = responseDto.extractData()
+        logIfContainsDataAndErrors(responseDto)
+        val internals = external.toInternal(innloggetBruker)
+        logAdditionalResponseInfoInCaseOfEmptyResultSet(internals, responseDto)
+        return internals
     }
-
-    private suspend inline fun <reified T : GraphQLResponse<*>> fetchResultAndHandleErrors(
-        request: GraphQLRequest,
-        accessToken: AccessToken
-    ): T = runCatching {
-        val response: HttpResponse = sendQuery(request, accessToken)
-        val graphQLResponseDto = response.receive<T>()
-        graphQLResponseDto.verifyThatResultDoesNotHaveErrors()
-        graphQLResponseDto
-
-    }.onFailure { cause ->
-        throw SafException("Klarte ikke å utføre spørring mot SAF", cause)
-            .addContext("query", request.query)
-            .addContext("variables", request.variables)
-
-    }.getOrThrow()
 
     private suspend inline fun <reified T> sendQuery(request: GraphQLRequest, accessToken: AccessToken): T =
-        withContext(Dispatchers.IO) {
-            httpClient.post {
-                url("$safEndpoint")
-                method = HttpMethod.Post
-                header(Authorization, "Bearer ${accessToken.value}")
-                contentType(ContentType.Application.Json)
-                accept(ContentType.Application.Json)
-                body = request
+        runCatching<T> {
+            withContext(Dispatchers.IO) {
+                httpClient.post {
+                    url("$safEndpoint")
+                    method = HttpMethod.Post
+                    header(Authorization, "Bearer ${accessToken.value}")
+                    contentType(ContentType.Application.Json)
+                    accept(ContentType.Application.Json)
+                    body = request
+                }
             }
-        }
+        }.onFailure { cause ->
+            throw SafException("Klarte ikke å utføre spørring mot SAF", cause)
+                .addContext("query", request.query)
+                .addContext("variables", request.variables)
+        }.getOrThrow()
 
-    private fun GraphQLResponse<*>.verifyThatResultDoesNotHaveErrors() {
-        if (errors?.isNotEmpty() == true) {
-            val message = "Det skjedde en feil i spørringen mot SAF. Se feillisten for detaljer."
-            throw GraphQLResultException(message, errors, extensions)
+    private inline fun <reified T> GraphQLResponse<T>.extractData(): T {
+        return data ?: throw GraphQLResultException("Ingen data i resultatet fra SAF.", errors, extensions)
+    }
+
+    private fun logIfContainsDataAndErrors(response: GraphQLResponse<*>) {
+        if (response.containsData() && response.containsErrors()) {
+            val msg = "Resultatet inneholdt data og feil, dataene returneres til bruker. " +
+                    "Feilene var errors: ${response.errors}, extensions: ${response.extensions}"
+            log.warn(msg)
         }
     }
 
-    private fun noDataWithContext(responseDto: GraphQLResponse<*>) =
-        SafException("Ingen data i resultatet fra SAF.")
-            .addContext("errors", responseDto.errors)
-            .addContext("extensions", responseDto.extensions)
+    private fun GraphQLResponse<*>.containsData() = data != null
+    private fun GraphQLResponse<*>.containsErrors() = errors?.isNotEmpty() == true
+
+    // TODO: Dropp dette i det SAF har fått støtte for å legge ved feil i responsen, i stede for å sende tomt resultat i feilsituasjoner.
+    private fun logAdditionalResponseInfoInCaseOfEmptyResultSet(
+        internal: List<Sakstema>,
+        responseDto: GraphQLResponse<*>
+    ) {
+        if (internal.isEmpty()) {
+            val msg =
+                "Mottok tomt resultat. Responsen inneholdt i tilleg: " +
+                        "Errors: ${responseDto.errors}, extensions: ${responseDto.extensions}"
+            log.info(msg)
+        }
+    }
 
 }

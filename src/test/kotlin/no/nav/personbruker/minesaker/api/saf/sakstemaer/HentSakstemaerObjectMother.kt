@@ -12,9 +12,14 @@ object HentSakstemaerObjectMother {
         return GraphQLResponse(data)
     }
 
-    fun giveMeResponseWithError() : GraphQLResponse<HentSakstemaer.Result> {
+    fun giveMeResponseWithError(data: HentSakstemaer.Result? = null): GraphQLResponse<HentSakstemaer.Result> {
         val errors = listOf(GraphQLError("Feilet ved henting av data for bruker."))
-        return GraphQLResponse(null, errors = errors)
+        return GraphQLResponse(data, errors = errors)
+    }
+
+    fun giveMeResponseWithDataAndError(): GraphQLResponse<HentSakstemaer.Result> {
+        val data = ResultObjectMother.giveMeHentSakstemaResult()
+        return giveMeResponseWithError(data)
     }
 
 }
