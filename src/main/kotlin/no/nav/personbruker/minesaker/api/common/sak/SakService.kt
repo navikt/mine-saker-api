@@ -33,11 +33,4 @@ class SakService(
         return tokendingsWrapper.exchangeTokenForSafSelvbetjening(user.tokenString)
     }
 
-    suspend fun hentSakstemaerTriggFeil(user: IdportenUser): List<Sakstema> {
-        val exchangedToken = exchangeToken(user)
-        val fodselsnummer = Fodselsnummer(""""value":${user.ident}""")
-        val sakstemaerRequest = SakstemaerRequest.create(fodselsnummer)
-        return safConsumer.hentSakstemaer(sakstemaerRequest, exchangedToken)
-    }
-
 }
