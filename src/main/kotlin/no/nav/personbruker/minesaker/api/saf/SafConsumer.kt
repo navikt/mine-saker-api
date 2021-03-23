@@ -27,7 +27,7 @@ class SafConsumer(
 
     private val log = LoggerFactory.getLogger(SafConsumer::class.java)
 
-    private val NavCallIdHeaderName = "Nav-Callid"
+    private val NavCallIdHeaderName = "Nav-Call-Id"
 
     suspend fun hentSakstemaer(request: SakstemaerRequest, accessToken: AccessToken): List<Sakstema> {
         val responseDto: GraphQLResponse<HentSakstemaer.Result> = sendQuery(request, accessToken)
