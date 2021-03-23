@@ -26,22 +26,6 @@ class SafConsumer(
 
     private val log = LoggerFactory.getLogger(SafConsumer::class.java)
 
-    suspend fun hentSakstemaerTriggFeil(request: SakstemaerRequest, accessToken: AccessToken): List<Sakstema> {
-        val responseDto: GraphQLResponse<HentSakstemaer.Result> = runCatching {
-            val graphQLResponseDto: GraphQLResponse<HentSakstemaer.Result> = sendQuery(request, accessToken)
-            graphQLResponseDto
-
-        }.onFailure { cause ->
-            throw SafException("Klarte ikke å utføre spørring mot SAF", cause)
-                .addContext("query", request.query)
-                .addContext("variables", request.variables)
-
-        }.getOrThrow()
-
-        val external = responseDto.extractData()
-        return external.toInternal()
-    }
-
     suspend fun hentSakstemaer(request: SakstemaerRequest, accessToken: AccessToken): List<Sakstema> {
         val responseDto: GraphQLResponse<HentSakstemaer.Result> = sendQuery(request, accessToken)
         val external = responseDto.extractData()

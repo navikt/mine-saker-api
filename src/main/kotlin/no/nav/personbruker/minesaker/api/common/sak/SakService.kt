@@ -17,7 +17,7 @@ class SakService(
 
     suspend fun hentSakstemaer(user: IdportenUser): List<Sakstema> {
         val exchangedToken = exchangeToken(user)
-        val fodselsnummer =  Fodselsnummer(user.ident)
+        val fodselsnummer = Fodselsnummer(user.ident)
         val sakstemaerRequest = SakstemaerRequest.create(fodselsnummer)
         return safConsumer.hentSakstemaer(sakstemaerRequest, exchangedToken)
     }
@@ -35,9 +35,9 @@ class SakService(
 
     suspend fun hentSakstemaerTriggFeil(user: IdportenUser): List<Sakstema> {
         val exchangedToken = exchangeToken(user)
-        val fodselsnummer =  Fodselsnummer(""""value":${user.ident}""")
+        val fodselsnummer = Fodselsnummer(""""value":${user.ident}""")
         val sakstemaerRequest = SakstemaerRequest.create(fodselsnummer)
-        return safConsumer.hentSakstemaerTriggFeil(sakstemaerRequest, exchangedToken)
+        return safConsumer.hentSakstemaer(sakstemaerRequest, exchangedToken)
     }
 
 }
