@@ -12,7 +12,7 @@ suspend fun ApplicationCall.respondWithError(log: Logger, exception: Exception) 
     when (exception) {
         is InvalidRequestException -> {
             respond(HttpStatusCode.BadRequest)
-            val msg = "Mottok en request med feil input. context=${exception.context}"
+            val msg = "Mottok en request med feil input. $exception"
             log.warn(msg, exception)
         }
         is GraphQLResultException -> {
