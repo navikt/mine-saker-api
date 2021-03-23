@@ -72,6 +72,7 @@ class SafConsumer(
                     "Feilene var errors: ${response.errors}, extensions: ${response.extensions}"
             log.warn(msg)
         }
+        log.info("Response: $response")
     }
 
     private fun GraphQLResponse<*>.containsData() = data != null
