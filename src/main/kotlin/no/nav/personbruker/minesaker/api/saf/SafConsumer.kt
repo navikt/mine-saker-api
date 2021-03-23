@@ -30,7 +30,9 @@ class SafConsumer(
         val responseDto: GraphQLResponse<HentSakstemaer.Result> = sendQuery(request, accessToken)
         val external = responseDto.extractData()
         logIfContainsDataAndErrors(responseDto)
-        return external.toInternal()
+        val internals = external.toInternal()
+        logAdditionalResponseInfoInCaseOfEmptyResultSet(internals, responseDto)
+        return internals
     }
 
     suspend fun hentJournalposter(
@@ -41,7 +43,9 @@ class SafConsumer(
         val responseDto: GraphQLResponse<HentJournalposter.Result> = sendQuery(request, accessToken)
         val external = responseDto.extractData()
         logIfContainsDataAndErrors(responseDto)
-        return external.toInternal(innloggetBruker)
+        val internals = external.toInternal(innloggetBruker)
+        logAdditionalResponseInfoInCaseOfEmptyResultSet(internals, responseDto)
+        return internals
     }
 
     private suspend inline fun <reified T> sendQuery(request: GraphQLRequest, accessToken: AccessToken): T =
@@ -72,10 +76,22 @@ class SafConsumer(
                     "Feilene var errors: ${response.errors}, extensions: ${response.extensions}"
             log.warn(msg)
         }
-        log.info("Response: $response")
     }
 
     private fun GraphQLResponse<*>.containsData() = data != null
     private fun GraphQLResponse<*>.containsErrors() = errors?.isNotEmpty() == true
+
+    // TODO: Dropp dette i det SAF har fått støtte for å legge ved feil i responsen, i stede for å sende tomt resultat i feilsituasjoner.
+    private fun logAdditionalResponseInfoInCaseOfEmptyResultSet(
+        internal: List<Sakstema>,
+        responseDto: GraphQLResponse<*>
+    ) {
+        if (internal.isEmpty()) {
+            val msg =
+                "Mottok tomt resultat. Responsen inneholdt i tilleg: " +
+                        "Errors: ${responseDto.errors}, extensions: ${responseDto.extensions}"
+            log.info(msg)
+        }
+    }
 
 }
