@@ -11,12 +11,15 @@ import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
 import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.common.exception.SafException
+import no.nav.personbruker.minesaker.api.saf.domain.DokumentInfoId
 import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
+import no.nav.personbruker.minesaker.api.saf.domain.JournalpostId
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstema
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.personbruker.minesaker.api.tokenx.AccessToken
 import org.slf4j.LoggerFactory
+import java.io.File
 import java.net.URL
 
 class SafConsumer(
@@ -48,11 +51,29 @@ class SafConsumer(
         return internals
     }
 
+    suspend fun hentDokument(journapostId : JournalpostId, dokumentinfoId : DokumentInfoId, accessToken: AccessToken) : File {
+        return runCatching {
+            withContext(Dispatchers.IO) {
+                httpClient.get<File> {
+                    url("$safEndpoint/rest/hentdokument/$journapostId/$dokumentinfoId/ARKIV")
+                    method = HttpMethod.Get
+                    header(Authorization, "Bearer ${accessToken.value}")
+                    contentType(ContentType.Application.Pdf)
+                    ContentDisposition.Inline
+                }
+            }
+        }.onFailure { cause ->
+            throw SafException("Klarte ikke å hente dokumentet fra SAF", cause)
+                .addContext("journapostId", journapostId)
+                .addContext("dokumentinfoId", dokumentinfoId)
+        }.getOrThrow()
+    }
+
     private suspend inline fun <reified T> sendQuery(request: GraphQLRequest, accessToken: AccessToken): T =
         runCatching<T> {
             withContext(Dispatchers.IO) {
                 httpClient.post {
-                    url("$safEndpoint")
+                    url("$safEndpoint/graphql")
                     method = HttpMethod.Post
                     header(Authorization, "Bearer ${accessToken.value}")
                     contentType(ContentType.Application.Json)
