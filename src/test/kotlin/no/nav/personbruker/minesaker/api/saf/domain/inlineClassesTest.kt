@@ -10,13 +10,13 @@ internal class inlineClassesTest {
 
     @Test
     fun `Inline klasser skal ikke generere noe overhead naar det serialiseres til JSON`() {
-        val dokumentinfo = Dokumentinfo(Tittel("Tittelen"), FilUUID("uuiden"), true)
+        val dokumentinfo = Dokumentinfo(Tittel("Tittelen"), DokumentInfoId("filid"), true)
 
         val dokumentInfoAsJson = objectMapper.writeValueAsString(dokumentinfo)
 
         println(dokumentInfoAsJson)
 
-        dokumentInfoAsJson `should contain` """"filuuid":"uuiden""""
+        dokumentInfoAsJson `should contain` """"dokumentInfoId":"filid""""
         dokumentInfoAsJson `should contain` """"tittel":"Tittelen""""
         dokumentInfoAsJson `should contain` """"brukerHarTilgang":true"""
     }
