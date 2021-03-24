@@ -12,9 +12,9 @@ object HentJournalposterResultObjectMother {
         return GraphQLResponse(data)
     }
 
-    fun giveMeResponseWithError(): GraphQLResponse<HentJournalposter.Result> {
+    fun giveMeResponseWithError(data: HentJournalposter.Result? = null): GraphQLResponse<HentJournalposter.Result> {
         val errors = listOf(GraphQLError("Feilet ved henting av data for bruker."))
-        return GraphQLResponse(null, errors = errors)
+        return GraphQLResponse(data, errors = errors)
     }
 
 }

@@ -24,7 +24,7 @@ internal class JournalposttypeTransformerTest {
         result.isFailure `should be equal to` true
         result.exceptionOrNull() `should be instance of` UnknownValueException::class
         val mfe = result.exceptionOrNull() as UnknownValueException
-        mfe.context["feltnavn"] `should be equal to` "journalposttype"
+        mfe.feltnavn `should be equal to` "journalposttype"
     }
 
 }

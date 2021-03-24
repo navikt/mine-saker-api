@@ -37,7 +37,7 @@ internal class JournalpostTransformerTest {
         result.isFailure `should be equal to` true
         result.exceptionOrNull() `should be instance of` MissingFieldException::class
         val exception = result.exceptionOrNull() as MissingFieldException
-        exception.context["feltnavn"] `should be equal to` "tittel"
+        exception.feltnavn `should be equal to` "tittel"
     }
 
     @Test
@@ -51,7 +51,7 @@ internal class JournalpostTransformerTest {
         result.isFailure `should be equal to` true
         result.exceptionOrNull() `should be instance of` MissingFieldException::class
         val mfe = result.exceptionOrNull() as MissingFieldException
-        mfe.context["feltnavn"] `should be equal to` "avsenderMottaker"
+        mfe.feltnavn `should be equal to` "avsenderMottaker"
     }
 
     @Test
@@ -66,7 +66,7 @@ internal class JournalpostTransformerTest {
         result.exceptionOrNull().`should not be null`()
         result.exceptionOrNull() `should be instance of` MissingFieldException::class
         val mfe = result.exceptionOrNull() as MissingFieldException
-        mfe.context["feltnavn"] `should be equal to` "journalposttype"
+        mfe.feltnavn `should be equal to` "journalposttype"
     }
 
 }
