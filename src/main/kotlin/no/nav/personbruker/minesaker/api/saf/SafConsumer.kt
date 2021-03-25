@@ -18,6 +18,7 @@ import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.personbruker.minesaker.api.tokenx.AccessToken
 import org.slf4j.LoggerFactory
 import java.net.URL
+import java.util.*
 
 class SafConsumer(
     private val httpClient: HttpClient,
@@ -25,6 +26,8 @@ class SafConsumer(
 ) {
 
     private val log = LoggerFactory.getLogger(SafConsumer::class.java)
+
+    private val NavCallIdHeaderName = "Nav-Call-Id"
 
     suspend fun hentSakstemaer(request: SakstemaerRequest, accessToken: AccessToken): List<Sakstema> {
         val responseDto: GraphQLResponse<HentSakstemaer.Result> = sendQuery(request, accessToken)
@@ -50,10 +53,12 @@ class SafConsumer(
 
     private suspend inline fun <reified T> sendQuery(request: GraphQLRequest, accessToken: AccessToken): T =
         runCatching<T> {
+            val callId = UUID.randomUUID()
             withContext(Dispatchers.IO) {
                 httpClient.post {
                     url("$safEndpoint")
                     method = HttpMethod.Post
+                    header(NavCallIdHeaderName, callId)
                     header(Authorization, "Bearer ${accessToken.value}")
                     contentType(ContentType.Application.Json)
                     accept(ContentType.Application.Json)
