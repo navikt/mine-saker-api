@@ -75,8 +75,6 @@ class SafConsumer(
                 url(urlToFetch)
                 method = HttpMethod.Get
                 header(Authorization, "Bearer ${accessToken.value}")
-                contentType(ContentType.Application.Pdf)
-                ContentDisposition.Inline
             }
         }
     }.onFailure { cause ->

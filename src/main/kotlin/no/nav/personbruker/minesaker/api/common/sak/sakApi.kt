@@ -47,7 +47,7 @@ fun Route.sakApi(
             val dokumentinfoId = DokumentInfoId("${call.parameters["dokumentId"]}")
             log.info("Skal hente dokumentet $dokumentinfoId, fra journalposten $journapostId")
             val result = service.hentDokument(idportenUser, journapostId, dokumentinfoId)
-            call.respond(HttpStatusCode.OK, result)
+            call.respondBytes(bytes = result, contentType = ContentType.Application.Pdf, status = HttpStatusCode.OK)
 
         } catch (exception: Exception) {
             call.respondWithError(log, exception)
@@ -58,7 +58,7 @@ fun Route.sakApi(
 
 private fun PipelineContext<Unit, ApplicationCall>.extractOnsketSakstema(): Sakstemakode {
     val sakstemakode: String = call.request.queryParameters["sakstemakode"]
-            ?: throw InvalidRequestException("Kallet kan ikke utføres uten at tema er valgt.")
+        ?: throw InvalidRequestException("Kallet kan ikke utføres uten at tema er valgt.")
 
     val sakstema = runCatching {
         sakstemakode.toInternalSaktemakode()
