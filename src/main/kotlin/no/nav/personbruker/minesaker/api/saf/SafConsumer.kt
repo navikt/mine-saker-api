@@ -56,7 +56,7 @@ class SafConsumer(
             val callId = UUID.randomUUID()
             withContext(Dispatchers.IO) {
                 httpClient.post {
-                    url("$safEndpoint")
+                    url("$safEndpoint/graphql")
                     method = HttpMethod.Post
                     header(NavCallIdHeaderName, callId)
                     header(Authorization, "Bearer ${accessToken.value}")
