@@ -69,8 +69,10 @@ class SafConsumer(
         accessToken: AccessToken
     ): HttpResponse = runCatching {
         withContext<HttpResponse>(Dispatchers.IO) {
-            httpClient.get {
-                url("$safEndpoint/rest/hentdokument/$journapostId/$dokumentinfoId/ARKIV")
+            val urlToFetch = "$safEndpoint/rest/hentdokument/$journapostId/$dokumentinfoId/ARKIV"
+            log.info("Skal hente data fra: $urlToFetch")
+            httpClient.request {
+                url(urlToFetch)
                 method = HttpMethod.Get
                 header(Authorization, "Bearer ${accessToken.value}")
                 contentType(ContentType.Application.Pdf)
@@ -81,6 +83,8 @@ class SafConsumer(
         throw SafException("Klarte ikke å hente dokumentet fra SAF", cause)
             .addContext("journapostId", journapostId)
             .addContext("dokumentinfoId", dokumentinfoId)
+    }.onSuccess {
+        log.info("Klarte å hente dokumentet.")
     }.getOrThrow()
 
     private suspend fun extractBinaryData(
@@ -94,6 +98,8 @@ class SafConsumer(
         throw SafException("Klarte ikke å lese inn dataene i responsen fra SAF", cause)
             .addContext("journapostId", journapostId)
             .addContext("dokumentinfoId", dokumentinfoId)
+    }.onSuccess {
+        log.info("Klarte å lese ut binærdataene.")
     }.getOrThrow()
 
 
