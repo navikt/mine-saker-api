@@ -3,6 +3,7 @@ package no.nav.personbruker.minesaker.api.saf
 import com.expediagroup.graphql.types.GraphQLResponse
 import io.ktor.client.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.HttpHeaders.Authorization
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +20,6 @@ import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.personbruker.minesaker.api.tokenx.AccessToken
 import org.slf4j.LoggerFactory
-import java.io.File
 import java.net.URL
 import java.util.*
 
@@ -54,23 +54,48 @@ class SafConsumer(
         return internals
     }
 
-    suspend fun hentDokument(journapostId : JournalpostId, dokumentinfoId : DokumentInfoId, accessToken: AccessToken) : File {
-        return runCatching {
-            withContext(Dispatchers.IO) {
-                httpClient.get<File> {
-                    url("$safEndpoint/rest/hentdokument/$journapostId/$dokumentinfoId/ARKIV")
-                    method = HttpMethod.Get
-                    header(Authorization, "Bearer ${accessToken.value}")
-                    contentType(ContentType.Application.Pdf)
-                    ContentDisposition.Inline
-                }
-            }
-        }.onFailure { cause ->
-            throw SafException("Klarte ikke å hente dokumentet fra SAF", cause)
-                .addContext("journapostId", journapostId)
-                .addContext("dokumentinfoId", dokumentinfoId)
-        }.getOrThrow()
+    suspend fun hentDokument(
+        journapostId: JournalpostId,
+        dokumentinfoId: DokumentInfoId,
+        accessToken: AccessToken
+    ): ByteArray {
+        val response = fetchDocument(journapostId, dokumentinfoId, accessToken)
+        return extractBinaryData(response, journapostId, dokumentinfoId)
     }
+
+    private suspend fun fetchDocument(
+        journapostId: JournalpostId,
+        dokumentinfoId: DokumentInfoId,
+        accessToken: AccessToken
+    ): HttpResponse = runCatching {
+        withContext<HttpResponse>(Dispatchers.IO) {
+            httpClient.get {
+                url("$safEndpoint/rest/hentdokument/$journapostId/$dokumentinfoId/ARKIV")
+                method = HttpMethod.Get
+                header(Authorization, "Bearer ${accessToken.value}")
+                contentType(ContentType.Application.Pdf)
+                ContentDisposition.Inline
+            }
+        }
+    }.onFailure { cause ->
+        throw SafException("Klarte ikke å hente dokumentet fra SAF", cause)
+            .addContext("journapostId", journapostId)
+            .addContext("dokumentinfoId", dokumentinfoId)
+    }.getOrThrow()
+
+    private suspend fun extractBinaryData(
+        response: HttpResponse,
+        journapostId: JournalpostId,
+        dokumentinfoId: DokumentInfoId
+    ): ByteArray = runCatching {
+        response.readBytes()
+
+    }.onFailure { cause ->
+        throw SafException("Klarte ikke å lese inn dataene i responsen fra SAF", cause)
+            .addContext("journapostId", journapostId)
+            .addContext("dokumentinfoId", dokumentinfoId)
+    }.getOrThrow()
+
 
     private suspend inline fun <reified T> sendQuery(request: GraphQLRequest, accessToken: AccessToken): T =
         runCatching<T> {

@@ -28,7 +28,7 @@ class SakService(
         return safConsumer.hentJournalposter(fodselsnummer, journalposterRequest, exchangedToken)
     }
 
-    suspend fun hentDokument(user: IdportenUser, journapostId : JournalpostId, dokumentinfoId : DokumentInfoId): File {
+    suspend fun hentDokument(user: IdportenUser, journapostId : JournalpostId, dokumentinfoId : DokumentInfoId): ByteArray {
         val exchangedToken = exchangeToken(user)
         return safConsumer.hentDokument(journapostId, dokumentinfoId, exchangedToken)
     }
