@@ -69,7 +69,7 @@ class SafConsumer(
         accessToken: AccessToken
     ): HttpResponse = runCatching {
         withContext<HttpResponse>(Dispatchers.IO) {
-            val urlToFetch = "$safEndpoint/rest/hentdokument/$journapostId/$dokumentinfoId/ARKIV"
+            val urlToFetch = "$safEndpoint/rest/hentdokument/${journapostId.value}/${dokumentinfoId.value}/ARKIV"
             log.info("Skal hente data fra: $urlToFetch")
             httpClient.request {
                 url(urlToFetch)
