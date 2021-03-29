@@ -1,33 +1,45 @@
 package no.nav.personbruker.minesaker.api.common
 
-import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.response.*
 import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.common.exception.SafException
+import no.nav.personbruker.minesaker.api.common.exception.UgyldigVerdiException
 import org.slf4j.Logger
 
-suspend fun ApplicationCall.respondWithError(log: Logger, exception: Exception) {
-    when (exception) {
-        is InvalidRequestException -> {
-            respond(HttpStatusCode.BadRequest)
-            val msg = "Mottok en request med feil input. $exception"
-            log.warn(msg, exception)
-        }
-        is GraphQLResultException -> {
-            respond(HttpStatusCode.ServiceUnavailable)
-            val msg = "Klarte ikke å hente data fra SAF. Returnerer feilkode til frontend. $exception"
-            log.warn(msg, exception)
-        }
-        is SafException -> {
-            respond(HttpStatusCode.ServiceUnavailable)
-            val msg = "Klarte ikke å hente data fra SAF. Returnerer feilkode til frontend. $exception"
-            log.warn(msg, exception)
-        }
-        else -> {
-            respond(HttpStatusCode.InternalServerError)
-            log.error("Ukjent feil oppstod ved henting av eventer. Returnerer feilkode til frontend", exception)
+object ExceptionResponseHandler {
+    fun logExceptionAndDecideErrorResponseCode(log: Logger, exception: Exception): HttpStatusCode {
+        return when (exception) {
+            is InvalidRequestException -> {
+                val errorCode = HttpStatusCode.BadRequest
+                val msg = "Mottok en request med feil input. Returnerer feilkoden $errorCode. $exception"
+                log.warn(msg, exception)
+                errorCode
+            }
+            is GraphQLResultException -> {
+                val errorCode = HttpStatusCode.ServiceUnavailable
+                val msg = "Det skjedde en graphQL-feil. Returnerer feilkoden $errorCode. $exception"
+                log.warn(msg, exception)
+                errorCode
+            }
+            is SafException -> {
+                val errorCode = HttpStatusCode.ServiceUnavailable
+                val msg = "Klarte ikke å hente data. Returnerer feilkoden $errorCode. $exception"
+                log.warn(msg, exception)
+                errorCode
+            }
+            is UgyldigVerdiException -> {
+                val errorCode = HttpStatusCode.InternalServerError
+                val msg = "Det skjedde en feil ved konvertering til den interne-modellen. Returnerer feilkoden $errorCode. $exception"
+                log.warn(msg, exception)
+                errorCode
+            }
+            else -> {
+                val errorCode = HttpStatusCode.InternalServerError
+                val msg = "Ukjent feil oppstod. Returnerer feilkoden $errorCode. $exception"
+                log.error(msg, exception)
+                errorCode
+            }
         }
     }
 }
