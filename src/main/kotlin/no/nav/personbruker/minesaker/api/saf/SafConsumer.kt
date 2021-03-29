@@ -69,12 +69,15 @@ class SafConsumer(
         accessToken: AccessToken
     ): HttpResponse = runCatching {
         withContext<HttpResponse>(Dispatchers.IO) {
+            val callId = UUID.randomUUID()
+            log.info("Sender POST-kall med correlationId=$callId")
             val urlToFetch = "$safEndpoint/rest/hentdokument/$journapostId/$dokumentinfoId/ARKIV"
             log.info("Skal hente data fra: $urlToFetch")
             httpClient.request {
                 url(urlToFetch)
                 method = HttpMethod.Get
                 header(Authorization, "Bearer ${accessToken.value}")
+                header(NavCallIdHeaderName, callId)
             }
         }
     }.onFailure { cause ->
@@ -103,6 +106,7 @@ class SafConsumer(
     private suspend inline fun <reified T> sendQuery(request: GraphQLRequest, accessToken: AccessToken): T =
         runCatching<T> {
             val callId = UUID.randomUUID()
+            log.info("Sender graphql-spørring med correlationId=$callId")
             withContext(Dispatchers.IO) {
                 httpClient.post {
                     url("$safEndpoint/graphql")
