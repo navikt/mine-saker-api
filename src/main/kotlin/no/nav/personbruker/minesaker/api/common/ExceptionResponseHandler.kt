@@ -26,7 +26,7 @@ object ExceptionResponseHandler {
                 log.warn(msg, exception)
                 errorCode
             }
-            is SafException -> {
+            is CommunicationException -> {
                 val errorCode = HttpStatusCode.ServiceUnavailable
                 val msg = "Klarte ikke å hente data. Returnerer feilkoden $errorCode. $exception"
                 log.warn(msg, exception)

@@ -10,7 +10,7 @@ import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
 import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
-import no.nav.personbruker.minesaker.api.common.exception.SafException
+import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.config.buildJsonSerializer
 import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstema
@@ -101,7 +101,7 @@ internal class SafConsumerTest {
 
         result.isFailure `should be equal to` true
         val exception = result.exceptionOrNull()
-        exception `should be instance of` SafException::class
+        exception `should be instance of` CommunicationException::class
     }
 
     @Test
@@ -152,8 +152,8 @@ internal class SafConsumerTest {
 
         result.isFailure `should be equal to` true
         val exception = result.exceptionOrNull()
-        exception `should be instance of` SafException::class
-        exception as SafException
+        exception `should be instance of` CommunicationException::class
+        exception as CommunicationException
         exception.context `should have key` "query"
         exception.context `should have key` "variables"
     }

@@ -55,9 +55,9 @@ internal class ExceptionResponseHandlerTest {
     }
 
     @Test
-    fun `Skal haandtere SafException`() {
+    fun `Skal haandtere CommunicationException`() {
         val log = mockk<Logger>(relaxed = true)
-        val exception = SafException("Simulert feil")
+        val exception = CommunicationException("Simulert feil")
 
         val errorCode = runBlocking {
             ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)

@@ -1,7 +1,6 @@
 package no.nav.personbruker.minesaker.api.saf
 
 import no.nav.personbruker.minesaker.api.common.exception.MissingFieldException
-import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should not be null`

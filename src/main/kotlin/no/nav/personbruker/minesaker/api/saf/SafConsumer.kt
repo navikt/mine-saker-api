@@ -10,8 +10,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
+import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
-import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.saf.domain.DokumentInfoId
 import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
 import no.nav.personbruker.minesaker.api.saf.domain.JournalpostId
@@ -81,7 +81,7 @@ class SafConsumer(
             }
         }
     }.onFailure { cause ->
-        throw SafException("Klarte ikke å hente dokumentet fra SAF", cause)
+        throw CommunicationException("Klarte ikke å hente dokumentet fra SAF", cause)
             .addContext("journapostId", journapostId)
             .addContext("dokumentinfoId", dokumentinfoId)
     }.onSuccess {
@@ -96,7 +96,7 @@ class SafConsumer(
         response.readBytes()
 
     }.onFailure { cause ->
-        throw SafException("Klarte ikke å lese inn dataene i responsen fra SAF", cause)
+        throw CommunicationException("Klarte ikke å lese inn dataene i responsen fra SAF", cause)
             .addContext("journapostId", journapostId)
             .addContext("dokumentinfoId", dokumentinfoId)
     }.onSuccess {
@@ -119,7 +119,7 @@ class SafConsumer(
                 }
             }
         }.onFailure { cause ->
-            throw SafException("Klarte ikke å utføre spørring mot SAF", cause)
+            throw CommunicationException("Klarte ikke å utføre spørring mot SAF", cause)
                 .addContext("query", request.query)
                 .addContext("variables", request.variables)
         }.getOrThrow()

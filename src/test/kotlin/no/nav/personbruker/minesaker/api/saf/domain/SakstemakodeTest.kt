@@ -1,7 +1,6 @@
 package no.nav.personbruker.minesaker.api.saf.domain
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
-import no.nav.personbruker.minesaker.api.common.exception.SafException
 import no.nav.personbruker.minesaker.api.common.exception.UgyldigVerdiException
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be instance of`
