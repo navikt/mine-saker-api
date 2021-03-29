@@ -11,6 +11,7 @@ import io.ktor.util.*
 import io.ktor.util.pipeline.*
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.personbruker.minesaker.api.common.sak.sakApi
+import no.nav.personbruker.minesaker.api.debug.exchangeApi
 import no.nav.personbruker.minesaker.api.health.healthApi
 import no.nav.tms.token.support.idporten.installIdPortenAuth
 import no.nav.tms.token.support.idporten.user.IdportenUserFactory
@@ -44,6 +45,10 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
 
         authenticate {
             sakApi(appContext.sakService)
+        }
+
+        authenticate {
+            exchangeApi(appContext.tokendingsServiceWrapper, appContext.environment.clusterName)
         }
 
         configureShutdownHook(appContext.httpClient)
