@@ -7,6 +7,12 @@ import org.slf4j.Logger
 object ExceptionResponseHandler {
     fun logExceptionAndDecideErrorResponseCode(log: Logger, exception: Exception): HttpStatusCode {
         return when (exception) {
+            is DocumentNotFoundException -> {
+                val errorCode = HttpStatusCode.NotFound
+                val msg = "Dokumentet ble ikke funnet. Returnerer feilkoden $errorCode. $exception"
+                log.warn(msg, exception)
+                errorCode
+            }
             is GraphQLResultException -> {
                 val errorCode = HttpStatusCode.ServiceUnavailable
                 val msg = "Det skjedde en graphQL-feil. Returnerer feilkoden $errorCode. $exception"

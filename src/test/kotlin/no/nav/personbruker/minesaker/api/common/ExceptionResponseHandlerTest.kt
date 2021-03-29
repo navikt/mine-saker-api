@@ -13,6 +13,20 @@ import org.slf4j.Logger
 internal class ExceptionResponseHandlerTest {
 
     @Test
+    fun `Skal haandtere DocumentNotFoundException`() {
+        val log = mockk<Logger>(relaxed = true)
+        val exception = DocumentNotFoundException("Simulert feil")
+
+        val errorCode = runBlocking {
+            ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
+        }
+
+        errorCode `should be equal to` HttpStatusCode.NotFound
+        coVerify(exactly = 1) { log.warn(any<String>(), any()) }
+        confirmVerified(log)
+    }
+
+    @Test
     fun `Skal haandtere GraphQLResultException`() {
         val log = mockk<Logger>(relaxed = true)
         val exception = GraphQLResultException("Simulert feil", emptyList(), emptyMap())
