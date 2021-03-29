@@ -31,7 +31,7 @@ object DokumentInfoTransformer {
         external: HentJournalposter.DokumentInfo,
         externalVariant: HentJournalposter.Dokumentvariant
     ) = Dokumentinfo(
-        Tittel(external.tittel ?: throw MissingFieldException("tittel")),
+        Tittel(external.tittel ?: "Uten tittel"),
         DokumentInfoId(external.dokumentInfoId),
         externalVariant.brukerHarTilgang == true
     )

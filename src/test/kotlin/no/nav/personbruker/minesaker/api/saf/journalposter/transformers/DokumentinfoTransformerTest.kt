@@ -49,16 +49,12 @@ internal class DokumentinfoTransformerTest {
     }
 
     @Test
-    fun `Skal kaste feil hvis tittel-feltet mangler`() {
+    fun `Skal takle at tittel ikke er tilgjengelig i SAF, return dummy tittel til sluttbruker`() {
         val externals = listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertVariantMenUtenTittel())
 
-        val result = runCatching {
-            DokumentInfoTransformer.toInternal(externals)
-        }
-        result.isFailure `should be equal to` true
-        result.exceptionOrNull() `should be instance of` MissingFieldException::class
-        val mfe = result.exceptionOrNull() as MissingFieldException
-        mfe.feltnavn `should be equal to` "tittel"
+        val result = DokumentInfoTransformer.toInternal(externals)
+
+        result[0].tittel.value `should be equal to` "Uten tittel"
     }
 
     @Test
