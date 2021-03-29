@@ -69,7 +69,7 @@ class SafConsumer(
         accessToken: AccessToken
     ): HttpResponse = runCatching {
         withContext<HttpResponse>(Dispatchers.IO) {
-            val urlToFetch = "$safEndpoint/rest/hentdokument/${journapostId.value}/${dokumentinfoId.value}/ARKIV"
+            val urlToFetch = "$safEndpoint/rest/hentdokument/$journapostId/$dokumentinfoId/ARKIV"
             log.info("Skal hente data fra: $urlToFetch")
             httpClient.request {
                 url(urlToFetch)
@@ -99,7 +99,6 @@ class SafConsumer(
     }.onSuccess {
         log.info("Klarte å lese ut binærdataene.")
     }.getOrThrow()
-
 
     private suspend inline fun <reified T> sendQuery(request: GraphQLRequest, accessToken: AccessToken): T =
         runCatching<T> {
