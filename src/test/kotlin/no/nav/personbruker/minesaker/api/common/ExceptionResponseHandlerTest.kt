@@ -91,7 +91,7 @@ internal class ExceptionResponseHandlerTest {
             ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
         }
 
-        errorCode `should be equal to` HttpStatusCode.ServiceUnavailable
+        errorCode `should be equal to` HttpStatusCode.InternalServerError
         coVerify(exactly = 1) { log.warn(any<String>(), any()) }
         confirmVerified(log)
     }
