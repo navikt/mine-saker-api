@@ -31,15 +31,14 @@ internal class ResultTransformerTest {
     }
 
     @Test
-    fun `Skal kaste en SAFException hvis det skjer en feil ved henting av sakstemaer`() {
+    fun `Alle feil som skjer skal kastes videre ved henting av sakstemaer`() {
         val eksternalMedValideringsfeil = ResultObjectMother.giveMeHentSakstemaResultMedUfullstendigeData()
 
         runCatching {
             eksternalMedValideringsfeil.toInternal()
 
         }.onFailure { exception ->
-            exception `should be instance of` SafException::class
-            exception.cause `should be instance of` MissingFieldException::class
+            exception `should be instance of` MissingFieldException::class
 
         }.onSuccess {
             fail("Denne testen skal kaste en feil")
@@ -47,15 +46,14 @@ internal class ResultTransformerTest {
     }
 
     @Test
-    fun `Skal kaste en SAFException hvis det skjer en feil ved henting av journalposter`() {
+    fun `Alle feil som skjer skal kastes videre ved henting av journalposter`() {
         val eksternalMedValideringsfeil = ResultObjectMother.giveMeHentJournalposterResultMedUfullstendigeData()
 
         runCatching {
             eksternalMedValideringsfeil.toInternal(dummyInnloggetBruker)
 
         }.onFailure { exception ->
-            exception `should be instance of` SafException::class
-            exception.cause `should be instance of` MissingFieldException::class
+            exception `should be instance of` MissingFieldException::class
 
         }.onSuccess {
             fail("Denne testen skal kaste en feil")
