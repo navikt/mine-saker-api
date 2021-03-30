@@ -10,7 +10,6 @@ import no.nav.personbruker.minesaker.api.config.idportenUser
 import no.nav.personbruker.minesaker.api.saf.domain.DokumentInfoId
 import no.nav.personbruker.minesaker.api.saf.domain.JournalpostId
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
-import no.nav.personbruker.minesaker.api.saf.domain.toInternalSaktemakode
 import org.slf4j.LoggerFactory
 
 val dokumentIdParameterName = "dokumentId"
@@ -66,7 +65,7 @@ private fun ApplicationCall.extractOnsketSakstema(): Sakstemakode {
         ?: throw InvalidRequestException("Kallet kan ikke utføres uten at tema er valgt.")
 
     val sakstema = runCatching {
-        sakstemakode.toInternalSaktemakode()
+        Sakstemakode.valueOf(sakstemakode)
 
     }.onFailure { cause ->
         throw InvalidRequestException("Ugyldig sakstemakode ble brukt", cause)

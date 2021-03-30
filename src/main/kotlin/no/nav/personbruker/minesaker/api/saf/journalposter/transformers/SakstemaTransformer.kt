@@ -5,7 +5,6 @@ import no.nav.personbruker.minesaker.api.common.exception.MissingFieldException
 import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
 import no.nav.personbruker.minesaker.api.saf.domain.Navn
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstema
-import no.nav.personbruker.minesaker.api.saf.domain.toInternalSaktemakode
 
 fun HentJournalposter.Sakstema.toInternal(innloggetBruker: Fodselsnummer) = Sakstema(
     Navn(navn ?: throw MissingFieldException("navn")),

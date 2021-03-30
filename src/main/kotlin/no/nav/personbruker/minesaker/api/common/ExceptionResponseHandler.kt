@@ -38,17 +38,10 @@ object ExceptionResponseHandler {
                 log.warn(msg, exception)
                 errorCode
             }
-            is UgyldigVerdiException -> {
+            is TransformationException -> {
                 val errorCode = HttpStatusCode.InternalServerError
-                val msg = "Det skjedde en feil ved konvertering til den interne-modellen. Returnerer " +
+                val msg = "Mottok verdi som ikke kunne konverteres til den interne-modellen. Returnerer " +
                         "feilkoden $errorCode. $exception"
-                log.warn(msg, exception)
-                errorCode
-            }
-            is UnknownValueException -> {
-                val errorCode = HttpStatusCode.InternalServerError
-                val msg = "Klarte ikke å transformere til intern-modell, grunnet ukjent verdi mottatt. Kan " +
-                        "GraphQL-schema-et ha endret seg? Returnerer feilkoden $errorCode. $exception"
                 log.warn(msg, exception)
                 errorCode
             }
