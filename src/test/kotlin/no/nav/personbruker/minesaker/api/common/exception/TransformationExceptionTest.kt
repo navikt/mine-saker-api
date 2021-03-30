@@ -20,4 +20,15 @@ internal class TransformationExceptionTest {
         exception.toString() `should contain` expectedErrorType.toString()
     }
 
+    @Test
+    fun `Hjelpemetoden for aa opprette TransformationException med feltnavn i konteksten`() {
+        val expectedFieldName = "navnet på feltet er dette"
+
+        val exception = TransformationException.withMissingFieldName(expectedFieldName)
+
+        exception.type `should be equal to` TransformationException.ErrorType.MISSING_FIELD
+        exception.context[TransformationException.feltnavnKey] `should be equal to` expectedFieldName
+        exception.toString() `should contain` expectedFieldName
+    }
+
 }

@@ -1,9 +1,9 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
-import no.nav.personbruker.minesaker.api.common.exception.MissingFieldException
-import no.nav.personbruker.minesaker.api.saf.domain.Dokumentinfo
+import no.nav.personbruker.minesaker.api.common.exception.TransformationException
 import no.nav.personbruker.minesaker.api.saf.domain.DokumentInfoId
+import no.nav.personbruker.minesaker.api.saf.domain.Dokumentinfo
 import no.nav.personbruker.minesaker.api.saf.domain.Tittel
 
 object DokumentInfoTransformer {
@@ -12,7 +12,7 @@ object DokumentInfoTransformer {
      * Er kun interessert i den arkivert versjonen av dokumentet, da det er denne som er mest vanlig.
      */
     fun toInternal(externals: List<HentJournalposter.DokumentInfo?>?): List<Dokumentinfo> {
-        if (externals == null) throw MissingFieldException("dokumenter")
+        if (externals == null) throw TransformationException.withMissingFieldName("dokumenter")
 
         val internals = mutableListOf<Dokumentinfo>()
         externals

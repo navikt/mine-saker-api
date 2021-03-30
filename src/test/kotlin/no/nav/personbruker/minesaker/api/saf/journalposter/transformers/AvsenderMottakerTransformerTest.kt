@@ -1,6 +1,6 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
-import no.nav.personbruker.minesaker.api.common.exception.MissingFieldException
+import no.nav.personbruker.minesaker.api.common.exception.TransformationException
 import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
 import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.AvsenderMottakerObjectMother
 import org.amshove.kluent.`should be equal to`
@@ -44,9 +44,9 @@ internal class AvsenderMottakerTransformerTest {
         }
 
         result.isFailure `should be equal to` true
-        result.exceptionOrNull() `should be instance of` MissingFieldException::class
-        val mfe = result.exceptionOrNull() as MissingFieldException
-        mfe.feltnavn `should be equal to` "avsenderMottakerIdType"
+        result.exceptionOrNull() `should be instance of` TransformationException::class
+        val exception = result.exceptionOrNull() as TransformationException
+        exception.context[TransformationException.feltnavnKey] `should be equal to` "avsenderMottakerIdType"
     }
 
     @Test
