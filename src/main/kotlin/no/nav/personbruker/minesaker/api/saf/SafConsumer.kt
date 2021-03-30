@@ -39,9 +39,7 @@ class SafConsumer(
         val responseDto: GraphQLResponse<HentSakstemaer.Result> = sendQuery(request, accessToken)
         val external = responseDto.extractData()
         logIfContainsDataAndErrors(responseDto)
-        val internals = external.toInternal()
-        logAdditionalResponseInfoInCaseOfEmptyResultSet(internals, responseDto)
-        return internals
+        return external.toInternal()
     }
 
     suspend fun hentJournalposter(
@@ -52,9 +50,7 @@ class SafConsumer(
         val responseDto: GraphQLResponse<HentJournalposter.Result> = sendQuery(request, accessToken)
         val external = responseDto.extractData()
         logIfContainsDataAndErrors(responseDto)
-        val internals = external.toInternal(innloggetBruker)
-        logAdditionalResponseInfoInCaseOfEmptyResultSet(internals, responseDto)
-        return internals
+        return external.toInternal(innloggetBruker)
     }
 
     suspend fun hentDokument(
@@ -89,24 +85,6 @@ class SafConsumer(
     }.onSuccess {
         log.info("Klarte å hente dokumentet.")
     }.getOrThrow()
-
-    private fun handleDocumentExceptionAndBuildInternalException(
-        exception: Throwable,
-        journapostId: JournalpostId,
-        dokumentinfoId: DokumentInfoId
-    ): AbstractMineSakerException {
-        val internalException = if (exception is ClientRequestException && exception.isResponseCodeIsNotFound()) {
-            DocumentNotFoundException("Dokumentet ble ikke funnet.", exception)
-        } else {
-            CommunicationException("Klarte ikke å hente dokumentet fra SAF", exception)
-        }
-
-        return internalException
-            .addContext("journalpostId", journapostId)
-            .addContext("dokumentinfoId", dokumentinfoId)
-    }
-
-    private fun ClientRequestException.isResponseCodeIsNotFound(): Boolean = response.status == HttpStatusCode.NotFound
 
     private suspend fun extractBinaryData(
         response: HttpResponse,
@@ -176,18 +154,5 @@ class SafConsumer(
 
     private fun GraphQLResponse<*>.containsData() = data != null
     private fun GraphQLResponse<*>.containsErrors() = errors?.isNotEmpty() == true
-
-    // TODO: Dropp dette i det SAF har fått støtte for å legge ved feil i responsen, i stede for å sende tomt resultat i feilsituasjoner.
-    private fun logAdditionalResponseInfoInCaseOfEmptyResultSet(
-        internal: List<Sakstema>,
-        responseDto: GraphQLResponse<*>
-    ) {
-        if (internal.isEmpty()) {
-            val msg =
-                "Mottok tomt resultat. Responsen inneholdt i tillegg: " +
-                        "Errors: ${responseDto.errors}, extensions: ${responseDto.extensions}"
-            log.info(msg)
-        }
-    }
 
 }
