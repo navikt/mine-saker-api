@@ -5,7 +5,10 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import no.nav.personbruker.minesaker.api.common.exception.*
+import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
+import no.nav.personbruker.minesaker.api.common.exception.DocumentNotFoundException
+import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
+import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger
@@ -55,20 +58,6 @@ internal class ExceptionResponseHandlerTest {
     }
 
     @Test
-    fun `Skal haandtere MissingFieldException`() {
-        val log = mockk<Logger>(relaxed = true)
-        val exception = MissingFieldException("Simulert feil")
-
-        val errorCode = runBlocking {
-            ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
-        }
-
-        errorCode `should be equal to` HttpStatusCode.ServiceUnavailable
-        coVerify(exactly = 1) { log.warn(any<String>(), any()) }
-        confirmVerified(log)
-    }
-
-    @Test
     fun `Skal haandtere CommunicationException`() {
         val log = mockk<Logger>(relaxed = true)
         val exception = CommunicationException("Simulert feil")
@@ -78,34 +67,6 @@ internal class ExceptionResponseHandlerTest {
         }
 
         errorCode `should be equal to` HttpStatusCode.ServiceUnavailable
-        coVerify(exactly = 1) { log.warn(any<String>(), any()) }
-        confirmVerified(log)
-    }
-
-    @Test
-    fun `Skal haandtere UgyldigVerdiException`() {
-        val log = mockk<Logger>(relaxed = true)
-        val exception = UgyldigVerdiException("Simulert feil")
-
-        val errorCode = runBlocking {
-            ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
-        }
-
-        errorCode `should be equal to` HttpStatusCode.InternalServerError
-        coVerify(exactly = 1) { log.warn(any<String>(), any()) }
-        confirmVerified(log)
-    }
-
-    @Test
-    fun `Skal haandtere UnknownValueException`() {
-        val log = mockk<Logger>(relaxed = true)
-        val exception = UnknownValueException("Simulert feil")
-
-        val errorCode = runBlocking {
-            ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
-        }
-
-        errorCode `should be equal to` HttpStatusCode.InternalServerError
         coVerify(exactly = 1) { log.warn(any<String>(), any()) }
         confirmVerified(log)
     }

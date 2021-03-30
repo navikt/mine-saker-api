@@ -1,9 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf.domain
 
-import no.nav.personbruker.minesaker.api.common.exception.UgyldigVerdiException
-
 enum class Sakstemakode {
-  
+
     AAP,
     AAR,
     AGR,
@@ -60,15 +58,4 @@ enum class Sakstemakode {
     YRA,
     YRK
 
-}
-
-fun String.toInternalSaktemakode(): Sakstemakode {
-    val gyldigSakstemakode = runCatching {
-        Sakstemakode.valueOf(this)
-
-    }.onFailure { cause ->
-        throw UgyldigVerdiException("Ukjent sakstemakode", cause).addContext("ukjentVerdi", this)
-    }
-
-    return gyldigSakstemakode.getOrThrow()
 }

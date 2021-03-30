@@ -1,6 +1,6 @@
 package no.nav.personbruker.minesaker.api.saf
 
-import no.nav.personbruker.minesaker.api.common.exception.MissingFieldException
+import no.nav.personbruker.minesaker.api.common.exception.TransformationException
 import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should not be null`
@@ -37,7 +37,7 @@ internal class ResultTransformerTest {
             eksternalMedValideringsfeil.toInternal()
 
         }.onFailure { exception ->
-            exception `should be instance of` MissingFieldException::class
+            exception `should be instance of` TransformationException::class
 
         }.onSuccess {
             fail("Denne testen skal kaste en feil")
@@ -52,7 +52,7 @@ internal class ResultTransformerTest {
             eksternalMedValideringsfeil.toInternal(dummyInnloggetBruker)
 
         }.onFailure { exception ->
-            exception `should be instance of` MissingFieldException::class
+            exception `should be instance of` TransformationException::class
 
         }.onSuccess {
             fail("Denne testen skal kaste en feil")

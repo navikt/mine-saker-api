@@ -1,13 +1,13 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
-import no.nav.personbruker.minesaker.api.common.exception.MissingFieldException
+import no.nav.personbruker.minesaker.api.common.exception.TransformationException
 import no.nav.personbruker.minesaker.api.saf.domain.AvsenderMottaker
 import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
 
 fun HentJournalposter.AvsenderMottaker.toInternal(innloggetBruker: Fodselsnummer) = AvsenderMottaker(
     innloggetBrukerErAvsender(innloggetBruker),
-    type?.toInternal() ?: throw MissingFieldException("avsenderMottakerIdType")
+    type?.toInternal() ?: throw TransformationException.withMissingFieldName("avsenderMottakerIdType")
 )
 
 fun HentJournalposter.AvsenderMottaker.innloggetBrukerErAvsender(innloggetBruker: Fodselsnummer): Boolean {
