@@ -4,9 +4,17 @@ inline class Tittel(val value: String)
 
 inline class Navn(val value: String)
 
-inline class FilUUID(val value: String)
+inline class DokumentInfoId(val value: String) {
+    override fun toString(): String {
+        return value
+    }
+}
 
-inline class JournalpostId(val value: String)
+inline class JournalpostId(val value: String) {
+    override fun toString(): String {
+        return value
+    }
+}
 
 inline class Fodselsnummer(val value: String) {
     override fun toString(): String {

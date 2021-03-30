@@ -9,7 +9,8 @@ object DokumentInfoObjectMother {
             DokumentVariantObjectMother.giveMeOriginalVariant(),
             DokumentVariantObjectMother.giveMeSladdetVariant()
         )
-        return HentJournalposter.DokumentInfo("Dummytittel uten arkivert", varianter)
+        val dokumentInfoId = "dummyId001"
+        return HentJournalposter.DokumentInfo("Dummytittel uten arkivert", dokumentInfoId, varianter)
     }
 
     fun giveMeDokumentMedArkivertVariant(): HentJournalposter.DokumentInfo {
@@ -18,28 +19,32 @@ object DokumentInfoObjectMother {
             DokumentVariantObjectMother.giveMeSladdetVariant(),
             DokumentVariantObjectMother.giveMeArkivertVariant()
         )
-        return HentJournalposter.DokumentInfo("Dummytittel med arkivert", varianter)
+        val dokumentInfoId = "dummyId002"
+        return HentJournalposter.DokumentInfo("Dummytittel med arkivert", dokumentInfoId, varianter)
     }
 
     fun giveMeDokumentMedArkivertVariantMenUtenTittel(): HentJournalposter.DokumentInfo {
         val varianter = listOf(
             DokumentVariantObjectMother.giveMeArkivertVariant()
         )
-        return HentJournalposter.DokumentInfo(null, varianter)
+        val dokumentInfoId = "dummyId003"
+        return HentJournalposter.DokumentInfo(null, dokumentInfoId, varianter)
     }
 
-    fun giveMeDokumentMedArkivertVariantMenUtenFiluuid(): HentJournalposter.DokumentInfo {
+    fun giveMeDokumentMedArkivertVariantMenUtenDokumentInfoId(): HentJournalposter.DokumentInfo {
         val varianter = listOf(
-            DokumentVariantObjectMother.giveMeArkivertVariantUtenFiluuid()
+            DokumentVariantObjectMother.giveMeArkivertVariantUtenDokumentInfoId()
         )
-        return HentJournalposter.DokumentInfo("Dummytittel med arkivert uten filuuid", varianter)
+        val dokumentInfoId = "dummyId004"
+        return HentJournalposter.DokumentInfo("Dummytittel med arkivert uten dokumentInfoId", dokumentInfoId, varianter)
     }
 
     fun giveMeDokumentMedArkivertVariantMenUtenAtTilgangErSpesifisert(): HentJournalposter.DokumentInfo {
         val varianter = listOf(
             DokumentVariantObjectMother.giveMeArkivertVariantUtenBrukerHarTilgangSatt()
         )
-        return HentJournalposter.DokumentInfo("Dummytittel med arkivert uten filuuid", varianter)
+        val dokumentInfoId = "dummyId005"
+        return HentJournalposter.DokumentInfo("Dummytittel med arkivert uten dokumentInfoId", dokumentInfoId, varianter)
     }
 
 }

@@ -33,7 +33,7 @@ internal class DokumentinfoTransformerTest {
         internals.shouldNotBeEmpty()
         internals.size `should be equal to` 1
         internals[0].tittel.value `should be equal to` expectedDokument.tittel
-        internals[0].filuuid.value `should be equal to` expectedDokumentVariant?.filuuid
+        internals[0].dokumentInfoId.value `should be equal to` expectedDokument.dokumentInfoId
         internals[0].brukerHarTilgang `should be equal to` expectedDokumentVariant?.brukerHarTilgang
     }
 
@@ -49,29 +49,12 @@ internal class DokumentinfoTransformerTest {
     }
 
     @Test
-    fun `Skal kaste feil hvis tittel-feltet mangler`() {
+    fun `Skal takle at tittel ikke er tilgjengelig i SAF, return dummy tittel til sluttbruker`() {
         val externals = listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertVariantMenUtenTittel())
 
-        val result = runCatching {
-            DokumentInfoTransformer.toInternal(externals)
-        }
-        result.isFailure `should be equal to` true
-        result.exceptionOrNull() `should be instance of` MissingFieldException::class
-        val mfe = result.exceptionOrNull() as MissingFieldException
-        mfe.feltnavn `should be equal to` "tittel"
-    }
+        val result = DokumentInfoTransformer.toInternal(externals)
 
-    @Test
-    fun `Skal kaste feil hvis filuuid-feltet mangler`() {
-        val externals = listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertVariantMenUtenFiluuid())
-
-        val result = runCatching {
-            DokumentInfoTransformer.toInternal(externals)
-        }
-        result.isFailure `should be equal to` true
-        result.exceptionOrNull() `should be instance of` MissingFieldException::class
-        val mfe = result.exceptionOrNull() as MissingFieldException
-        mfe.feltnavn `should be equal to` "filuuid"
+        result[0].tittel.value `should be equal to` "Uten tittel"
     }
 
     @Test

@@ -8,7 +8,7 @@ import no.nav.personbruker.minesaker.api.saf.domain.JournalpostId
 import no.nav.personbruker.minesaker.api.saf.domain.Tittel
 
 fun HentJournalposter.Journalpost.toInternal(innloggetBruker: Fodselsnummer) = Journalpost(
-    Tittel(tittel ?: throw MissingFieldException("tittel")),
+    Tittel(tittel ?: "Uten tittel"),
     JournalpostId(journalpostId),
     journalposttype?.toInternal() ?: throw MissingFieldException("journalposttype"),
     avsenderMottaker?.toInternal(innloggetBruker) ?: throw MissingFieldException("avsenderMottaker"),

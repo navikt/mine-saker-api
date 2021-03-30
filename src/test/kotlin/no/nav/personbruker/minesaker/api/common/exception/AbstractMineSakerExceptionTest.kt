@@ -13,7 +13,7 @@ internal class AbstractMineSakerExceptionTest {
         val value1 = "value1"
         val value2 = "value2"
         val message = "A message"
-        val exception = SafException(message)
+        val exception = CommunicationException(message)
         exception.addContext(key1, value1)
         exception.addContext(key2, value2)
 
@@ -30,7 +30,7 @@ internal class AbstractMineSakerExceptionTest {
     @Test
     fun `Skal bruke standard toString hvis det ikke er lagt ved noe context`() {
         val message = "A message"
-        val exception = SafException(message)
+        val exception = CommunicationException(message)
 
         exception.toString() `should not contain` "context:"
     }

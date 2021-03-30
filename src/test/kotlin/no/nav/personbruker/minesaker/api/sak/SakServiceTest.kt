@@ -3,7 +3,7 @@ package no.nav.personbruker.minesaker.api.sak
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import no.nav.personbruker.minesaker.api.common.IdportenUserObjectMother
-import no.nav.personbruker.minesaker.api.common.exception.SafException
+import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.common.sak.SakService
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
@@ -61,7 +61,7 @@ internal class SakServiceTest {
 
     @Test
     fun `Feil som oppstaar, ved henting av alle sakstemaer, skal kastes videre`() {
-        val expectedException = SafException("Simulert feil i en test")
+        val expectedException = CommunicationException("Simulert feil i en test")
 
         val consumer = mockk<SafConsumer>(relaxed = true)
         val service = SakService(consumer, tokendingsWrapper)
@@ -77,7 +77,7 @@ internal class SakServiceTest {
         }
 
         result.isFailure `should be equal to` true
-        result.exceptionOrNull() `should be instance of` SafException::class
+        result.exceptionOrNull() `should be instance of` CommunicationException::class
     }
 
     @Test
@@ -103,7 +103,7 @@ internal class SakServiceTest {
 
     @Test
     fun `Feil som oppstaar, ved henting av journalposter for et konkret sakstema, skal kastes videre`() {
-        val expectedException = SafException("Simulert feil i en test")
+        val expectedException = CommunicationException("Simulert feil i en test")
 
         val consumer = mockk<SafConsumer>(relaxed = true)
         val service = SakService(consumer, tokendingsWrapper)
@@ -120,7 +120,7 @@ internal class SakServiceTest {
         }
 
         result.isFailure `should be equal to` true
-        result.exceptionOrNull() `should be instance of` SafException::class
+        result.exceptionOrNull() `should be instance of` CommunicationException::class
     }
 
 }

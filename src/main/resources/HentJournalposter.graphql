@@ -17,9 +17,9 @@ query($ident : String!, $temaetSomSkalHentes : Tema) {
                 }
                 dokumenter {
                     tittel
+                    dokumentInfoId
                     dokumentvarianter{
                         variantformat
-                        filuuid
                         brukerHarTilgang
                     }
                 }

@@ -5,23 +5,23 @@ import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 object DokumentVariantObjectMother {
 
     fun giveMeArkivertVariant(): HentJournalposter.Dokumentvariant {
-        return HentJournalposter.Dokumentvariant(HentJournalposter.Variantformat.ARKIV, "dummyUuid1", true)
+        return HentJournalposter.Dokumentvariant(HentJournalposter.Variantformat.ARKIV, true)
     }
 
-    fun giveMeArkivertVariantUtenFiluuid(): HentJournalposter.Dokumentvariant {
-        return HentJournalposter.Dokumentvariant(HentJournalposter.Variantformat.ARKIV, null, true)
+    fun giveMeArkivertVariantUtenDokumentInfoId(): HentJournalposter.Dokumentvariant {
+        return HentJournalposter.Dokumentvariant(HentJournalposter.Variantformat.ARKIV, true)
     }
 
     fun giveMeArkivertVariantUtenBrukerHarTilgangSatt(): HentJournalposter.Dokumentvariant {
-        return HentJournalposter.Dokumentvariant(HentJournalposter.Variantformat.ARKIV, "dummyUuid2", null)
+        return HentJournalposter.Dokumentvariant(HentJournalposter.Variantformat.ARKIV, null)
     }
 
     fun giveMeOriginalVariant(): HentJournalposter.Dokumentvariant {
-        return HentJournalposter.Dokumentvariant(HentJournalposter.Variantformat.ORIGINAL, "dummyUuid3", true)
+        return HentJournalposter.Dokumentvariant(HentJournalposter.Variantformat.ORIGINAL, true)
     }
 
     fun giveMeSladdetVariant(): HentJournalposter.Dokumentvariant {
-        return HentJournalposter.Dokumentvariant(HentJournalposter.Variantformat.SLADDET, "dummyUuid4", true)
+        return HentJournalposter.Dokumentvariant(HentJournalposter.Variantformat.SLADDET, true)
     }
 
 }

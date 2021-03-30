@@ -27,17 +27,12 @@ internal class JournalpostTransformerTest {
     }
 
     @Test
-    fun `Skal kaste feil hvis tittel ikke er satt`() {
+    fun `Skal takle at tittel ikke er tilgjengelig i SAF, return dummy tittel til sluttbruker`() {
         val external = JournalpostObjectMother.giveMeOneInngaaendeDokument(tittel = null)
 
-        val result = runCatching {
-            external.toInternal(dummyIdent)
-        }
+        val result = external.toInternal(dummyIdent)
 
-        result.isFailure `should be equal to` true
-        result.exceptionOrNull() `should be instance of` MissingFieldException::class
-        val exception = result.exceptionOrNull() as MissingFieldException
-        exception.feltnavn `should be equal to` "tittel"
+        result.tittel.value `should be equal to` "Uten tittel"
     }
 
     @Test
