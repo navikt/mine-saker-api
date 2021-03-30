@@ -2,6 +2,7 @@ package no.nav.personbruker.minesaker.api.saf
 
 import com.expediagroup.graphql.types.GraphQLResponse
 import io.ktor.client.*
+import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -10,7 +11,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
+import no.nav.personbruker.minesaker.api.common.exception.AbstractMineSakerException
 import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
+import no.nav.personbruker.minesaker.api.common.exception.DocumentNotFoundException
 import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.saf.domain.DokumentInfoId
 import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
@@ -81,12 +84,29 @@ class SafConsumer(
             }
         }
     }.onFailure { cause ->
-        throw CommunicationException("Klarte ikke å hente dokumentet fra SAF", cause)
-            .addContext("journapostId", journapostId)
-            .addContext("dokumentinfoId", dokumentinfoId)
+        throw handleDocumentExceptionAndBuildInternalException(cause, journapostId, dokumentinfoId)
+
     }.onSuccess {
         log.info("Klarte å hente dokumentet.")
     }.getOrThrow()
+
+    private fun handleDocumentExceptionAndBuildInternalException(
+        exception: Throwable,
+        journapostId: JournalpostId,
+        dokumentinfoId: DokumentInfoId
+    ): AbstractMineSakerException {
+        val internalException = if (exception is ClientRequestException && exception.isResponseCodeIsNotFound()) {
+            DocumentNotFoundException("Dokumentet ble ikke funnet.", exception)
+        } else {
+            CommunicationException("Klarte ikke å hente dokumentet fra SAF", exception)
+        }
+
+        return internalException
+            .addContext("journalpostId", journapostId)
+            .addContext("dokumentinfoId", dokumentinfoId)
+    }
+
+    private fun ClientRequestException.isResponseCodeIsNotFound(): Boolean = response.status == HttpStatusCode.NotFound
 
     private suspend fun extractBinaryData(
         response: HttpResponse,
@@ -102,6 +122,24 @@ class SafConsumer(
     }.onSuccess {
         log.info("Klarte å lese ut binærdataene.")
     }.getOrThrow()
+
+    private fun handleDocumentExceptionAndBuildInternalException(
+        exception: Throwable,
+        journapostId: JournalpostId,
+        dokumentinfoId: DokumentInfoId
+    ): AbstractMineSakerException {
+        val internalException = if (exception is ClientRequestException && exception.isResponseCodeIsNotFound()) {
+            DocumentNotFoundException("Dokumentet ble ikke funnet.", exception)
+        } else {
+            CommunicationException("Klarte ikke å hente dokumentet fra SAF", exception)
+        }
+
+        return internalException
+            .addContext("journalpostId", journapostId)
+            .addContext("dokumentinfoId", dokumentinfoId)
+    }
+
+    private fun ClientRequestException.isResponseCodeIsNotFound(): Boolean = response.status == HttpStatusCode.NotFound
 
     private suspend inline fun <reified T> sendQuery(request: GraphQLRequest, accessToken: AccessToken): T =
         runCatching<T> {
@@ -146,7 +184,7 @@ class SafConsumer(
     ) {
         if (internal.isEmpty()) {
             val msg =
-                "Mottok tomt resultat. Responsen inneholdt i tilleg: " +
+                "Mottok tomt resultat. Responsen inneholdt i tillegg: " +
                         "Errors: ${responseDto.errors}, extensions: ${responseDto.extensions}"
             log.info(msg)
         }

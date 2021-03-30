@@ -4,17 +4,17 @@ import com.expediagroup.graphql.types.GraphQLResponse
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.*
 import io.ktor.client.engine.mock.*
+import io.ktor.client.features.*
 import io.ktor.client.features.json.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
-import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
+import no.nav.personbruker.minesaker.api.common.exception.DocumentNotFoundException
+import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.config.buildJsonSerializer
-import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
-import no.nav.personbruker.minesaker.api.saf.domain.Sakstema
-import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
+import no.nav.personbruker.minesaker.api.saf.domain.*
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.HentJournalposterResultObjectMother
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.HentSakstemaerObjectMother
@@ -205,7 +205,72 @@ internal class SafConsumerTest {
 
         result.isSuccess `should be equal to` true
         val dto = result.getOrThrow()
-        dto.size `should be equal to`  externalResponseWithDataAndError.data?.dokumentoversiktSelvbetjening?.tema?.size
+        dto.size `should be equal to` externalResponseWithDataAndError.data?.dokumentoversiktSelvbetjening?.tema?.size
+    }
+
+    @Test
+    fun `Skal kunne hente et dokument`() {
+        val dummyBinaryDataResponse = "dummy data for å simulere binære data".toByteArray()
+        val mockHttpClient = createMockHttpClient {
+            respond(dummyBinaryDataResponse)
+        }
+        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
+
+        val dokumentAsByteArray = runBlocking {
+            consumer.hentDokument(JournalpostId("123"), DokumentInfoId("456"), dummyToken)
+        }
+
+        dokumentAsByteArray.size `should be equal to` dummyBinaryDataResponse.size
+        dokumentAsByteArray `should be equal to` dummyBinaryDataResponse
+    }
+
+    @Test
+    fun `Skal takle at et dokument ikke blir funnet`() {
+        val expectedErrorCode = HttpStatusCode.NotFound
+        val mockHttpClient = createMockHttpClient {
+            respondError(status = expectedErrorCode)
+        }
+        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
+
+        val result = runCatching {
+            runBlocking {
+                consumer.hentDokument(JournalpostId("123"), DokumentInfoId("456"), dummyToken)
+            }
+        }
+
+        result.isFailure `should be equal to` true
+        val exception = result.exceptionOrNull()
+        exception as DocumentNotFoundException
+        exception `should be instance of` DocumentNotFoundException::class
+        exception.context `should have key` "journalpostId"
+        exception.context `should have key` "dokumentinfoId"
+
+        val cause = exception.cause
+        cause as ClientRequestException
+        cause `should be instance of` ClientRequestException::class
+        exception.cause?.message?.`should contain`(expectedErrorCode.value.toString())
+    }
+
+    @Test
+    fun `Skal takle alle andre feil som ikke er NotFound for dokument`() {
+        val expectedErrorCode = HttpStatusCode.InternalServerError
+        val mockHttpClient = createMockHttpClient {
+            respondError(status = expectedErrorCode)
+        }
+        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
+
+        val result = runCatching {
+            runBlocking {
+                consumer.hentDokument(JournalpostId("123"), DokumentInfoId("456"), dummyToken)
+            }
+        }
+
+        result.isFailure `should be equal to` true
+        val exception = result.exceptionOrNull()
+        exception as CommunicationException
+        exception.context `should have key` "journalpostId"
+        exception.context `should have key` "dokumentinfoId"
+        exception.cause?.message?.`should contain`(expectedErrorCode.value.toString())
     }
 
     private fun createMockHttpClient(respond: MockRequestHandleScope.() -> HttpResponseData): HttpClient {
