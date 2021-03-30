@@ -109,7 +109,7 @@ class SafConsumer(
         val internalException = if (exception is ClientRequestException && exception.isResponseCodeIsNotFound()) {
             DocumentNotFoundException("Dokumentet ble ikke funnet.", exception)
         } else {
-            CommunicationException("Klarte ikke å hente dokumentet fra SAF", exception)
+            CommunicationException("Klarte ikke å hente dokumentet", exception)
         }
 
         return internalException
