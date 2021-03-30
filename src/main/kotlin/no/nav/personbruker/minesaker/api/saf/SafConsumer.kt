@@ -81,9 +81,6 @@ class SafConsumer(
         }
     }.onFailure { cause ->
         throw handleDocumentExceptionAndBuildInternalException(cause, journapostId, dokumentinfoId)
-
-    }.onSuccess {
-        log.info("Klarte å hente dokumentet.")
     }.getOrThrow()
 
     private suspend fun extractBinaryData(
@@ -97,8 +94,6 @@ class SafConsumer(
         throw CommunicationException("Klarte ikke å lese inn dataene i responsen fra SAF", cause)
             .addContext("journapostId", journapostId)
             .addContext("dokumentinfoId", dokumentinfoId)
-    }.onSuccess {
-        log.info("Klarte å lese ut binærdataene.")
     }.getOrThrow()
 
     private fun handleDocumentExceptionAndBuildInternalException(
