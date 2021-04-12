@@ -1,0 +1,7 @@
+{
+  "ingress": "https://mine-saker-api.nav.no/person/mine-saker-api",
+  "outboundHosts": [
+    "https://safselvbetjening.prod-fss-pub.nais.io"
+  ],
+  "safselvbetjeningCluster": "prod-fss"
+}
