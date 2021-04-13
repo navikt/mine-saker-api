@@ -28,6 +28,9 @@ spec:
   tokenx:
     enabled: true
   accessPolicy:
+    inbound:
+      rules:
+        - application: mine-saker
     outbound:
       external:
       {{#each outboundHosts}}
