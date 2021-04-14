@@ -30,6 +30,7 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
     }
 
     installIdPortenAuth {
+        postLogoutRedirectUri = appContext.environment.postLogoutUrl
         tokenCookieName = "mine_saker_api_token"
         setAsDefault = true
     }

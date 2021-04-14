@@ -3,5 +3,6 @@
   "outboundHosts": [
     "safselvbetjening.dev-fss-pub.nais.io"
   ],
-  "safselvbetjeningCluster": "dev-fss"
+  "safselvbetjeningCluster": "dev-fss",
+  "postLogoutUrl": "https://www.dev.nav.no"
 }
