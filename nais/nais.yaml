@@ -25,6 +25,8 @@ spec:
   webproxy: true
   idporten:
     enabled: true
+    postLogoutRedirectURIs:
+      - {{postLogoutUrl}}
   tokenx:
     enabled: true
   accessPolicy:
