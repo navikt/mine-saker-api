@@ -64,4 +64,18 @@ internal class JournalpostTransformerTest {
         exception.context[TransformationException.feltnavnKey] `should be equal to` "journalposttype"
     }
 
+    @Test
+    fun `Skal kaste feil hvis dokumentlisten er null`() {
+        val external = JournalpostObjectMother.giveMeOneInngaaendeDokument(dokumenter = null)
+
+        val result = runCatching {
+            external.toInternal(dummyIdent)
+        }
+
+        result.isFailure `should be equal to` true
+        result.exceptionOrNull() `should be instance of` TransformationException::class
+        val exception = result.exceptionOrNull() as TransformationException
+        exception.context[TransformationException.feltnavnKey] `should be equal to` "dokumenter"
+    }
+
 }

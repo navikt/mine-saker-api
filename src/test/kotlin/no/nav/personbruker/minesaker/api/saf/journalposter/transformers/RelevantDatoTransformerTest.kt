@@ -24,7 +24,7 @@ internal class RelevantDatoTransformerTest {
 
         val nyesteDato = toLikeDatoer.toInternal()
 
-        nyesteDato `should be equal to` expectedDato
+        nyesteDato `should be equal to` expectedDato.toInternal()
     }
 
     @Test

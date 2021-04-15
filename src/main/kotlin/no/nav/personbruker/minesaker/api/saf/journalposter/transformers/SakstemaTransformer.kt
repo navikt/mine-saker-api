@@ -9,5 +9,5 @@ import no.nav.personbruker.minesaker.api.saf.domain.Sakstema
 fun HentJournalposter.Sakstema.toInternal(innloggetBruker: Fodselsnummer) = Sakstema(
     Navn(navn ?: throw TransformationException.withMissingFieldName("navn")),
     kode?.toInternalSaktemakode() ?: throw TransformationException.withMissingFieldName("kode"),
-    journalposter.filterNotNull().map { external -> external.toInternal(innloggetBruker) }
+    journalposter.toInternal(innloggetBruker)
 )

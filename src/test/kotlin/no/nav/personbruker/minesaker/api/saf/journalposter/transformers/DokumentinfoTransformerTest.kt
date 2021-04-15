@@ -1,9 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
-import no.nav.personbruker.minesaker.api.common.exception.TransformationException
 import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.DokumentInfoObjectMother
 import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.shouldBeEmpty
 import org.amshove.kluent.shouldNotBeEmpty
 import org.junit.jupiter.api.Test
@@ -14,7 +12,7 @@ internal class DokumentinfoTransformerTest {
     fun `Skal returnere tom liste hvis det ikke finnes dokumenter med arkiverte varianter`() {
         val externals = listOf(DokumentInfoObjectMother.giveMeDokumentUtenArkivertVariant())
 
-        val internals = DokumentInfoTransformer.toInternal(externals)
+        val internals = externals.toInternal()
 
         internals.shouldBeEmpty()
     }
@@ -28,7 +26,7 @@ internal class DokumentinfoTransformerTest {
             expectedDokument
         )
 
-        val internals = DokumentInfoTransformer.toInternal(externals)
+        val internals = externals.toInternal()
 
         internals.shouldNotBeEmpty()
         internals.size `should be equal to` 1
@@ -38,21 +36,10 @@ internal class DokumentinfoTransformerTest {
     }
 
     @Test
-    fun `Skal kaste feil hvis dokumentlisten er null`() {
-        val result = runCatching {
-            DokumentInfoTransformer.toInternal(null)
-        }
-        result.isFailure `should be equal to` true
-        result.exceptionOrNull() `should be instance of` TransformationException::class
-        val exception = result.exceptionOrNull() as TransformationException
-        exception.context[TransformationException.feltnavnKey] `should be equal to` "dokumenter"
-    }
-
-    @Test
     fun `Skal takle at tittel ikke er tilgjengelig i SAF, return dummy tittel til sluttbruker`() {
         val externals = listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertVariantMenUtenTittel())
 
-        val result = DokumentInfoTransformer.toInternal(externals)
+        val result = externals.toInternal()
 
         result[0].tittel.value `should be equal to` "Uten tittel"
     }
@@ -61,7 +48,7 @@ internal class DokumentinfoTransformerTest {
     fun `Skal sette tilgang til dokumentet som false hvis det ikke er spesifisert`() {
         val externals = listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertVariantMenUtenAtTilgangErSpesifisert())
 
-        val internals = DokumentInfoTransformer.toInternal(externals)
+        val internals = externals.toInternal()
 
         internals.shouldNotBeEmpty()
         internals.size `should be equal to` 1
