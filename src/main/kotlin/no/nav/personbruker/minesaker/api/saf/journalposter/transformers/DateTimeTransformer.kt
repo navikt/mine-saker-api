@@ -7,4 +7,4 @@ object DateTimeTransformer {
     val timeZoneUTC = "+00:00"
 }
 
-fun DateTime.toInternal() = ZonedDateTime.parse("$this${DateTimeTransformer.timeZoneUTC}")
+fun DateTime.toInternal(): ZonedDateTime = ZonedDateTime.parse("$this${DateTimeTransformer.timeZoneUTC}")
