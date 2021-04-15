@@ -5,6 +5,6 @@ data class Journalpost(
     val journalpostId: JournalpostId,
     val journalposttype: Journalposttype,
     val avsenderMottaker: AvsenderMottaker,
-    val relevanteDatoer: List<RelevantDato>,
+    val sisteEndret: RelevantDato,
     val arkiverteDokumenter: List<Dokumentinfo> = emptyList()
 )

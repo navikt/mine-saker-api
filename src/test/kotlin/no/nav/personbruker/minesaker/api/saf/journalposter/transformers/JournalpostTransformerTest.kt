@@ -22,7 +22,7 @@ internal class JournalpostTransformerTest {
 
         internal.arkiverteDokumenter.shouldNotBeEmpty()
         internal.avsenderMottaker.shouldNotBeNull()
-        internal.relevanteDatoer.shouldNotBeNull()
+        internal.sisteEndret.shouldNotBeNull()
         internal.journalposttype.shouldNotBeNull()
     }
 
