@@ -5,7 +5,7 @@ import no.nav.personbruker.minesaker.api.saf.journalposter.transformers.toIntern
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 
-internal class RelevantDatoTest {
+internal class DatoTest {
 
     @Test
     fun `Skal plukke ut den datoen som er nyest`() {
