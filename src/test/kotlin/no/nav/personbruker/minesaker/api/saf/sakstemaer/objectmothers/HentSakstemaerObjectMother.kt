@@ -1,4 +1,4 @@
-package no.nav.personbruker.minesaker.api.saf.sakstemaer
+package no.nav.personbruker.minesaker.api.saf.sakstemaer.objectmothers
 
 import com.expediagroup.graphql.types.GraphQLError
 import com.expediagroup.graphql.types.GraphQLResponse

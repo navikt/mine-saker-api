@@ -14,7 +14,7 @@ class SakService(
     private val tokendingsWrapper: TokendingsServiceWrapper
 ) {
 
-    suspend fun hentSakstemaer(user: IdportenUser): List<Sakstema> {
+    suspend fun hentSakstemaer(user: IdportenUser): List<ForenkletSakstema> {
         val exchangedToken = exchangeToken(user)
         val fodselsnummer = Fodselsnummer(user.ident)
         val sakstemaerRequest = SakstemaerRequest.create(fodselsnummer)

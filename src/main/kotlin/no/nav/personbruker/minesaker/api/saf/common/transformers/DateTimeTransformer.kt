@@ -1,4 +1,4 @@
-package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
+package no.nav.personbruker.minesaker.api.saf.common.transformers
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.DateTime
 import java.time.ZonedDateTime

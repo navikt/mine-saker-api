@@ -17,7 +17,7 @@ import no.nav.personbruker.minesaker.api.config.buildJsonSerializer
 import no.nav.personbruker.minesaker.api.saf.domain.*
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.HentJournalposterResultObjectMother
-import no.nav.personbruker.minesaker.api.saf.sakstemaer.HentSakstemaerObjectMother
+import no.nav.personbruker.minesaker.api.saf.sakstemaer.objectmothers.HentSakstemaerObjectMother
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.personbruker.minesaker.api.tokenx.AccessToken
 import org.amshove.kluent.*
@@ -51,7 +51,7 @@ internal class SafConsumerTest {
 
         val externalSakstema = externalResponse.data!!.dokumentoversiktSelvbetjening.tema
         internalSakstema.size `should be equal to` externalSakstema.size
-        internalSakstema[0] `should be instance of` Sakstema::class
+        internalSakstema[0] `should be instance of` ForenkletSakstema::class
         internalSakstema[0].navn.value `should be equal to` externalSakstema[0].navn
         internalSakstema[0].kode.toString() `should be equal to` externalSakstema[0].kode.toString()
         internalSakstema `should not be equal to` externalSakstema

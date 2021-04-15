@@ -7,14 +7,14 @@ import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.Sakstem
 object ResultObjectMother {
 
     fun giveMeHentSakstemaResult(): HentSakstemaer.Result {
-        val temaer = no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaObjectMother.giveMeListOfSakstema()
+        val temaer = no.nav.personbruker.minesaker.api.saf.sakstemaer.objectmothers.SakstemaObjectMother.giveMeListOfSakstema()
         val dokumentoversikt = HentSakstemaer.Dokumentoversikt(temaer)
         return HentSakstemaer.Result(dokumentoversikt)
     }
 
     fun giveMeHentSakstemaResultMedUfullstendigeData(): HentSakstemaer.Result {
         val sakstemaUtenKodeSatt =
-            no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaObjectMother.giveMeOneSakstema(kode = null)
+            no.nav.personbruker.minesaker.api.saf.sakstemaer.objectmothers.SakstemaObjectMother.giveMeOneSakstema(kode = null)
         val dokumentoversikt = HentSakstemaer.Dokumentoversikt(listOf(sakstemaUtenKodeSatt))
         return HentSakstemaer.Result(dokumentoversikt)
     }
