@@ -50,9 +50,9 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
         authenticate {
             exchangeApi(appContext.tokendingsServiceWrapper, appContext.environment.clusterName)
         }
-
-        configureShutdownHook(appContext.httpClient)
     }
+
+    configureShutdownHook(appContext.httpClient)
 }
 
 private fun Application.configureShutdownHook(httpClient: HttpClient) {
