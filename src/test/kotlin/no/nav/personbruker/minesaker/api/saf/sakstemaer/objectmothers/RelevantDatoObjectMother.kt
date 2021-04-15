@@ -13,15 +13,15 @@ object RelevantDatoObjectMother {
     }
 
     fun giveMeDatoForUtgaaendeDokument(): HentSakstemaer.RelevantDato {
-        return HentSakstemaer.RelevantDato("2018-06-01T12:00:00", HentSakstemaer.Datotype.DATO_EKSPEDERT)
+        return HentSakstemaer.RelevantDato("2018-06-01T12:00:00")
     }
 
     fun giveMeDatoForInngaaendeDokument(): HentSakstemaer.RelevantDato {
-        return HentSakstemaer.RelevantDato("2018-04-02T12:00:00", HentSakstemaer.Datotype.DATO_REGISTRERT)
+        return HentSakstemaer.RelevantDato("2018-04-02T12:00:00")
     }
 
     fun giveMeDatoForNotat(): HentSakstemaer.RelevantDato {
-        return HentSakstemaer.RelevantDato("2018-05-03T12:00:00", HentSakstemaer.Datotype.DATO_OPPRETTET)
+        return HentSakstemaer.RelevantDato("2018-05-03T12:00:00")
     }
 
 }
