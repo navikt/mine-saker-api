@@ -145,7 +145,7 @@ object TestContainers {
 
 object Tms {
     object KtorTokenSupport {
-        private const val version = "2021.04.14-08.19-d6139a0cb38a"
+        private const val version = "2021.04.15-login"
         private const val groupId = "com.github.navikt.tms-ktor-token-support"
 
         const val idporten = "$groupId:token-support-idporten:$version"
