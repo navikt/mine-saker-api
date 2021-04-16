@@ -17,7 +17,8 @@ fun HentSakstemaer.Sakstema.toInternal(): ForenkletSakstema {
     )
 }
 
-fun List<HentSakstemaer.Journalpost?>.toInternal(): ZonedDateTime {
+fun List<HentSakstemaer.Journalpost?>.toInternal(): ZonedDateTime? {
     val internalDates: List<ZonedDateTime> = filterNotNull().map { journalpost -> journalpost.relevanteDatoer.toInternal() }
-    return internalDates.finnSistEndret()
+    val sistEndret = internalDates.maxByOrNull { it }
+    return sistEndret
 }

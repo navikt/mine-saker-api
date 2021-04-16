@@ -1,10 +1,9 @@
 package no.nav.personbruker.minesaker.api.saf.sakstemaer.transformers
 
-import no.nav.personbruker.minesaker.api.common.exception.TransformationException
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.objectmothers.SakstemaObjectMother
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.toInternal
 import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should be instance of`
+import org.amshove.kluent.`should be null`
 import org.amshove.kluent.shouldNotBeNull
 import org.junit.jupiter.api.Test
 
@@ -22,15 +21,12 @@ internal class HentSakstemaerTransformerTest {
     }
 
     @Test
-    fun `Skal kaste feil hvis ingen relevante datoer finnes (dette skal ikke kunne skje)`() {
+    fun `Skal returnerer null hvis ingen relevant dato finnes`() {
         val external = SakstemaObjectMother.giveMeOneSakstema(journalposter = emptyList())
 
-        val result = runCatching {
-            external.toInternal()
-        }
+        val internal = external.toInternal()
 
-        result.isFailure `should be equal to` true
-        result.exceptionOrNull() `should be instance of` TransformationException::class
+        internal.sistEndret.`should be null`()
     }
 
 }
