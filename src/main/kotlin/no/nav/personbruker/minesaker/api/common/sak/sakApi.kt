@@ -12,6 +12,7 @@ import no.nav.personbruker.minesaker.api.saf.domain.JournalpostId
 import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
 import org.slf4j.LoggerFactory
 
+val sakstemakode = "sakstemakode"
 val dokumentIdParameterName = "dokumentId"
 val journalpostIdParameterName = "journalpostId"
 
@@ -23,7 +24,19 @@ fun Route.sakApi(
 
     get("/journalposter") {
         try {
-            val sakstema = call.extractOnsketSakstema()
+            val sakstema = call.extractSakstemaFromQueryParameters()
+            val result = service.hentJournalposterForSakstema(idportenUser, sakstema)
+            call.respond(HttpStatusCode.OK, result)
+
+        } catch (exception: Exception) {
+            val errorCode = ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
+            call.respond(errorCode)
+        }
+    }
+
+    get("/journalposter/{$sakstemakode}") {
+        try {
+            val sakstema = call.extractSakstemakodeFromParameters()
             val result = service.hentJournalposterForSakstema(idportenUser, sakstema)
             call.respond(HttpStatusCode.OK, result)
 
@@ -60,10 +73,14 @@ fun Route.sakApi(
 
 }
 
-private fun ApplicationCall.extractOnsketSakstema(): Sakstemakode {
+private fun ApplicationCall.extractSakstemaFromQueryParameters(): Sakstemakode {
     val sakstemakode: String = request.queryParameters["sakstemakode"]
         ?: throw InvalidRequestException("Kallet kan ikke utføres uten at tema er valgt.")
 
+    return verifiserSakstemakode(sakstemakode)
+}
+
+private fun verifiserSakstemakode(sakstemakode: String): Sakstemakode {
     val sakstema = runCatching {
         Sakstemakode.valueOf(sakstemakode)
 
@@ -72,6 +89,13 @@ private fun ApplicationCall.extractOnsketSakstema(): Sakstemakode {
     }
 
     return sakstema.getOrThrow()
+}
+
+private fun ApplicationCall.extractSakstemakodeFromParameters(): Sakstemakode {
+    val sakstemakodeUverifisert = parameters[sakstemakode]
+        ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$sakstemakode' er spesifisert.")
+
+    return verifiserSakstemakode(sakstemakodeUverifisert)
 }
 
 private fun ApplicationCall.extractJournalpostId(): JournalpostId {

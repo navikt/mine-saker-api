@@ -13,7 +13,7 @@ internal class SakstemaerRequestTest {
 
     @Test
     fun `Skal bygge opp en korrekt sporring`() {
-        val expectedFields = "tema { navn kode }"
+        val expectedFields = "tema { navn kode journalposter{ relevanteDatoer { dato } } }"
         val identAsQueryVarible = "\$ident : String!"
         val expectedAllSakstemar = """tema: []"""
 

@@ -8,10 +8,14 @@ import no.nav.personbruker.minesaker.api.saf.domain.JournalpostId
 import no.nav.personbruker.minesaker.api.saf.domain.Tittel
 
 fun HentJournalposter.Journalpost.toInternal(innloggetBruker: Fodselsnummer) = Journalpost(
-    Tittel(tittel ?: "Uten tittel"),
-    JournalpostId(journalpostId),
-    journalposttype?.toInternal() ?: throw TransformationException.withMissingFieldName("journalposttype"),
-    avsenderMottaker?.toInternal(innloggetBruker) ?: throw TransformationException.withMissingFieldName("avsenderMottaker"),
-    relevanteDatoer.filterNotNull().map { external -> external.toInternal() },
-    DokumentInfoTransformer.toInternal(dokumenter)
-)
+        Tittel(tittel ?: "Uten tittel"),
+        JournalpostId(journalpostId),
+        journalposttype?.toInternal() ?: throw TransformationException.withMissingFieldName("journalposttype"),
+        avsenderMottaker?.toInternal(innloggetBruker) ?: throw TransformationException.withMissingFieldName("avsenderMottaker"),
+        relevanteDatoer.toInternal(),
+        dokumenter?.toInternal() ?: throw TransformationException.withMissingFieldName("dokumenter")
+    )
+
+fun List<HentJournalposter.Journalpost?>.toInternal(innloggetBruker: Fodselsnummer): List<Journalpost> {
+    return filterNotNull().map { external -> external.toInternal(innloggetBruker) }
+}

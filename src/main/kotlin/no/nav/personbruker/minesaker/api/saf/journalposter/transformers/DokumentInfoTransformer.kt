@@ -1,41 +1,24 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
-import no.nav.personbruker.minesaker.api.common.exception.TransformationException
 import no.nav.personbruker.minesaker.api.saf.domain.DokumentInfoId
 import no.nav.personbruker.minesaker.api.saf.domain.Dokumentinfo
 import no.nav.personbruker.minesaker.api.saf.domain.Tittel
 
-object DokumentInfoTransformer {
-
-    /**
-     * Er kun interessert i den arkivert versjonen av dokumentet, da det er denne som er mest vanlig.
-     */
-    fun toInternal(externals: List<HentJournalposter.DokumentInfo?>?): List<Dokumentinfo> {
-        if (externals == null) throw TransformationException.withMissingFieldName("dokumenter")
-
-        val internals = mutableListOf<Dokumentinfo>()
-        externals
-            .filterNotNull()
-            .forEach { externalDokument ->
-                val externalArkivertDokumentVariant = externalDokument.getEventuellArkivertVariant()
-                if (externalArkivertDokumentVariant != null) {
-                    val internal = toInternal(externalDokument, externalArkivertDokumentVariant)
-                    internals.add(internal)
-                }
+/**
+ * Er kun interessert i den arkivert versjonen av dokumentet, da det er denne som er mest vanlig.
+ */
+fun List<HentJournalposter.DokumentInfo?>.toInternal(): List<Dokumentinfo> {
+    val internals = mutableListOf<Dokumentinfo>()
+    filterNotNull()
+        .forEach { externalDokument ->
+            val externalArkivertDokumentVariant = externalDokument.getEventuellArkivertVariant()
+            if (externalArkivertDokumentVariant != null) {
+                val internal = externalDokument.toInternal(externalArkivertDokumentVariant)
+                internals.add(internal)
             }
-        return internals
-    }
-
-    private fun toInternal(
-        external: HentJournalposter.DokumentInfo,
-        externalVariant: HentJournalposter.Dokumentvariant
-    ) = Dokumentinfo(
-        Tittel(external.tittel ?: "Uten tittel"),
-        DokumentInfoId(external.dokumentInfoId),
-        externalVariant.brukerHarTilgang == true
-    )
-
+        }
+    return internals
 }
 
 fun HentJournalposter.DokumentInfo.getEventuellArkivertVariant(): HentJournalposter.Dokumentvariant? {
@@ -45,6 +28,14 @@ fun HentJournalposter.DokumentInfo.getEventuellArkivertVariant(): HentJournalpos
         }
     }
     return null
+}
+
+fun HentJournalposter.DokumentInfo.toInternal(externalVariant: HentJournalposter.Dokumentvariant): Dokumentinfo {
+    return Dokumentinfo(
+        Tittel(tittel ?: "Uten tittel"),
+        DokumentInfoId(dokumentInfoId),
+        externalVariant.brukerHarTilgang == true
+    )
 }
 
 fun HentJournalposter.Dokumentvariant.hasArkivertVariant(): Boolean {

@@ -13,14 +13,14 @@ object JournalpostObjectMother {
             RelevantDatoObjectMother.giveMeDatoForInngaaendeDokument(),
             RelevantDatoObjectMother.giveMeDatoForUtgaaendeDokument()
         ),
-        journalposter: List<HentJournalposter.DokumentInfo?>? = listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertVariant())
+        dokumenter: List<HentJournalposter.DokumentInfo?>? = listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertVariant())
     ) = HentJournalposter.Journalpost(
         tittel,
         journalpostId,
         journalposttype,
         avsenderMottaker,
         relevanteDatoer,
-        journalposter
+        dokumenter
     )
 
     fun giveMeOneUtgaaendeDokument() =

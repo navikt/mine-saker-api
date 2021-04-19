@@ -3,6 +3,11 @@ query($ident : String!) {
         tema {
             navn
             kode
+            journalposter{
+                relevanteDatoer {
+                    dato
+                }
+            }
         }
     }
 }

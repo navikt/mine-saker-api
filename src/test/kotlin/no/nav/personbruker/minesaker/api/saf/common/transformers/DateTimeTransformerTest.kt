@@ -1,4 +1,4 @@
-package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
+package no.nav.personbruker.minesaker.api.saf.common.transformers
 
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should not be null`
