@@ -3,6 +3,7 @@ name: Bygg branch
 on:
   push:
     branches-ignore:
+      - master
       - main
 
 jobs:
