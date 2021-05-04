@@ -21,6 +21,7 @@ query($ident : String!, $temaetSomSkalHentes : Tema) {
                     dokumentvarianter{
                         variantformat
                         brukerHarTilgang
+                        code
                     }
                 }
             }

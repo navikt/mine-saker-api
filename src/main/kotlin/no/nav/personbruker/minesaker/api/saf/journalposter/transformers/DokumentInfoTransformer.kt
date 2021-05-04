@@ -31,11 +31,23 @@ fun HentJournalposter.DokumentInfo.getEventuellArkivertVariant(): HentJournalpos
 }
 
 fun HentJournalposter.DokumentInfo.toInternal(externalVariant: HentJournalposter.Dokumentvariant): Dokumentinfo {
+    val brukerHarTilgang = externalVariant.brukerHarTilgang == true
+    val eventuelleGrunnerTilManglendeTilgang = plukkUtEventuelleGrunnerTilManglendeTilgang(brukerHarTilgang, externalVariant)
     return Dokumentinfo(
         Tittel(tittel ?: "Uten tittel"),
         DokumentInfoId(dokumentInfoId),
-        externalVariant.brukerHarTilgang == true
+        brukerHarTilgang,
+        eventuelleGrunnerTilManglendeTilgang
     )
+}
+
+private fun plukkUtEventuelleGrunnerTilManglendeTilgang(
+    brukerHarTilgang: Boolean,
+    externalVariant: HentJournalposter.Dokumentvariant
+): List<String> = if (brukerHarTilgang) {
+    emptyList()
+} else {
+    externalVariant.code.filterNotNull()
 }
 
 fun HentJournalposter.Dokumentvariant.hasArkivertVariant(): Boolean {
