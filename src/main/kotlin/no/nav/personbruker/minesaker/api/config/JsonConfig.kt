@@ -12,8 +12,9 @@ fun buildJsonSerializer(): JacksonSerializer {
     }
 }
 
-fun ObjectMapper.enableMineSakerJsonConfig() {
+fun ObjectMapper.enableMineSakerJsonConfig(): ObjectMapper {
     registerKotlinModule()
     registerModule(JavaTimeModule())
     disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    return this
 }
