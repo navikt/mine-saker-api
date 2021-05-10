@@ -1,13 +1,12 @@
-package no.nav.personbruker.minesaker.api.common.sak
+package no.nav.personbruker.minesaker.api.sak
 
+import no.nav.personbruker.minesaker.api.domain.*
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
-import no.nav.personbruker.minesaker.api.saf.domain.*
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.personbruker.minesaker.api.tokenx.AccessToken
 import no.nav.personbruker.minesaker.api.tokenx.TokendingsServiceWrapper
 import no.nav.tms.token.support.idporten.user.IdportenUser
-import java.io.File
 
 class SakService(
     private val safConsumer: SafConsumer,

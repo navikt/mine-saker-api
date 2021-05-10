@@ -1,5 +1,6 @@
-package no.nav.personbruker.minesaker.api.saf.domain
+package no.nav.personbruker.minesaker.api.domain
 
+import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
 import org.amshove.kluent.`should contain`
 import org.amshove.kluent.`should not contain`
 import org.junit.jupiter.api.Test

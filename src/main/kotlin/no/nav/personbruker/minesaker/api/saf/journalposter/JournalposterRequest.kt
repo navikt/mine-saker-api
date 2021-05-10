@@ -2,8 +2,8 @@ package no.nav.personbruker.minesaker.api.saf.journalposter
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HENT_JOURNALPOSTER
 import no.nav.personbruker.minesaker.api.saf.GraphQLRequest
-import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
-import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
+import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
+import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 
 class JournalposterRequest(override val variables: Map<String, Any>) : GraphQLRequest {
 

@@ -1,6 +1,5 @@
-package no.nav.personbruker.minesaker.api.saf.domain.objectmothers
+package no.nav.personbruker.minesaker.api.domain
 
-import no.nav.personbruker.minesaker.api.saf.domain.*
 import java.time.ZonedDateTime
 
 object JournalpostObjectMother {

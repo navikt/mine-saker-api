@@ -4,10 +4,10 @@ import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import no.nav.personbruker.minesaker.api.common.IdportenUserObjectMother
 import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
-import no.nav.personbruker.minesaker.api.common.sak.SakService
+import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
-import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
-import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
+import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
+import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.personbruker.minesaker.api.tokenx.AccessToken

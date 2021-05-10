@@ -1,7 +1,4 @@
-package no.nav.personbruker.minesaker.api.saf.domain.objectmothers
-
-import no.nav.personbruker.minesaker.api.saf.domain.AvsenderMottaker
-import no.nav.personbruker.minesaker.api.saf.domain.AvsenderMottakerType
+package no.nav.personbruker.minesaker.api.domain
 
 object AvsenderMottakerObjectMother {
 

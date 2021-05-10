@@ -1,9 +1,4 @@
-package no.nav.personbruker.minesaker.api.saf.domain.objectmothers
-
-import no.nav.personbruker.minesaker.api.saf.domain.DokumentInfoId
-import no.nav.personbruker.minesaker.api.saf.domain.Dokumentinfo
-import no.nav.personbruker.minesaker.api.saf.domain.Dokumenttype
-import no.nav.personbruker.minesaker.api.saf.domain.Tittel
+package no.nav.personbruker.minesaker.api.domain
 
 object DokumentinfoObjectMother {
 

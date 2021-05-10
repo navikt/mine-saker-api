@@ -1,7 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import no.nav.personbruker.minesaker.api.common.exception.TransformationException
-import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
+import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 
 fun String.toInternalSaktemakode(): Sakstemakode {
     val gyldigSakstemakode = runCatching {
