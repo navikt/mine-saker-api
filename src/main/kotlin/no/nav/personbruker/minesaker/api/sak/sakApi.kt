@@ -1,4 +1,4 @@
-package no.nav.personbruker.minesaker.api.common.sak
+package no.nav.personbruker.minesaker.api.sak
 
 import io.ktor.application.*
 import io.ktor.http.*

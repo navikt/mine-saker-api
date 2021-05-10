@@ -1,4 +1,4 @@
-package no.nav.personbruker.minesaker.api.common.sak
+package no.nav.personbruker.minesaker.api.sak
 
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.saf.domain.*

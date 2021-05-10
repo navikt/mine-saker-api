@@ -1,6 +1,6 @@
 package no.nav.personbruker.minesaker.api.config
 
-import no.nav.personbruker.minesaker.api.common.sak.SakService
+import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.personbruker.minesaker.api.health.HealthService
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.tokenx.TokendingsServiceWrapper
