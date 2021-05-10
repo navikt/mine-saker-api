@@ -1,6 +1,7 @@
-package no.nav.personbruker.minesaker.api.saf.domain
+package no.nav.personbruker.minesaker.api.domain
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
+import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.shouldBeEmpty
 import org.junit.jupiter.api.Test

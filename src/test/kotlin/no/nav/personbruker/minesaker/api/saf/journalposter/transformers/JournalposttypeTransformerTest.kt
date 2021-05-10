@@ -2,7 +2,7 @@ package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter.Journalposttype.*
 import no.nav.personbruker.minesaker.api.common.exception.TransformationException
-import no.nav.personbruker.minesaker.api.saf.domain.Journalposttype
+import no.nav.personbruker.minesaker.api.domain.Journalposttype
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 

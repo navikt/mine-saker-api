@@ -1,7 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf.sakstemaer
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
+import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
 import org.amshove.kluent.`should contain`
 import org.junit.jupiter.api.Test
 

@@ -2,7 +2,7 @@ package no.nav.personbruker.minesaker.api.saf.sakstemaer
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HENT_SAKSTEMAER
 import no.nav.personbruker.minesaker.api.saf.GraphQLRequest
-import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
+import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
 
 class SakstemaerRequest(override val variables: Map<String, Any>) : GraphQLRequest {
 

@@ -1,4 +1,4 @@
-package no.nav.personbruker.minesaker.api.saf.domain
+package no.nav.personbruker.minesaker.api.domain
 
 inline class Tittel(val value: String)
 

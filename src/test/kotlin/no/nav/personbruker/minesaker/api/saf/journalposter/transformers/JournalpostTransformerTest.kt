@@ -1,7 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import no.nav.personbruker.minesaker.api.common.exception.TransformationException
-import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
+import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
 import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.JournalpostObjectMother
 import org.amshove.kluent.*
 import org.junit.jupiter.api.Test

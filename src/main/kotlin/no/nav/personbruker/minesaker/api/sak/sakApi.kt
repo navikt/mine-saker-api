@@ -7,9 +7,9 @@ import io.ktor.routing.*
 import no.nav.personbruker.minesaker.api.common.ExceptionResponseHandler
 import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.config.idportenUser
-import no.nav.personbruker.minesaker.api.saf.domain.DokumentInfoId
-import no.nav.personbruker.minesaker.api.saf.domain.JournalpostId
-import no.nav.personbruker.minesaker.api.saf.domain.Sakstemakode
+import no.nav.personbruker.minesaker.api.domain.DokumentInfoId
+import no.nav.personbruker.minesaker.api.domain.JournalpostId
+import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import org.slf4j.LoggerFactory
 
 val sakstemakode = "sakstemakode"

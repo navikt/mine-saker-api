@@ -1,7 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf
 
 import no.nav.personbruker.minesaker.api.common.exception.TransformationException
-import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
+import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should not be null`
 import org.junit.jupiter.api.Test

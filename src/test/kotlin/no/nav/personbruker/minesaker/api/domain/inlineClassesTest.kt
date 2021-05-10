@@ -1,6 +1,7 @@
-package no.nav.personbruker.minesaker.api.saf.domain
+package no.nav.personbruker.minesaker.api.domain
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import no.nav.personbruker.minesaker.api.domain.*
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain`
 import org.junit.jupiter.api.Test

@@ -2,10 +2,10 @@ package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.personbruker.minesaker.api.common.exception.TransformationException
-import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
-import no.nav.personbruker.minesaker.api.saf.domain.Journalpost
-import no.nav.personbruker.minesaker.api.saf.domain.JournalpostId
-import no.nav.personbruker.minesaker.api.saf.domain.Tittel
+import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
+import no.nav.personbruker.minesaker.api.domain.Journalpost
+import no.nav.personbruker.minesaker.api.domain.JournalpostId
+import no.nav.personbruker.minesaker.api.domain.Tittel
 
 fun HentJournalposter.Journalpost.toInternal(innloggetBruker: Fodselsnummer) = Journalpost(
         Tittel(tittel ?: "Uten tittel"),

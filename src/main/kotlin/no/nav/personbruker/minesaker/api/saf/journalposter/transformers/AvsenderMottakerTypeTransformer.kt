@@ -1,7 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
-import no.nav.personbruker.minesaker.api.saf.domain.AvsenderMottakerType
+import no.nav.personbruker.minesaker.api.domain.AvsenderMottakerType
 
 fun HentJournalposter.AvsenderMottakerIdType.toInternal(): AvsenderMottakerType {
     return when (this) {

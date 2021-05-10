@@ -1,7 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import no.nav.personbruker.minesaker.api.common.exception.TransformationException
-import no.nav.personbruker.minesaker.api.saf.domain.Fodselsnummer
+import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
 import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.AvsenderMottakerObjectMother
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be instance of`

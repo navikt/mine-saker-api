@@ -1,4 +1,4 @@
-package no.nav.personbruker.minesaker.api.saf.domain
+package no.nav.personbruker.minesaker.api.domain
 
 data class Dokumentinfo(
     val tittel: Tittel,

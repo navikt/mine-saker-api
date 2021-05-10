@@ -2,10 +2,10 @@ package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.personbruker.minesaker.api.common.exception.TransformationException
-import no.nav.personbruker.minesaker.api.saf.domain.DokumentInfoId
-import no.nav.personbruker.minesaker.api.saf.domain.Dokumentinfo
-import no.nav.personbruker.minesaker.api.saf.domain.Dokumenttype
-import no.nav.personbruker.minesaker.api.saf.domain.Tittel
+import no.nav.personbruker.minesaker.api.domain.DokumentInfoId
+import no.nav.personbruker.minesaker.api.domain.Dokumentinfo
+import no.nav.personbruker.minesaker.api.domain.Dokumenttype
+import no.nav.personbruker.minesaker.api.domain.Tittel
 import org.slf4j.LoggerFactory
 
 private val log = LoggerFactory.getLogger(HentJournalposter.DokumentInfo::class.java)
