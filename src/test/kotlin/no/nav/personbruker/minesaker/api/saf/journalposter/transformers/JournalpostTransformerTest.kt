@@ -20,7 +20,7 @@ internal class JournalpostTransformerTest {
         internal.tittel.value `should be equal to` external.tittel
         internal.journalpostId.value `should be equal to` external.journalpostId
 
-        internal.arkiverteDokumenter.shouldNotBeEmpty()
+        internal.dokumenter.shouldNotBeEmpty()
         internal.avsenderMottaker.shouldNotBeNull()
         internal.sisteEndret.shouldNotBeNull()
         internal.journalposttype.shouldNotBeNull()
