@@ -8,5 +8,5 @@ data class Journalpost(
     val journalposttype: Journalposttype,
     val avsenderMottaker: AvsenderMottaker,
     val sisteEndret: ZonedDateTime,
-    val arkiverteDokumenter: List<Dokumentinfo> = emptyList()
+    val dokumenter: List<Dokumentinfo> = emptyList()
 )
