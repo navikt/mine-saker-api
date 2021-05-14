@@ -43,7 +43,9 @@ spec:
           namespace: teamdokumenthandtering
           cluster: {{safselvbetjeningCluster}}
   ingresses:
-    - {{ingress}}
+  {{#each ingresses}}
+     - {{this}}
+  {{/each}}
   resources:
     limits:
       cpu: "3"
