@@ -31,6 +31,9 @@ class SafConsumer(
     private val log = LoggerFactory.getLogger(SafConsumer::class.java)
 
     private val safCallIdHeaderName = "Nav-Callid"
+    private val navConsumerIdHeaderName = "Nav-Consumer-Id"
+
+    private val navConsumerId = "mine-saker-api"
 
     suspend fun hentSakstemaer(request: SakstemaerRequest, accessToken: AccessToken): List<ForenkletSakstema> {
         val responseDto: GraphQLResponse<HentSakstemaer.Result> = sendQuery(request, accessToken)
@@ -74,6 +77,7 @@ class SafConsumer(
                 method = HttpMethod.Get
                 header(Authorization, "Bearer ${accessToken.value}")
                 header(safCallIdHeaderName, callId)
+                header(navConsumerIdHeaderName, navConsumerId)
             }
         }
     }.onFailure { cause ->
