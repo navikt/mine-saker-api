@@ -25,7 +25,6 @@ enum class Sakstemakode {
     IAR,
     IND,
     KON,
-    KTR,
     MED,
     MOB,
     OMS,
