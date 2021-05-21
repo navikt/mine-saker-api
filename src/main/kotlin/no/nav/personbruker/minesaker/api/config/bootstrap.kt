@@ -13,6 +13,7 @@ import io.prometheus.client.hotspot.DefaultExports
 import no.nav.personbruker.minesaker.api.sak.sakApi
 import no.nav.personbruker.minesaker.api.debug.exchangeApi
 import no.nav.personbruker.minesaker.api.health.healthApi
+import no.nav.tms.token.support.idporten.SecurityLevel.LEVEL_4
 import no.nav.tms.token.support.idporten.installIdPortenAuth
 import no.nav.tms.token.support.idporten.user.IdportenUserFactory
 
@@ -33,6 +34,7 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
         postLogoutRedirectUri = appContext.environment.postLogoutUrl
         tokenCookieName = "mine_saker_api_token"
         setAsDefault = true
+        securityLevel = LEVEL_4
     }
 
     install(ContentNegotiation) {
