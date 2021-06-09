@@ -1,9 +1,12 @@
 package no.nav.personbruker.minesaker.api.sak
 
 import io.ktor.application.*
+import io.ktor.html.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import kotlinx.html.body
+import kotlinx.html.iframe
 import no.nav.personbruker.minesaker.api.common.ExceptionResponseHandler
 import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.config.idportenUser
@@ -68,6 +71,23 @@ fun Route.sakApi(
         } catch (exception: Exception) {
             val errorCode = ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
             call.respond(errorCode)
+        }
+    }
+
+    get("/dokument/{$journalpostIdParameterName}/{$dokumentIdParameterName}/index.html") {
+        val journalpostId = call.parameters[journalpostIdParameterName]
+        val dokumentId = call.parameters[dokumentIdParameterName]
+        val src = "https://mine-saker-api.dev.nav.no/person/mine-saker-api/dokument/$journalpostId/$dokumentId"
+        call.respondHtml {
+            attributes["style"] = "height: 100%;"
+            body {
+                attributes["style"] = "height: 100%; margin: 0px;"
+                iframe {
+                    attributes["src"] = src
+                    attributes["frameborder"] = "0"
+                    attributes["style"] = "height: 100%; width: 100%;"
+                }
+            }
         }
     }
 
