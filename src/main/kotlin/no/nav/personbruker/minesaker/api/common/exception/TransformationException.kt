@@ -9,6 +9,7 @@ class TransformationException(
     constructor(message: String, type: ErrorType) : this(message, type, null)
 
     enum class ErrorType {
+        INVALID_STATE,
         MISSING_FIELD,
         UNKNOWN_VALUE,
     }

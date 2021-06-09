@@ -23,8 +23,8 @@ object DokumentinfoObjectMother {
         id,
         type,
         brukerHarTiltang,
-        grunnerTilIkkeTilgang
+        grunnerTilIkkeTilgang,
+        Dokumentvariant.SLADDET
     )
-
 
 }

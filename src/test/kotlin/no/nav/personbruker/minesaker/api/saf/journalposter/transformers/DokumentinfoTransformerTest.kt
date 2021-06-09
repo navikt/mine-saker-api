@@ -2,8 +2,12 @@ package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import no.nav.personbruker.minesaker.api.common.exception.TransformationException
 import no.nav.personbruker.minesaker.api.domain.Dokumenttype
+import no.nav.personbruker.minesaker.api.domain.Dokumentvariant
 import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.DokumentInfoObjectMother
-import org.amshove.kluent.*
+import org.amshove.kluent.`should be equal to`
+import org.amshove.kluent.`should be instance of`
+import org.amshove.kluent.shouldNotBeEmpty
+import org.amshove.kluent.shouldNotBeNull
 import org.junit.jupiter.api.Test
 
 internal class DokumentinfoTransformerTest {
@@ -39,13 +43,35 @@ internal class DokumentinfoTransformerTest {
     }
 
     @Test
-    fun `Skal takle at et dokument har flere varianter, og plukke den forste varianten`() {
-        val externals = listOf(DokumentInfoObjectMother.giveMeDokumentMedFlereVarianter())
+    fun `Velg preferer alltid SLADDET-variant hvis den varianten finnes`() {
+        val externals = listOf(DokumentInfoObjectMother.giveMeDokumentMedSladdetOgArkivertVariant())
 
         val internals = externals.toInternal()
 
         internals.shouldNotBeNull()
         internals.size `should be equal to` 1
+        internals.first().variant `should be equal to` Dokumentvariant.SLADDET
+    }
+
+    @Test
+    fun `Hvis SLADDET-variant ikke finnes, velg ARKIVERT-variant`() {
+        val externals = listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertOgOriginalVariant())
+
+        val internals = externals.toInternal()
+
+        internals.shouldNotBeNull()
+        internals.size `should be equal to` 1
+        internals.first().variant `should be equal to` Dokumentvariant.ARKIV
+    }
+
+    @Test
+    fun `Ignorer andre varianter enn SLADDET og ARKIV`() {
+        val externals = listOf(DokumentInfoObjectMother.giveMeDokumentMedKunOriginalVariant())
+
+        val internals = externals.toInternal()
+
+        internals.shouldNotBeNull()
+        internals.size `should be equal to` 0
     }
 
     @Test

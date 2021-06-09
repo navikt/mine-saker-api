@@ -5,5 +5,6 @@ data class Dokumentinfo(
     val dokumentInfoId: DokumentInfoId,
     val dokumenttype : Dokumenttype,
     val brukerHarTilgang: Boolean,
-    val eventuelleGrunnerTilManglendeTilgang : List<String>
+    val eventuelleGrunnerTilManglendeTilgang : List<String>,
+    val variant : Dokumentvariant
 )
