@@ -1,30 +1,39 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
+import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter.Variantformat.ARKIV
+import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter.Variantformat.SLADDET
 import no.nav.personbruker.minesaker.api.common.exception.TransformationException
-import no.nav.personbruker.minesaker.api.domain.DokumentInfoId
-import no.nav.personbruker.minesaker.api.domain.Dokumentinfo
-import no.nav.personbruker.minesaker.api.domain.Dokumenttype
-import no.nav.personbruker.minesaker.api.domain.Tittel
+import no.nav.personbruker.minesaker.api.domain.*
 import org.slf4j.LoggerFactory
 
 private val log = LoggerFactory.getLogger(HentJournalposter.DokumentInfo::class.java)
 
-/**
- * Er kun interessert i den arkivert versjonen av dokumentet, da det er denne som er mest vanlig.
- */
 fun List<HentJournalposter.DokumentInfo?>.toInternal(): List<Dokumentinfo> {
     val internals = mutableListOf<Dokumentinfo>()
     filterNotNull()
         .forEachIndexed { index, externalDokument ->
             externalDokument.kastFeilHvisManglerVarianter()
-            externalDokument.loggHvisHarFlereVariangerEnnForventet()
-            val forsteVariant = externalDokument.dokumentvarianter.filterNotNull().first()
-            val dokumenttype = avgjorDokumenttype(index)
-            val internal = externalDokument.toInternal(forsteVariant, dokumenttype)
-            internals.add(internal)
+            val valgtVariant = externalDokument.velgSladdetVariantOverArkivertVariant()
+            if(valgtVariant != null) {
+                val dokumenttype = avgjorDokumenttype(index)
+                val internal = externalDokument.toInternal(valgtVariant, dokumenttype)
+                internals.add(internal)
+
+            } else {
+                val msg = "Dokumentet med dokumentInfoId={} har ingen dokumenttype som kan vises for sluttbruker."
+                log.warn(msg, externalDokument.dokumentInfoId)
+            }
         }
     return internals
+}
+
+private fun HentJournalposter.DokumentInfo.velgSladdetVariantOverArkivertVariant(): HentJournalposter.Dokumentvariant? {
+    var variant = dokumentvarianter.find { v -> v?.variantformat == SLADDET }
+    if (variant == null) {
+        variant = dokumentvarianter.find { v -> v?.variantformat == ARKIV }
+    }
+    return variant
 }
 
 private fun HentJournalposter.DokumentInfo.kastFeilHvisManglerVarianter() {
@@ -35,16 +44,6 @@ private fun HentJournalposter.DokumentInfo.kastFeilHvisManglerVarianter() {
 
 private fun HentJournalposter.DokumentInfo.utenVarianter() =
     dokumentvarianter.isEmpty()
-
-private fun HentJournalposter.DokumentInfo.loggHvisHarFlereVariangerEnnForventet() {
-    if (flereVarianterEnnForventet()) {
-        val varianter = dokumentvarianter.map { variant -> variant?.variantformat }.toList()
-        log.warn("Det ble sendt med mer enn en dokumentvariant: $varianter. Dette kan indikere en endring i SAF. Returnerer første variant: ${varianter[0]}.")
-    }
-}
-
-private fun HentJournalposter.DokumentInfo.flereVarianterEnnForventet() =
-    dokumentvarianter.size > 1
 
 private fun avgjorDokumenttype(index: Int) = if (index == 0) {
     Dokumenttype.HOVED
@@ -64,7 +63,8 @@ fun HentJournalposter.DokumentInfo.toInternal(
         DokumentInfoId(dokumentInfoId),
         dokumenttype,
         brukerHarTilgang,
-        eventuelleGrunnerTilManglendeTilgang
+        eventuelleGrunnerTilManglendeTilgang,
+        externalVariant.variantformat.toInternal()
     )
 }
 

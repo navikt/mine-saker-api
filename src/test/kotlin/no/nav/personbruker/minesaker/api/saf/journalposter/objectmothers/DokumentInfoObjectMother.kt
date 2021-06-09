@@ -36,14 +36,32 @@ object DokumentInfoObjectMother {
         return HentJournalposter.DokumentInfo("Dummytittel uten arkiverte varianger", dokumentInfoId, emptyList())
     }
 
-    fun giveMeDokumentMedFlereVarianter(): HentJournalposter.DokumentInfo {
+    fun giveMeDokumentMedSladdetOgArkivertVariant(): HentJournalposter.DokumentInfo {
         val varianter = listOf(
-            DokumentVariantObjectMother.giveMeOriginalVariant(),
-            DokumentVariantObjectMother.giveMeSladdetVariant()
+            DokumentVariantObjectMother.giveMeSladdetVariant(),
+            DokumentVariantObjectMother.giveMeArkivertVariant()
         )
         val dokumentInfoId = "dummyId005"
         val tittel = "Dummytittel medflere dokument varianter"
         return HentJournalposter.DokumentInfo(tittel, dokumentInfoId, varianter)
+    }
+
+    fun giveMeDokumentMedArkivertOgOriginalVariant(): HentJournalposter.DokumentInfo {
+        val varianter = listOf(
+            DokumentVariantObjectMother.giveMeOriginalVariant(),
+            DokumentVariantObjectMother.giveMeArkivertVariant()
+        )
+        val dokumentInfoId = "dummyId006"
+        val tittel = "Dummytittel medflere dokument varianter"
+        return HentJournalposter.DokumentInfo(tittel, dokumentInfoId, varianter)
+    }
+
+    fun giveMeDokumentMedKunOriginalVariant(): HentJournalposter.DokumentInfo {
+        val varianter = listOf(
+            DokumentVariantObjectMother.giveMeOriginalVariant(),
+        )
+        val dokumentInfoId = "dummyId007"
+        return HentJournalposter.DokumentInfo("Dummytittel med arkivert", dokumentInfoId, varianter)
     }
 
     fun giveMeTreGyldigeDokumenter(): List<HentJournalposter.DokumentInfo> {

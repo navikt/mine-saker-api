@@ -1,7 +1,6 @@
 package no.nav.personbruker.minesaker.api.domain
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.personbruker.minesaker.api.domain.*
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain`
 import org.junit.jupiter.api.Test
@@ -12,7 +11,14 @@ internal class inlineClassesTest {
 
     @Test
     fun `Inline klasser skal ikke generere noe overhead naar det serialiseres til JSON`() {
-        val dokumentinfo = Dokumentinfo(Tittel("Tittelen"), DokumentInfoId("filid"), Dokumenttype.HOVED,true, emptyList())
+        val dokumentinfo = Dokumentinfo(
+            Tittel("Tittelen"),
+            DokumentInfoId("filid"),
+            Dokumenttype.HOVED,
+            true,
+            emptyList(),
+            Dokumentvariant.SLADDET
+        )
 
         val dokumentInfoAsJson = objectMapper.writeValueAsString(dokumentinfo)
 
@@ -21,6 +27,7 @@ internal class inlineClassesTest {
         dokumentInfoAsJson `should contain` """"brukerHarTilgang":true"""
         dokumentInfoAsJson `should contain` """"eventuelleGrunnerTilManglendeTilgang":[]"""
         dokumentInfoAsJson `should contain` """"dokumenttype":"HOVED"""
+        dokumentInfoAsJson `should contain` """"variant":"SLADDET"""
     }
 
     @Test
