@@ -8,7 +8,8 @@ data class Environment(
     val safEndpoint: URL = URL(getEnvVar("SAF_API_URL")),
     val safClientId: String = getEnvVar("SAF_CLIENT_ID"),
     val clusterName: String = getEnvVar("NAIS_CLUSTER_NAME"),
-    val postLogoutUrl: String = getEnvVar("POST_LOGOUT_URL")
+    val postLogoutUrl: String = getEnvVar("POST_LOGOUT_URL"),
+    val sakApiUrl: String = getEnvVar("SAK_API_URL")
 )
 
 fun getEnvVar(varName: String, default: String? = null): String {

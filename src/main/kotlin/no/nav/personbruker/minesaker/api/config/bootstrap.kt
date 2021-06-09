@@ -47,7 +47,7 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
         healthApi(appContext.healthService)
 
         authenticate {
-            sakApi(appContext.sakService)
+            sakApi(appContext.sakService, appContext.environment.sakApiUrl)
             exchangeApi(appContext.tokendingsServiceWrapper, appContext.environment.clusterName)
         }
     }

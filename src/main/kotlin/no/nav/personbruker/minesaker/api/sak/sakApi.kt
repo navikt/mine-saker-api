@@ -20,7 +20,8 @@ val dokumentIdParameterName = "dokumentId"
 val journalpostIdParameterName = "journalpostId"
 
 fun Route.sakApi(
-    service: SakService
+    service: SakService,
+    sakApiUrl: String
 ) {
 
     val log = LoggerFactory.getLogger(SakService::class.java)
@@ -77,7 +78,7 @@ fun Route.sakApi(
     get("/dokument/{$journalpostIdParameterName}/{$dokumentIdParameterName}/index.html") {
         val journalpostId = call.parameters[journalpostIdParameterName]
         val dokumentId = call.parameters[dokumentIdParameterName]
-        val src = "https://mine-saker-api.dev.nav.no/person/mine-saker-api/dokument/$journalpostId/$dokumentId"
+        val src = "$sakApiUrl/dokument/$journalpostId/$dokumentId"
         call.respondHtml {
             attributes["style"] = "height: 100%;"
             body {

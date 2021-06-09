@@ -82,6 +82,7 @@ tasks {
         println("Setting default environment variables for running with DittNAV docker-compose")
 
         environment("SAF_API_URL", "http://localhost:8080/graphql")
+        environment("SAK_API_URL", "http://localhost:8091/person/mine-saker-api")
         environment("CORS_ALLOWED_ORIGINS", "localhost:9002")
 
         environment("OIDC_ISSUER", "http://localhost:9000")
