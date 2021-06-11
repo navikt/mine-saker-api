@@ -22,8 +22,8 @@ object JournalpostObjectMother {
         tittel: Tittel = Tittel ("Uten dokumenter"),
         id: JournalpostId = JournalpostId("dummyId001"),
         type: Journalposttype = Journalposttype.INNGAAENDE,
-        avsender: AvsenderMottaker = AvsenderMottakerObjectMother.giveMeOrganisasjonSomAvsedner(),
-        mottaker: AvsenderMottaker = AvsenderMottakerObjectMother.giveMeInnloggetBrukerAsAvsender(),
+        avsender: Dokumentkilde = AvsenderMottakerObjectMother.giveMeOrganisasjonSomAvsedner(),
+        mottaker: Dokumentkilde = AvsenderMottakerObjectMother.giveMeInnloggetBrukerAsAvsender(),
         sistEndret: ZonedDateTime = ZonedDateTime.now(),
         dokumenter: List<Dokumentinfo> = emptyList()
     ): Journalpost {

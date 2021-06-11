@@ -1,6 +1,6 @@
 package no.nav.personbruker.minesaker.api.domain
 
-enum class AvsenderMottakerType {
+enum class DokumentkildeType {
     PERSON,
     ORGANISASJON,
     HELSEPERSONELL,

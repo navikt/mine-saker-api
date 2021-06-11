@@ -8,7 +8,7 @@ import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.shouldNotBeNull
 import org.junit.jupiter.api.Test
 
-internal class AvsenderMottakerTransformerTest {
+internal class DokumentkildeTransformerTest {
 
     private val dummyIdent = Fodselsnummer("123")
 
@@ -20,7 +20,7 @@ internal class AvsenderMottakerTransformerTest {
 
         val internal = external.toInternal(innloggetBruker)
 
-        internal.innloggetBrukerErAvsender `should be equal to` true
+        internal.innloggetBrukerErSelvKilden `should be equal to` true
         internal.type.shouldNotBeNull()
     }
 
@@ -31,7 +31,7 @@ internal class AvsenderMottakerTransformerTest {
 
         val internal = external.toInternal(innloggetBruker)
 
-        internal.innloggetBrukerErAvsender `should be equal to` false
+        internal.innloggetBrukerErSelvKilden `should be equal to` false
         internal.type.shouldNotBeNull()
     }
 
@@ -55,7 +55,7 @@ internal class AvsenderMottakerTransformerTest {
 
         val internal = externalUtenTypeSatt.toInternal(dummyIdent)
 
-        internal.innloggetBrukerErAvsender `should be equal to` false
+        internal.innloggetBrukerErSelvKilden `should be equal to` false
         internal.type.shouldNotBeNull()
     }
 
