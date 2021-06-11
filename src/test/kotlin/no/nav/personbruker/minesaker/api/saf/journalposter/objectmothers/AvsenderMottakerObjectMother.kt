@@ -4,9 +4,15 @@ import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 
 object AvsenderMottakerObjectMother {
 
-    fun giveMePersonSomAvsender(
+    fun giveMePerson(
         ident: String? = "123",
         idType: HentJournalposter.AvsenderMottakerIdType? = HentJournalposter.AvsenderMottakerIdType.FNR
+    ) =
+        HentJournalposter.AvsenderMottaker(ident, idType)
+
+    fun giveMeOrganisasjon(
+        ident: String? = "987654",
+        idType: HentJournalposter.AvsenderMottakerIdType? = HentJournalposter.AvsenderMottakerIdType.ORGNR
     ) =
         HentJournalposter.AvsenderMottaker(ident, idType)
 

@@ -16,7 +16,7 @@ internal class AvsenderMottakerTransformerTest {
     fun `Skal transformere fra ekstern til intern verdi, i tilfeller hvor innlogget bruker er avsender`() {
         val expextedIdent = "123"
         val innloggetBruker = Fodselsnummer(expextedIdent)
-        val external = AvsenderMottakerObjectMother.giveMePersonSomAvsender(expextedIdent)
+        val external = AvsenderMottakerObjectMother.giveMePerson(expextedIdent)
 
         val internal = external.toInternal(innloggetBruker)
 
@@ -27,7 +27,7 @@ internal class AvsenderMottakerTransformerTest {
     @Test
     fun `Skal transformere fra ekstern til intern verdi, i tilfeller hvor innlogget bruker IKKE er avsender`() {
         val innloggetBruker = Fodselsnummer("456")
-        val external = AvsenderMottakerObjectMother.giveMePersonSomAvsender("123")
+        val external = AvsenderMottakerObjectMother.giveMePerson("123")
 
         val internal = external.toInternal(innloggetBruker)
 
@@ -37,7 +37,7 @@ internal class AvsenderMottakerTransformerTest {
 
     @Test
     fun `Skal kaste feil hvis idType ikke er satt`() {
-        val externalUtenTypeSatt = AvsenderMottakerObjectMother.giveMePersonSomAvsender(idType = null)
+        val externalUtenTypeSatt = AvsenderMottakerObjectMother.giveMePerson(idType = null)
 
         val result = runCatching {
             externalUtenTypeSatt.toInternal(dummyIdent)
@@ -51,7 +51,7 @@ internal class AvsenderMottakerTransformerTest {
 
     @Test
     fun `Hvis ID ikke er satt, saa skal innloggetBrukerErAvsender settes til false`() {
-        val externalUtenTypeSatt = AvsenderMottakerObjectMother.giveMePersonSomAvsender(ident = null)
+        val externalUtenTypeSatt = AvsenderMottakerObjectMother.giveMePerson(ident = null)
 
         val internal = externalUtenTypeSatt.toInternal(dummyIdent)
 
