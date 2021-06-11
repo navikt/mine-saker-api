@@ -11,8 +11,8 @@ fun HentJournalposter.Journalpost.toInternal(innloggetBruker: Fodselsnummer) = J
         Tittel(tittel ?: "Uten tittel"),
         JournalpostId(journalpostId),
         journalposttype?.toInternal() ?: throw TransformationException.withMissingFieldName("journalposttype"),
-        avsender?.toInternal(innloggetBruker) ?: throw TransformationException.withMissingFieldName("avsender"),
-        mottaker?.toInternal(innloggetBruker) ?: throw TransformationException.withMissingFieldName("mottaker"),
+        avsender?.toInternal(innloggetBruker),
+        mottaker?.toInternal(innloggetBruker),
         relevanteDatoer.toInternal(),
         dokumenter?.toInternal() ?: throw TransformationException.withMissingFieldName("dokumenter")
     )

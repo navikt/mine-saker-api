@@ -37,34 +37,6 @@ internal class JournalpostTransformerTest {
     }
 
     @Test
-    fun `Skal kaste feil hvis avsender ikke er satt`() {
-        val external = JournalpostObjectMother.giveMeOneInngaaendeDokument(avsender = null)
-
-        val result = runCatching {
-            external.toInternal(dummyIdent)
-        }
-
-        result.isFailure `should be equal to` true
-        result.exceptionOrNull() `should be instance of` TransformationException::class
-        val exception = result.exceptionOrNull() as TransformationException
-        exception.context[TransformationException.feltnavnKey] `should be equal to` "avsender"
-    }
-
-    @Test
-    fun `Skal kaste feil hvis mottaker ikke er satt`() {
-        val external = JournalpostObjectMother.giveMeOneInngaaendeDokument(mottaker = null)
-
-        val result = runCatching {
-            external.toInternal(dummyIdent)
-        }
-
-        result.isFailure `should be equal to` true
-        result.exceptionOrNull() `should be instance of` TransformationException::class
-        val exception = result.exceptionOrNull() as TransformationException
-        exception.context[TransformationException.feltnavnKey] `should be equal to` "mottaker"
-    }
-
-    @Test
     fun `Skal kaste feil hvis journalposttype ikke er satt`() {
         val external = JournalpostObjectMother.giveMeOneInngaaendeDokument(journalposttype = null)
 
