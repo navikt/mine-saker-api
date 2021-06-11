@@ -2,10 +2,10 @@ package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.personbruker.minesaker.api.common.exception.TransformationException
-import no.nav.personbruker.minesaker.api.domain.AvsenderMottaker
+import no.nav.personbruker.minesaker.api.domain.Dokumentkilde
 import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
 
-fun HentJournalposter.AvsenderMottaker.toInternal(innloggetBruker: Fodselsnummer) = AvsenderMottaker(
+fun HentJournalposter.AvsenderMottaker.toInternal(innloggetBruker: Fodselsnummer) = Dokumentkilde(
     innloggetBrukerErAvsender(innloggetBruker),
     type?.toInternal() ?: throw TransformationException.withMissingFieldName("avsenderMottakerIdType")
 )

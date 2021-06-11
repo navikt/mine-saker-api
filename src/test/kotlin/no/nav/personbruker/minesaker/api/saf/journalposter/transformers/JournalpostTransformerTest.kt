@@ -21,7 +21,8 @@ internal class JournalpostTransformerTest {
         internal.journalpostId.value `should be equal to` external.journalpostId
 
         internal.dokumenter.shouldNotBeEmpty()
-        internal.avsenderMottaker.shouldNotBeNull()
+        internal.avsender.shouldNotBeNull()
+        internal.mottaker.shouldNotBeNull()
         internal.sisteEndret.shouldNotBeNull()
         internal.journalposttype.shouldNotBeNull()
     }
@@ -33,20 +34,6 @@ internal class JournalpostTransformerTest {
         val result = external.toInternal(dummyIdent)
 
         result.tittel.value `should be equal to` "Uten tittel"
-    }
-
-    @Test
-    fun `Skal kaste feil hvis avsenderMottaker ikke er satt`() {
-        val external = JournalpostObjectMother.giveMeOneInngaaendeDokument(avsenderMottaker = null)
-
-        val result = runCatching {
-            external.toInternal(dummyIdent)
-        }
-
-        result.isFailure `should be equal to` true
-        result.exceptionOrNull() `should be instance of` TransformationException::class
-        val exception = result.exceptionOrNull() as TransformationException
-        exception.context[TransformationException.feltnavnKey] `should be equal to` "avsenderMottaker"
     }
 
     @Test

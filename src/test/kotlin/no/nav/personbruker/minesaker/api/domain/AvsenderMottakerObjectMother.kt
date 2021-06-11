@@ -2,12 +2,12 @@ package no.nav.personbruker.minesaker.api.domain
 
 object AvsenderMottakerObjectMother {
 
-    fun giveMeInnloggetBrukerAsAvsender() : AvsenderMottaker {
-        return AvsenderMottaker(true, AvsenderMottakerType.PERSON)
+    fun giveMeInnloggetBrukerAsAvsender() : Dokumentkilde {
+        return Dokumentkilde(true, DokumentkildeType.PERSON)
     }
 
-    fun giveMeOrganisasjonSomAvsedner() : AvsenderMottaker {
-        return AvsenderMottaker(false, AvsenderMottakerType.ORGANISASJON)
+    fun giveMeOrganisasjonSomAvsedner() : Dokumentkilde {
+        return Dokumentkilde(false, DokumentkildeType.ORGANISASJON)
     }
 
 }

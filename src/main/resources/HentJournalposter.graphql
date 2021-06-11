@@ -7,7 +7,11 @@ query($ident : String!, $temaetSomSkalHentes : Tema) {
                 tittel
                 journalpostId
                 journalposttype
-                avsenderMottaker {
+                avsender {
+                    id
+                    type
+                }
+                mottaker {
                     id
                     type
                 }

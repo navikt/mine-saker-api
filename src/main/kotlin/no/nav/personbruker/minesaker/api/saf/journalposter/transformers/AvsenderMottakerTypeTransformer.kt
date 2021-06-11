@@ -1,16 +1,16 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
-import no.nav.personbruker.minesaker.api.domain.AvsenderMottakerType
+import no.nav.personbruker.minesaker.api.domain.DokumentkildeType
 
-fun HentJournalposter.AvsenderMottakerIdType.toInternal(): AvsenderMottakerType {
+fun HentJournalposter.AvsenderMottakerIdType.toInternal(): DokumentkildeType {
     return when (this) {
-        HentJournalposter.AvsenderMottakerIdType.FNR -> AvsenderMottakerType.PERSON
-        HentJournalposter.AvsenderMottakerIdType.HPRNR -> AvsenderMottakerType.HELSEPERSONELL
-        HentJournalposter.AvsenderMottakerIdType.ORGNR -> AvsenderMottakerType.ORGANISASJON
-        HentJournalposter.AvsenderMottakerIdType.UTL_ORG -> AvsenderMottakerType.ORGANISASJON
-        HentJournalposter.AvsenderMottakerIdType.NULL -> AvsenderMottakerType.UKJENT
-        HentJournalposter.AvsenderMottakerIdType.UKJENT -> AvsenderMottakerType.UKJENT
-        HentJournalposter.AvsenderMottakerIdType.__UNKNOWN_VALUE -> AvsenderMottakerType.UKJENT
+        HentJournalposter.AvsenderMottakerIdType.FNR -> DokumentkildeType.PERSON
+        HentJournalposter.AvsenderMottakerIdType.HPRNR -> DokumentkildeType.HELSEPERSONELL
+        HentJournalposter.AvsenderMottakerIdType.ORGNR -> DokumentkildeType.ORGANISASJON
+        HentJournalposter.AvsenderMottakerIdType.UTL_ORG -> DokumentkildeType.ORGANISASJON
+        HentJournalposter.AvsenderMottakerIdType.NULL -> DokumentkildeType.UKJENT
+        HentJournalposter.AvsenderMottakerIdType.UKJENT -> DokumentkildeType.UKJENT
+        HentJournalposter.AvsenderMottakerIdType.__UNKNOWN_VALUE -> DokumentkildeType.UKJENT
     }
 }

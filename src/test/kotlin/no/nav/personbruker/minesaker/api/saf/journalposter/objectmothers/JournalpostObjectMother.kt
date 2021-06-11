@@ -8,7 +8,8 @@ object JournalpostObjectMother {
         tittel: String? = "Dummytittel Inngående",
         journalpostId: String = "dummyId-Inngående",
         journalposttype: HentJournalposter.Journalposttype? = HentJournalposter.Journalposttype.I,
-        avsenderMottaker: HentJournalposter.AvsenderMottaker? = AvsenderMottakerObjectMother.giveMePersonSomAvsender("123"),
+        avsender: HentJournalposter.AvsenderMottaker? = AvsenderMottakerObjectMother.giveMePerson("123"),
+        mottaker: HentJournalposter.AvsenderMottaker? = AvsenderMottakerObjectMother.giveMeOrganisasjon("654"),
         relevanteDatoer: List<HentJournalposter.RelevantDato?> = listOf(
             RelevantDatoObjectMother.giveMeDatoForInngaaendeDokument(),
             RelevantDatoObjectMother.giveMeDatoForUtgaaendeDokument()
@@ -18,7 +19,8 @@ object JournalpostObjectMother {
         tittel,
         journalpostId,
         journalposttype,
-        avsenderMottaker,
+        avsender,
+        mottaker,
         relevanteDatoer,
         dokumenter
     )
