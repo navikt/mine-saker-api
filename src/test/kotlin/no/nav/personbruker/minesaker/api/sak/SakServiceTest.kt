@@ -7,6 +7,7 @@ import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
+import no.nav.personbruker.minesaker.api.saf.SafTokendingsService
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.personbruker.minesaker.api.tokenx.AccessToken
@@ -27,7 +28,7 @@ internal class SakServiceTest {
     private val tokendingsService: no.nav.tms.token.support.tokendings.exchange.TokendingsService = mockk()
 
     private val tokendingsWrapper =
-        no.nav.personbruker.minesaker.api.tokenx.SafTokendingsService(tokendingsService, dummyClientId)
+        SafTokendingsService(tokendingsService, dummyClientId)
 
     @BeforeEach
     fun setup() {

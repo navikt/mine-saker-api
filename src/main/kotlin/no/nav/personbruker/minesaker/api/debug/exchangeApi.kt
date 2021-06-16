@@ -4,7 +4,7 @@ import io.ktor.application.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import no.nav.personbruker.minesaker.api.config.idportenUser
-import no.nav.personbruker.minesaker.api.tokenx.SafTokendingsService
+import no.nav.personbruker.minesaker.api.saf.SafTokendingsService
 
 fun Route.exchangeApi(safTokendingsService: SafTokendingsService, clusterName: String) {
     if (isRunningInDevGcp(clusterName)) {

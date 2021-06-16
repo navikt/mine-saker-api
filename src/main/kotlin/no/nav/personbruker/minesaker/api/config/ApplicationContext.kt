@@ -3,7 +3,7 @@ package no.nav.personbruker.minesaker.api.config
 import no.nav.personbruker.minesaker.api.health.HealthService
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.sak.SakService
-import no.nav.personbruker.minesaker.api.tokenx.SafTokendingsService
+import no.nav.personbruker.minesaker.api.saf.SafTokendingsService
 import no.nav.tms.token.support.tokendings.exchange.TokendingsServiceBuilder
 
 class ApplicationContext {
