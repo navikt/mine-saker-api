@@ -18,7 +18,7 @@ internal class DokumentvariantTransformerTest {
     @Test
     fun `Skal kaste feil hvis det blir forsokt aa transformere et variantformat som ikke brukes`() {
         val result = runCatching {
-            HentJournalposter.Variantformat.FULLVERSJON.toInternal()
+            HentJournalposter.Variantformat.__UNKNOWN_VALUE.toInternal()
         }
 
         result.isFailure `should be equal to` true
