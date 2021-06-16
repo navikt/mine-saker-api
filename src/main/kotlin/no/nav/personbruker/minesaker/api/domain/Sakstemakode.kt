@@ -24,6 +24,7 @@ enum class Sakstemakode {
     HJE,
     IAR,
     IND,
+    KOM,
     KON,
     MED,
     MOB,
@@ -55,6 +56,12 @@ enum class Sakstemakode {
     UKJ,
     VEN,
     YRA,
-    YRK
+    YRK;
+
+    companion object {
+        fun teamKoderFraSAF(): List<Sakstemakode> {
+            return values().filter { kode -> kode != KOM }
+        }
+    }
 
 }
