@@ -5,12 +5,12 @@ import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.personbruker.minesaker.api.tokenx.AccessToken
-import no.nav.personbruker.minesaker.api.tokenx.TokendingsServiceWrapper
+import no.nav.personbruker.minesaker.api.tokenx.SafTokendingsService
 import no.nav.tms.token.support.idporten.user.IdportenUser
 
 class SakService(
     private val safConsumer: SafConsumer,
-    private val tokendingsWrapper: TokendingsServiceWrapper
+    private val safTokendings: SafTokendingsService
 ) {
 
     suspend fun hentSakstemaer(user: IdportenUser): List<ForenkletSakstema> {
@@ -33,7 +33,7 @@ class SakService(
     }
 
     private suspend fun exchangeToken(user: IdportenUser): AccessToken {
-        return tokendingsWrapper.exchangeTokenForSafSelvbetjening(user.tokenString)
+        return safTokendings.exchangeTokenForSafSelvbetjening(user.tokenString)
     }
 
 }

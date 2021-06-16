@@ -4,14 +4,14 @@ import io.ktor.application.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import no.nav.personbruker.minesaker.api.config.idportenUser
-import no.nav.personbruker.minesaker.api.tokenx.TokendingsServiceWrapper
+import no.nav.personbruker.minesaker.api.tokenx.SafTokendingsService
 
-fun Route.exchangeApi(tokendingsServiceWrapper: TokendingsServiceWrapper, clusterName: String) {
+fun Route.exchangeApi(safTokendingsService: SafTokendingsService, clusterName: String) {
     if (isRunningInDevGcp(clusterName)) {
         get("/exchange") {
             val idToken = idportenUser.tokenString
 
-            val token = tokendingsServiceWrapper.exchangeTokenForSafSelvbetjening(idToken)
+            val token = safTokendingsService.exchangeTokenForSafSelvbetjening(idToken)
 
             call.respondText(token.value)
         }

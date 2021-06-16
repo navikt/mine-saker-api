@@ -4,15 +4,12 @@ import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import no.nav.personbruker.minesaker.api.common.IdportenUserObjectMother
 import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
-import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.personbruker.minesaker.api.tokenx.AccessToken
-import no.nav.personbruker.minesaker.api.tokenx.TokendingsServiceWrapper
-import no.nav.tms.token.support.tokendings.exchange.TokendingsService
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should contain`
@@ -27,9 +24,10 @@ internal class SakServiceTest {
 
     private val dummyToken = "<access_token>"
     private val dummyClientId = "<client_id>"
-    private val tokendingsService: TokendingsService = mockk()
+    private val tokendingsService: no.nav.tms.token.support.tokendings.exchange.TokendingsService = mockk()
 
-    private val tokendingsWrapper = TokendingsServiceWrapper(tokendingsService, dummyClientId)
+    private val tokendingsWrapper =
+        no.nav.personbruker.minesaker.api.tokenx.SafTokendingsService(tokendingsService, dummyClientId)
 
     @BeforeEach
     fun setup() {
