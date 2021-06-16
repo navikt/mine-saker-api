@@ -6,7 +6,6 @@ object DokumentInfoObjectMother {
 
     fun giveMeDokumentMedArkivertVariant(): HentJournalposter.DokumentInfo {
         val varianter = listOf(
-            DokumentVariantObjectMother.giveMeOriginalVariant(),
             DokumentVariantObjectMother.giveMeSladdetVariant(),
             DokumentVariantObjectMother.giveMeArkivertVariant()
         )
@@ -20,15 +19,6 @@ object DokumentInfoObjectMother {
         )
         val dokumentInfoId = "dummyId002"
         return HentJournalposter.DokumentInfo(null, dokumentInfoId, varianter)
-    }
-
-    fun giveMeDokumentMedArkivertVariantMenUtenAtTilgangErSpesifisert(): HentJournalposter.DokumentInfo {
-        val varianter = listOf(
-            DokumentVariantObjectMother.giveMeArkivertVariantUtenBrukerHarTilgangSatt()
-        )
-        val dokumentInfoId = "dummyId003"
-        val tittel = "Dummytittel med arkivert uten at tilgang er spesifisert"
-        return HentJournalposter.DokumentInfo(tittel, dokumentInfoId, varianter)
     }
 
     fun giveMeDokumentUtenNoenVarianter(): HentJournalposter.DokumentInfo {
@@ -46,24 +36,6 @@ object DokumentInfoObjectMother {
         return HentJournalposter.DokumentInfo(tittel, dokumentInfoId, varianter)
     }
 
-    fun giveMeDokumentMedArkivertOgOriginalVariant(): HentJournalposter.DokumentInfo {
-        val varianter = listOf(
-            DokumentVariantObjectMother.giveMeOriginalVariant(),
-            DokumentVariantObjectMother.giveMeArkivertVariant()
-        )
-        val dokumentInfoId = "dummyId006"
-        val tittel = "Dummytittel medflere dokument varianter"
-        return HentJournalposter.DokumentInfo(tittel, dokumentInfoId, varianter)
-    }
-
-    fun giveMeDokumentMedKunOriginalVariant(): HentJournalposter.DokumentInfo {
-        val varianter = listOf(
-            DokumentVariantObjectMother.giveMeOriginalVariant(),
-        )
-        val dokumentInfoId = "dummyId007"
-        return HentJournalposter.DokumentInfo("Dummytittel med arkivert", dokumentInfoId, varianter)
-    }
-
     fun giveMeTreGyldigeDokumenter(): List<HentJournalposter.DokumentInfo> {
         return listOf(
             giveMeDokument("Hveddok", "dummyId5", DokumentVariantObjectMother.giveMeArkivertVariant()),
@@ -75,7 +47,7 @@ object DokumentInfoObjectMother {
     private fun giveMeDokument(
         tittel: String = "Dummytittel gyldig dokument 11",
         dokumentInfoId: String = "dummyId011",
-        variant: HentJournalposter.Dokumentvariant = DokumentVariantObjectMother.giveMeOriginalVariant()
+        variant: HentJournalposter.Dokumentvariant = DokumentVariantObjectMother.giveMeArkivertVariant()
     ): HentJournalposter.DokumentInfo {
         return HentJournalposter.DokumentInfo(tittel, dokumentInfoId, listOf(variant))
     }

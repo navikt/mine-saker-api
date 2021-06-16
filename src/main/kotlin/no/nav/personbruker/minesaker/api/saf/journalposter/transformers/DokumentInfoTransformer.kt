@@ -55,14 +55,13 @@ fun HentJournalposter.DokumentInfo.toInternal(
     externalVariant: HentJournalposter.Dokumentvariant,
     dokumenttype: Dokumenttype
 ): Dokumentinfo {
-    val brukerHarTilgang = externalVariant.brukerHarTilgang == true
     val eventuelleGrunnerTilManglendeTilgang =
-        plukkUtEventuelleGrunnerTilManglendeTilgang(brukerHarTilgang, externalVariant)
+        plukkUtEventuelleGrunnerTilManglendeTilgang(externalVariant.brukerHarTilgang, externalVariant)
     return Dokumentinfo(
         Tittel(tittel ?: "Uten tittel"),
         DokumentInfoId(dokumentInfoId),
         dokumenttype,
-        brukerHarTilgang,
+        externalVariant.brukerHarTilgang,
         eventuelleGrunnerTilManglendeTilgang,
         externalVariant.variantformat.toInternal()
     )

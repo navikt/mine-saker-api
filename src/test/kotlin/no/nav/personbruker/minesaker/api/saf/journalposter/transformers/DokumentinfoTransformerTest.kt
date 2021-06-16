@@ -54,47 +54,12 @@ internal class DokumentinfoTransformerTest {
     }
 
     @Test
-    fun `Hvis SLADDET-variant ikke finnes, velg ARKIVERT-variant`() {
-        val externals = listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertOgOriginalVariant())
-
-        val internals = externals.toInternal()
-
-        internals.shouldNotBeNull()
-        internals.size `should be equal to` 1
-        internals.first().variant `should be equal to` Dokumentvariant.ARKIV
-    }
-
-    @Test
-    fun `Ignorer andre varianter enn SLADDET og ARKIV`() {
-        val externals = listOf(DokumentInfoObjectMother.giveMeDokumentMedKunOriginalVariant())
-
-        val internals = externals.toInternal()
-
-        internals.shouldNotBeNull()
-        internals.size `should be equal to` 0
-    }
-
-    @Test
     fun `Skal takle at tittel ikke er tilgjengelig i SAF, return dummy tittel til sluttbruker`() {
         val externals = listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertVariantMenUtenTittel())
 
         val result = externals.toInternal()
 
         result[0].tittel.value `should be equal to` "Uten tittel"
-    }
-
-    @Test
-    fun `Skal sette tilgang til dokumentet som false hvis det ikke er spesifisert`() {
-        val externals = listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertVariantMenUtenAtTilgangErSpesifisert())
-        val expectedGrunnTilManglendeTilgang = externals[0].dokumentvarianter[0]?.code?.get(0)
-
-        val internals = externals.toInternal()
-
-        internals.shouldNotBeEmpty()
-        internals.size `should be equal to` 1
-        internals[0].brukerHarTilgang `should be equal to` false
-        internals[0].eventuelleGrunnerTilManglendeTilgang.size `should be equal to` 1
-        internals[0].eventuelleGrunnerTilManglendeTilgang[0] `should be equal to` expectedGrunnTilManglendeTilgang
     }
 
 }
