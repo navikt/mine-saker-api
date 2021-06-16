@@ -7,7 +7,7 @@ class SafTokendingsService(
     private val tokendingsService: TokendingsService,
     private val safselvbetjeningClientId: String
 ){
-    suspend fun exchangeTokenForSafSelvbetjening(user: IdportenUser): AccessToken {
+    suspend fun exchangeToken(user: IdportenUser): AccessToken {
         return AccessToken(tokendingsService.exchangeToken(user.tokenString, safselvbetjeningClientId))
     }
 }

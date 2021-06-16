@@ -13,21 +13,21 @@ class SakService(
 ) {
 
     suspend fun hentSakstemaer(user: IdportenUser): List<ForenkletSakstema> {
-        val exchangedToken = safTokendings.exchangeTokenForSafSelvbetjening(user)
+        val exchangedToken = safTokendings.exchangeToken(user)
         val fodselsnummer = Fodselsnummer(user.ident)
         val sakstemaerRequest = SakstemaerRequest.create(fodselsnummer)
         return safConsumer.hentSakstemaer(sakstemaerRequest, exchangedToken)
     }
 
     suspend fun hentJournalposterForSakstema(user: IdportenUser, sakstema: Sakstemakode): List<Sakstema> {
-        val exchangedToken = safTokendings.exchangeTokenForSafSelvbetjening(user)
+        val exchangedToken = safTokendings.exchangeToken(user)
         val fodselsnummer = Fodselsnummer(user.ident)
         val journalposterRequest = JournalposterRequest.create(fodselsnummer, sakstema)
         return safConsumer.hentJournalposter(fodselsnummer, journalposterRequest, exchangedToken)
     }
 
     suspend fun hentDokument(user: IdportenUser, journapostId : JournalpostId, dokumentinfoId : DokumentInfoId): ByteArray {
-        val exchangedToken = safTokendings.exchangeTokenForSafSelvbetjening(user)
+        val exchangedToken = safTokendings.exchangeToken(user)
         return safConsumer.hentDokument(journapostId, dokumentinfoId, exchangedToken)
     }
 

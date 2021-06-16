@@ -9,7 +9,7 @@ import no.nav.personbruker.minesaker.api.tokenx.SafTokendingsService
 fun Route.exchangeApi(safTokendingsService: SafTokendingsService, clusterName: String) {
     if (isRunningInDevGcp(clusterName)) {
         get("/exchange") {
-            val token = safTokendingsService.exchangeTokenForSafSelvbetjening(idportenUser)
+            val token = safTokendingsService.exchangeToken(idportenUser)
 
             call.respondText(token.value)
         }
