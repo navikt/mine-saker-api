@@ -48,7 +48,7 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
 
         authenticate {
             sakApi(appContext.sakService)
-            exchangeApi(appContext.safTokendingsService, appContext.environment.clusterName)
+            exchangeApi(appContext.safTokendings, appContext.environment.clusterName)
         }
     }
 

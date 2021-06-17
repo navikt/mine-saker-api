@@ -3,7 +3,7 @@ package no.nav.personbruker.minesaker.api.config
 import no.nav.personbruker.minesaker.api.health.HealthService
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.sak.SakService
-import no.nav.personbruker.minesaker.api.saf.SafTokendingsService
+import no.nav.personbruker.minesaker.api.saf.SafTokendings
 import no.nav.tms.token.support.tokendings.exchange.TokendingsServiceBuilder
 
 class ApplicationContext {
@@ -15,8 +15,8 @@ class ApplicationContext {
 
     val tokendingsService = TokendingsServiceBuilder.buildTokendingsService()
 
-    val safTokendingsService = SafTokendingsService(tokendingsService, environment.safClientId)
+    val safTokendings = SafTokendings(tokendingsService, environment.safClientId)
 
     val safConsumer = SafConsumer(httpClient, safEndpoint = environment.safEndpoint)
-    val sakService = SakService(safConsumer, safTokendingsService)
+    val sakService = SakService(safConsumer, safTokendings)
 }

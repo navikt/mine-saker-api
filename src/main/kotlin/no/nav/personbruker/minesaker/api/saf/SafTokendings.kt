@@ -4,7 +4,7 @@ import no.nav.personbruker.minesaker.api.tokenx.AccessToken
 import no.nav.tms.token.support.idporten.user.IdportenUser
 import no.nav.tms.token.support.tokendings.exchange.TokendingsService
 
-class SafTokendingsService(
+class SafTokendings(
     private val tokendingsService: TokendingsService,
     private val safselvbetjeningClientId: String
 ){
