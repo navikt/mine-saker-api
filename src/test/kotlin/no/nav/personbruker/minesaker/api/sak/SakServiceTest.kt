@@ -4,6 +4,8 @@ import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import no.nav.personbruker.minesaker.api.common.IdportenUserObjectMother
 import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
+import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
+import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
@@ -22,28 +24,28 @@ internal class SakServiceTest {
 
     private val dummyUser = IdportenUserObjectMother.createIdportenUser()
 
+    private val safDummyToken = AccessToken("saf<access_token>")
+    private val digiSosDummyToken = AccessToken("digiSos<access_token>")
 
-    private val dummyToken = "<access_token>"
-    private val dummyClientId = "<client_id>"
-    private val tokendingsService: no.nav.tms.token.support.tokendings.exchange.TokendingsService = mockk()
-
-    private val tokendingsWrapper =
-        SafTokendings(tokendingsService, dummyClientId)
+    private val safTokendings = mockk<SafTokendings>()
+    private val digiSosTokendings = mockk<DigiSosTokendings>()
 
     @BeforeEach
     fun setup() {
-        coEvery { tokendingsService.exchangeToken(any(), dummyClientId) } returns dummyToken
+        coEvery { safTokendings.exchangeToken(dummyUser) } returns safDummyToken
+        coEvery { digiSosTokendings.exchangeToken(dummyUser) } returns digiSosDummyToken
     }
 
     @AfterEach
     fun cleanup() {
-        clearMocks(tokendingsService)
+        clearMocks(safTokendings, digiSosTokendings)
     }
 
     @Test
     fun `Skal hente alle sakstemaer for en konkret bruker`() {
-        val consumer = mockk<SafConsumer>(relaxed = true)
-        val service = SakService(consumer, tokendingsWrapper)
+        val safConsumer = mockk<SafConsumer>(relaxed = true)
+        val digiSosConsumer = mockk<DigiSosConsumer>()
+        val service = SakService(safConsumer, safTokendings, digiSosConsumer, digiSosTokendings)
 
         val parameterSendtVidere = slot<SakstemaerRequest>()
 
@@ -51,22 +53,23 @@ internal class SakServiceTest {
             service.hentSakstemaer(dummyUser)
         }
 
-        coVerify(exactly = 1) { consumer.hentSakstemaer(capture(parameterSendtVidere), AccessToken(dummyToken)) }
+        coVerify(exactly = 1) { safConsumer.hentSakstemaer(capture(parameterSendtVidere), safDummyToken) }
 
         parameterSendtVidere.captured `should be instance of` SakstemaerRequest::class
 
-        confirmVerified(consumer)
+        confirmVerified(safConsumer)
     }
 
     @Test
     fun `Feil som oppstaar, ved henting av alle sakstemaer, skal kastes videre`() {
         val expectedException = CommunicationException("Simulert feil i en test")
 
-        val consumer = mockk<SafConsumer>(relaxed = true)
-        val service = SakService(consumer, tokendingsWrapper)
+        val safConsumer = mockk<SafConsumer>()
+        val digiSosConsumer = mockk<DigiSosConsumer>()
+        val service = SakService(safConsumer, safTokendings, digiSosConsumer, digiSosTokendings)
 
         coEvery {
-            consumer.hentSakstemaer(any(), AccessToken(dummyToken))
+            safConsumer.hentSakstemaer(any(), safDummyToken)
         } throws expectedException
 
         val result = runCatching {
@@ -83,8 +86,9 @@ internal class SakServiceTest {
     fun `Skal hente alle journalposter for et konkret sakstema`() {
         val expectedSakstemakode = Sakstemakode.FOR
 
-        val consumer = mockk<SafConsumer>(relaxed = true)
-        val service = SakService(consumer, tokendingsWrapper)
+        val safConsumer = mockk<SafConsumer>(relaxed = true)
+        val digiSosConsumer = mockk<DigiSosConsumer>()
+        val service = SakService(safConsumer, safTokendings, digiSosConsumer, digiSosTokendings)
 
         val parameterSendtVidere = slot<JournalposterRequest>()
 
@@ -92,23 +96,24 @@ internal class SakServiceTest {
             service.hentJournalposterForSakstema(dummyUser, expectedSakstemakode)
         }
 
-        coVerify(exactly = 1) { consumer.hentJournalposter(Fodselsnummer(dummyUser.ident), capture(parameterSendtVidere), AccessToken(dummyToken)) }
+        coVerify(exactly = 1) { safConsumer.hentJournalposter(Fodselsnummer(dummyUser.ident), capture(parameterSendtVidere), safDummyToken) }
 
         parameterSendtVidere.captured `should be instance of` JournalposterRequest::class
         parameterSendtVidere.captured.variables.entries.toString() `should contain` expectedSakstemakode.toString()
 
-        confirmVerified(consumer)
+        confirmVerified(safConsumer)
     }
 
     @Test
     fun `Feil som oppstaar, ved henting av journalposter for et konkret sakstema, skal kastes videre`() {
         val expectedException = CommunicationException("Simulert feil i en test")
 
-        val consumer = mockk<SafConsumer>(relaxed = true)
-        val service = SakService(consumer, tokendingsWrapper)
+        val safConsumer = mockk<SafConsumer>(relaxed = true)
+        val digiSosConsumer = mockk<DigiSosConsumer>()
+        val service = SakService(safConsumer, safTokendings, digiSosConsumer, digiSosTokendings)
 
         coEvery {
-            consumer.hentJournalposter(Fodselsnummer(dummyUser.ident), any(), AccessToken(any()))
+            safConsumer.hentJournalposter(Fodselsnummer(dummyUser.ident), any(), any())
         } throws expectedException
 
         val result = runCatching {

@@ -57,6 +57,28 @@ fun Route.sakApi(
         }
     }
 
+    get("/sakstemaerAlle") {
+        try {
+            val result = service.hentSakstemaer(idportenUser)
+            call.respond(HttpStatusCode.OK, result)
+
+        } catch (exception: Exception) {
+            val errorCode = ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
+            call.respond(errorCode)
+        }
+    }
+
+    get("/digisos") {
+        try {
+            val result = service.hentSakstemaerFraDigiSos(idportenUser)
+            call.respond(HttpStatusCode.OK, result.results())
+
+        } catch (exception: Exception) {
+            val errorCode = ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
+            call.respond(errorCode)
+        }
+    }
+
     get("/dokument/{$journalpostIdParameterName}/{$dokumentIdParameterName}") {
         try {
             val journalpostId = call.extractJournalpostId()

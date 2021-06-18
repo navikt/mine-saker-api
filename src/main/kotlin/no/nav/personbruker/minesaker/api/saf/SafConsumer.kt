@@ -18,6 +18,8 @@ import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.domain.*
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
+import no.nav.personbruker.minesaker.api.sak.Kildetype
+import no.nav.personbruker.minesaker.api.sak.SakstemaResult
 import no.nav.personbruker.minesaker.api.tokenx.AccessToken
 import org.slf4j.LoggerFactory
 import java.net.URL
@@ -40,6 +42,19 @@ class SafConsumer(
         val external = responseDto.extractData()
         logIfContainsDataAndErrors(responseDto)
         return external.toInternal()
+    }
+
+    suspend fun hentSakstemaerAsync(request: SakstemaerRequest, accessToken: AccessToken): SakstemaResult {
+        return try {
+            val responseDto: GraphQLResponse<HentSakstemaer.Result> = sendQuery(request, accessToken)
+            val external = responseDto.extractData()
+            logIfContainsDataAndErrors(responseDto)
+            SakstemaResult(external.toInternal())
+
+        } catch (e : Exception) {
+            log.warn("Klarte ikke å hente data fra SAF, returnerer et resultat med info om at det feilet mot SAF: $e", e)
+            SakstemaResult(errors = listOf(Kildetype.SAF), e)
+        }
     }
 
     suspend fun hentJournalposter(
