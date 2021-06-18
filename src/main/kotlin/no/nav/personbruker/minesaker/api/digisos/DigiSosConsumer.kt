@@ -1,13 +1,11 @@
 package no.nav.personbruker.minesaker.api.digisos
 
-import com.expediagroup.graphql.types.GraphQLResponse
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
-import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
 import no.nav.personbruker.minesaker.api.domain.Navn
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
@@ -26,7 +24,7 @@ class DigiSosConsumer(
 
     private val log = LoggerFactory.getLogger(SafConsumer::class.java)
 
-    private val safCallIdHeaderName = "Nav-Callid"
+    private val callIdHeaderName = "Nav-Callid"
     private val navConsumerIdHeaderName = "Nav-Consumer-Id"
 
     private val navConsumerId = "mine-saker-api"
@@ -59,20 +57,14 @@ class DigiSosConsumer(
                 httpClient.get {
                     url("$digiSosEndpoint/sosialhjelp/soknad-api/minesaker/innsendte")
                     method = HttpMethod.Get
-                    header(safCallIdHeaderName, callId)
+                    header(callIdHeaderName, callId)
                     header(HttpHeaders.Authorization, "Bearer ${accessToken.value}")
                     contentType(ContentType.Application.Json)
                     accept(ContentType.Application.Json)
                 }
             }
         }.onFailure { cause ->
-            throw CommunicationException("Klarte ikke å utføre spørring mot SAF", cause)
-//                .addContext("query", request.query)
-//                .addContext("variables", request.variables)
+            throw CommunicationException("Klarte ikke å hente data fra DigiSos", cause)
         }.getOrThrow()
-
-    private inline fun <reified T> GraphQLResponse<T>.extractData(): T {
-        return data ?: throw GraphQLResultException("Ingen data i resultatet fra SAF.", errors, extensions)
-    }
 
 }
