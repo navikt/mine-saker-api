@@ -1,5 +1,8 @@
 package no.nav.personbruker.minesaker.api.sak
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
 import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings
 import no.nav.personbruker.minesaker.api.domain.*
@@ -23,10 +26,14 @@ class SakService(
         return safConsumer.hentSakstemaer(sakstemaerRequest, exchangedToken)
     }
 
-    suspend fun hentSakstemaerAlle(user: IdportenUser): SakstemaResult {
-        val sakstemaerFraSaf = hentSakstemaerFraSafAsync(user)
-        val sakstemaerFraDigiSos = hentSakstemaerFraDigiSos(user)
-        return sakstemaerFraSaf + sakstemaerFraDigiSos
+    suspend fun hentSakstemaerAlleAsync(user: IdportenUser): SakstemaResult = withContext(Dispatchers.IO) {
+        val sakstemaerFraSaf = async {
+            hentSakstemaerFraSafAsync(user)
+        }
+        val sakstemaerFraDigiSos = async {
+            hentSakstemaerFraDigiSos(user)
+        }
+        sakstemaerFraSaf.await() + sakstemaerFraDigiSos.await()
     }
 
     suspend fun hentSakstemaerFraSafAsync(user: IdportenUser): SakstemaResult {
@@ -48,7 +55,11 @@ class SakService(
         return safConsumer.hentJournalposter(fodselsnummer, journalposterRequest, exchangedToken)
     }
 
-    suspend fun hentDokument(user: IdportenUser, journapostId : JournalpostId, dokumentinfoId : DokumentInfoId): ByteArray {
+    suspend fun hentDokument(
+        user: IdportenUser,
+        journapostId: JournalpostId,
+        dokumentinfoId: DokumentInfoId
+    ): ByteArray {
         val exchangedToken = safTokendings.exchangeToken(user)
         return safConsumer.hentDokument(journapostId, dokumentinfoId, exchangedToken)
     }

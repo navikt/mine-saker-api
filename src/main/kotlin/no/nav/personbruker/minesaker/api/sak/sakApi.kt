@@ -59,7 +59,7 @@ fun Route.sakApi(
 
     get("/sakstemaerAlle") {
         try {
-            val result = service.hentSakstemaer(idportenUser)
+            val result = service.hentSakstemaerAlleAsync(idportenUser)
             call.respond(HttpStatusCode.OK, result)
 
         } catch (exception: Exception) {
