@@ -6,9 +6,6 @@ import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
-import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
-import no.nav.personbruker.minesaker.api.domain.Navn
-import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.sak.Kildetype
 import no.nav.personbruker.minesaker.api.sak.SakstemaResult
@@ -32,20 +29,11 @@ class DigiSosConsumer(
     suspend fun hentSakstemaer(accessToken: AccessToken): SakstemaResult {
         return try {
             val responseDto: List<DigiSosResponse> = hent(accessToken)
-            SakstemaResult( responseDto.toInternal())
+            log.info("Fikk følgende respons fra DigiSos: $responseDto")
+            SakstemaResult(responseDto.toInternal())
 
-        } catch (e : Exception) {
+        } catch (e: Exception) {
             SakstemaResult(errors = listOf(Kildetype.DIGISOS), e)
-        }
-    }
-
-    fun List<DigiSosResponse>.toInternal() : List<ForenkletSakstema> {
-        return map { result ->
-            ForenkletSakstema(
-                Navn(result.navn),
-                Sakstemakode.valueOf(result.kode),
-                result.sistEndret
-            )
         }
     }
 
