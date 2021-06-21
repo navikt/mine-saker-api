@@ -60,7 +60,7 @@ fun Route.sakApi(
     get("/sakstemaerAlle") {
         try {
             val result = service.hentSakstemaerAlleAsync(idportenUser)
-            call.respond(HttpStatusCode.OK, result)
+            call.respond(HttpStatusCode.OK, result.results())
 
         } catch (exception: Exception) {
             val errorCode = ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
