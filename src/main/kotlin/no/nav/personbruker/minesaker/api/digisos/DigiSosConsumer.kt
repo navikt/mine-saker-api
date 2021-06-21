@@ -26,7 +26,6 @@ class DigiSosConsumer(
     suspend fun hentSakstemaer(accessToken: AccessToken): SakstemaResult {
         return try {
             val responseDto: List<DigiSosResponse> = hent(accessToken)
-            log.info("Fikk følgende respons fra DigiSos: $responseDto")
             SakstemaResult(responseDto.toInternal())
 
         } catch (e: Exception) {
