@@ -33,7 +33,7 @@ class SakService(
         val exchangedToken = safTokendings.exchangeToken(user)
         val fodselsnummer = Fodselsnummer(user.ident)
         val sakstemaerRequest = SakstemaerRequest.create(fodselsnummer)
-        return safConsumer.hentSakstemaerAsync(sakstemaerRequest, exchangedToken)
+        return safConsumer.hentSakstemaer(sakstemaerRequest, exchangedToken)
     }
 
     suspend fun hentSakstemaerFraDigiSos(user: IdportenUser): SakstemaResult {

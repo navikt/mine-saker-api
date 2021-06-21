@@ -50,14 +50,14 @@ internal class SakServiceTest {
 
         val parameterSendtVidere = slot<SakstemaerRequest>()
 
-        coEvery { safConsumer.hentSakstemaerAsync(any(), any()) } returns SakstemaResultObjectMother.createSafResults()
+        coEvery { safConsumer.hentSakstemaer(any(), any()) } returns SakstemaResultObjectMother.createSafResults()
         coEvery { digiSosConsumer.hentSakstemaer(any()) } returns SakstemaResultObjectMother.createDigiSosResults()
 
         runBlocking {
             service.hentSakstemaer(dummyUser)
         }
 
-        coVerify(exactly = 1) { safConsumer.hentSakstemaerAsync(capture(parameterSendtVidere), any()) }
+        coVerify(exactly = 1) { safConsumer.hentSakstemaer(capture(parameterSendtVidere), any()) }
         coVerify(exactly = 1) { digiSosConsumer.hentSakstemaer(any()) }
 
         parameterSendtVidere.captured `should be instance of` SakstemaerRequest::class
@@ -72,7 +72,7 @@ internal class SakServiceTest {
         val digiSosConsumer = mockk<DigiSosConsumer>()
         val service = SakService(safConsumer, safTokendings, digiSosConsumer, digiSosTokendings)
 
-        coEvery { safConsumer.hentSakstemaerAsync(any(), any()) } returns SakstemaResultObjectMother.createSafResults()
+        coEvery { safConsumer.hentSakstemaer(any(), any()) } returns SakstemaResultObjectMother.createSafResults()
         coEvery { digiSosConsumer.hentSakstemaer(any()) } returns SakstemaResultObjectMother.createDigiSosError()
 
         val result = runBlocking {

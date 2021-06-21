@@ -37,21 +37,14 @@ class SafConsumer(
 
     private val navConsumerId = "mine-saker-api"
 
-    suspend fun hentSakstemaer(request: SakstemaerRequest, accessToken: AccessToken): List<ForenkletSakstema> {
-        val responseDto: GraphQLResponse<HentSakstemaer.Result> = sendQuery(request, accessToken)
-        val external = responseDto.extractData()
-        logIfContainsDataAndErrors(responseDto)
-        return external.toInternal()
-    }
-
-    suspend fun hentSakstemaerAsync(request: SakstemaerRequest, accessToken: AccessToken): SakstemaResult {
+    suspend fun hentSakstemaer(request: SakstemaerRequest, accessToken: AccessToken): SakstemaResult {
         return try {
             val responseDto: GraphQLResponse<HentSakstemaer.Result> = sendQuery(request, accessToken)
             val external = responseDto.extractData()
             logIfContainsDataAndErrors(responseDto)
             SakstemaResult(external.toInternal())
 
-        } catch (e : Exception) {
+        } catch (e: Exception) {
             log.warn("Klarte ikke å hente data fra SAF, returnerer et resultat med info om at det feilet mot SAF: $e", e)
             SakstemaResult(errors = listOf(Kildetype.SAF))
         }
