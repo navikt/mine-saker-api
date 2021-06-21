@@ -53,7 +53,7 @@ class SafConsumer(
 
         } catch (e : Exception) {
             log.warn("Klarte ikke å hente data fra SAF, returnerer et resultat med info om at det feilet mot SAF: $e", e)
-            SakstemaResult(errors = listOf(Kildetype.SAF), e)
+            SakstemaResult(errors = listOf(Kildetype.SAF))
         }
     }
 

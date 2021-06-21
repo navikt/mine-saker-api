@@ -33,7 +33,8 @@ class DigiSosConsumer(
             SakstemaResult(responseDto.toInternal())
 
         } catch (e: Exception) {
-            SakstemaResult(errors = listOf(Kildetype.DIGISOS), e)
+            log.warn("Klarte ikke å hente data fra DigiSos, returnerer et resultat med info om at det feilet mot DigiSos: $e", e)
+            SakstemaResult(errors = listOf(Kildetype.DIGISOS))
         }
     }
 

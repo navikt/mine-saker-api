@@ -4,12 +4,11 @@ import io.ktor.http.*
 import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
 
 data class SakstemaResult(
-    private val results : List<ForenkletSakstema>,
-    private val errors : List<Kildetype> = emptyList(),
-    private val cause : Exception? = null
+    private val results: List<ForenkletSakstema>,
+    private val errors: List<Kildetype> = emptyList()
 ) {
 
-    constructor(errors: List<Kildetype>, cause : Exception) : this(emptyList(), errors, cause)
+    constructor(errors: List<Kildetype>) : this(emptyList(), errors)
 
     operator fun plus(result: SakstemaResult): SakstemaResult =
         SakstemaResult(this.results + result.results, this.errors + result.errors)
