@@ -22,9 +22,6 @@ class DigiSosConsumer(
     private val log = LoggerFactory.getLogger(SafConsumer::class.java)
 
     private val callIdHeaderName = "Nav-Callid"
-    private val navConsumerIdHeaderName = "Nav-Consumer-Id"
-
-    private val navConsumerId = "mine-saker-api"
 
     suspend fun hentSakstemaer(accessToken: AccessToken): SakstemaResult {
         return try {

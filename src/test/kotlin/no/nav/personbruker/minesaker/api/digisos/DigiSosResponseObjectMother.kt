@@ -10,4 +10,6 @@ object DigiSosResponseObjectMother {
         LocalDateTime.now().minusWeeks(1)
     )
 
+    fun giveMeResponseAsList() = listOf(giveMeResponseSisteEndretEnUkeSiden())
+
 }
