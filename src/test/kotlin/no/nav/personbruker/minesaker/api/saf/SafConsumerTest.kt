@@ -19,6 +19,8 @@ import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.HentJournalposterResultObjectMother
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.objectmothers.HentSakstemaerObjectMother
+import no.nav.personbruker.minesaker.api.sak.Kildetype
+
 import no.nav.personbruker.minesaker.api.tokenx.AccessToken
 import org.amshove.kluent.*
 import org.junit.jupiter.api.Test
@@ -45,25 +47,24 @@ internal class SafConsumerTest {
 
         val request = SakstemaerRequest.create(dummyIdent)
 
-        val internalSakstema = runBlocking {
+        val sakstemarespons = runBlocking {
             consumer.hentSakstemaer(request, dummyToken)
         }
 
         val externalSakstema = externalResponse.data!!.dokumentoversiktSelvbetjening.tema
-        internalSakstema.results().size `should be equal to` externalSakstema.size
-        internalSakstema.results()[0] `should be instance of` ForenkletSakstema::class
-        internalSakstema.results()[0].navn.value `should be equal to` externalSakstema[0].navn
-        internalSakstema.results()[0].kode.toString() `should be equal to` externalSakstema[0].kode.toString()
-        internalSakstema `should not be equal to` externalSakstema
+        sakstemarespons.results().size `should be equal to` externalSakstema.size
+        sakstemarespons.results()[0] `should be instance of` ForenkletSakstema::class
+        sakstemarespons.results()[0].navn.value `should be equal to` externalSakstema[0].navn
+        sakstemarespons.results()[0].kode.toString() `should be equal to` externalSakstema[0].kode.toString()
+        sakstemarespons `should not be equal to` externalSakstema
     }
 
     @Test
     fun `Hvis henting av sakstema feiler, saa skal det returneres et tomt resultat med info om at SAF feilet`() {
-        val externalResponse = HentSakstemaerObjectMother.giveMeOneResult()
-        val safResponseAsJson = objectMapper.writeValueAsString(externalResponse)
+        val invalidJsonResponseSomVilTriggeEnException = "invalid response"
         val mockHttpClient = createMockHttpClient {
             respond(
-                safResponseAsJson,
+                invalidJsonResponseSomVilTriggeEnException,
                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             )
         }
@@ -71,16 +72,13 @@ internal class SafConsumerTest {
 
         val request = SakstemaerRequest.create(dummyIdent)
 
-        val internalSakstema = runBlocking {
+        val sakstemarespons = runBlocking {
             consumer.hentSakstemaer(request, dummyToken)
         }
 
-        val externalSakstema = externalResponse.data!!.dokumentoversiktSelvbetjening.tema
-        internalSakstema.results().size `should be equal to` externalSakstema.size
-        internalSakstema.results()[0] `should be instance of` ForenkletSakstema::class
-        internalSakstema.results()[0].navn.value `should be equal to` externalSakstema[0].navn
-        internalSakstema.results()[0].kode.toString() `should be equal to` externalSakstema[0].kode.toString()
-        internalSakstema `should not be equal to` externalSakstema
+        sakstemarespons.hasErrors() `should be equal to` true
+        sakstemarespons.results().shouldBeEmpty()
+        sakstemarespons.errors() `should contain` Kildetype.SAF
     }
 
     @Test
