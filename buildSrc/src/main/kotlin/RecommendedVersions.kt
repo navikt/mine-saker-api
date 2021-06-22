@@ -70,7 +70,7 @@ object Kotlinx {
 }
 
 object Ktor {
-    const val version = "1.5.1"
+    const val version = "1.5.4"
     private const val groupId = "io.ktor"
 
     const val auth = "$groupId:ktor-auth:$version"
