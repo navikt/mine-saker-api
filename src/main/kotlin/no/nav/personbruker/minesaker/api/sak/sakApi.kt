@@ -49,7 +49,10 @@ fun Route.sakApi(
     get("/sakstemaer") {
         try {
             val result = service.hentSakstemaer(idportenUser)
-            call.respond(HttpStatusCode.OK, result)
+            if(result.hasErrors()) {
+                log.warn("En eller flere kilder feilet: ${result.errors()}. Klienten får en passende http-svarkode.")
+            }
+            call.respond(result.determineHttpCode(), result.results())
 
         } catch (exception: Exception) {
             val errorCode = ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)

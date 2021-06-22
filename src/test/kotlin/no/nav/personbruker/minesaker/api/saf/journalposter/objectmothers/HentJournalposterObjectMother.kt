@@ -17,4 +17,9 @@ object HentJournalposterResultObjectMother {
         return GraphQLResponse(data, errors = errors)
     }
 
+    fun giveMeResponseWithDataAndError(): GraphQLResponse<HentJournalposter.Result> {
+        val data = ResultObjectMother.giveMeHentJournalposterResult()
+        return giveMeResponseWithError(data)
+    }
+
 }

@@ -1,6 +1,7 @@
 package no.nav.personbruker.minesaker.api.common
 
 import io.ktor.http.*
+import io.mockk.clearMocks
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
@@ -10,14 +11,21 @@ import no.nav.personbruker.minesaker.api.common.exception.DocumentNotFoundExcept
 import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
 import org.amshove.kluent.`should be equal to`
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger
 
 internal class ExceptionResponseHandlerTest {
 
+    private val log = mockk<Logger>(relaxed = true)
+
+    @BeforeEach
+    fun clearMock() {
+        clearMocks(log)
+    }
+
     @Test
     fun `Skal haandtere DocumentNotFoundException`() {
-        val log = mockk<Logger>(relaxed = true)
         val exception = DocumentNotFoundException("Simulert feil")
 
         val errorCode = runBlocking {
@@ -31,7 +39,6 @@ internal class ExceptionResponseHandlerTest {
 
     @Test
     fun `Skal haandtere GraphQLResultException`() {
-        val log = mockk<Logger>(relaxed = true)
         val exception = GraphQLResultException("Simulert feil", emptyList(), emptyMap())
 
         val errorCode = runBlocking {
@@ -45,7 +52,6 @@ internal class ExceptionResponseHandlerTest {
 
     @Test
     fun `Skal haandtere InvalidRequestException`() {
-        val log = mockk<Logger>(relaxed = true)
         val exception = InvalidRequestException("Simulert feil")
 
         val errorCode = runBlocking {
@@ -59,7 +65,6 @@ internal class ExceptionResponseHandlerTest {
 
     @Test
     fun `Skal haandtere CommunicationException`() {
-        val log = mockk<Logger>(relaxed = true)
         val exception = CommunicationException("Simulert feil")
 
         val errorCode = runBlocking {
@@ -73,7 +78,6 @@ internal class ExceptionResponseHandlerTest {
 
     @Test
     fun `Skal haandtere ukjente feil`() {
-        val log = mockk<Logger>(relaxed = true)
         val exception = SecurityException("Simulert feil")
 
         val errorCode = runBlocking {

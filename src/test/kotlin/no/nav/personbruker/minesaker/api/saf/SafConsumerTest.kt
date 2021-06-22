@@ -17,8 +17,10 @@ import no.nav.personbruker.minesaker.api.config.buildJsonSerializer
 import no.nav.personbruker.minesaker.api.domain.*
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.HentJournalposterResultObjectMother
-import no.nav.personbruker.minesaker.api.saf.sakstemaer.objectmothers.HentSakstemaerObjectMother
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
+import no.nav.personbruker.minesaker.api.saf.sakstemaer.objectmothers.HentSakstemaerObjectMother
+import no.nav.personbruker.minesaker.api.sak.Kildetype
+
 import no.nav.personbruker.minesaker.api.tokenx.AccessToken
 import org.amshove.kluent.*
 import org.junit.jupiter.api.Test
@@ -45,16 +47,38 @@ internal class SafConsumerTest {
 
         val request = SakstemaerRequest.create(dummyIdent)
 
-        val internalSakstema = runBlocking {
+        val sakstemarespons = runBlocking {
             consumer.hentSakstemaer(request, dummyToken)
         }
 
         val externalSakstema = externalResponse.data!!.dokumentoversiktSelvbetjening.tema
-        internalSakstema.size `should be equal to` externalSakstema.size
-        internalSakstema[0] `should be instance of` ForenkletSakstema::class
-        internalSakstema[0].navn.value `should be equal to` externalSakstema[0].navn
-        internalSakstema[0].kode.toString() `should be equal to` externalSakstema[0].kode.toString()
-        internalSakstema `should not be equal to` externalSakstema
+        sakstemarespons.results().size `should be equal to` externalSakstema.size
+        sakstemarespons.results()[0] `should be instance of` ForenkletSakstema::class
+        sakstemarespons.results()[0].navn.value `should be equal to` externalSakstema[0].navn
+        sakstemarespons.results()[0].kode.toString() `should be equal to` externalSakstema[0].kode.toString()
+        sakstemarespons `should not be equal to` externalSakstema
+    }
+
+    @Test
+    fun `Hvis henting av sakstema feiler, saa skal det returneres et tomt resultat med info om at SAF feilet`() {
+        val invalidJsonResponseSomVilTriggeEnException = "invalid response"
+        val mockHttpClient = createMockHttpClient {
+            respond(
+                invalidJsonResponseSomVilTriggeEnException,
+                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            )
+        }
+        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
+
+        val request = SakstemaerRequest.create(dummyIdent)
+
+        val sakstemarespons = runBlocking {
+            consumer.hentSakstemaer(request, dummyToken)
+        }
+
+        sakstemarespons.hasErrors() `should be equal to` true
+        sakstemarespons.results().shouldBeEmpty()
+        sakstemarespons.errors() `should contain` Kildetype.SAF
     }
 
     @Test
@@ -91,11 +115,11 @@ internal class SafConsumerTest {
 
         val failingConsumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val request = SakstemaerRequest.create(dummyIdent)
+        val request = JournalposterRequest.create(dummyIdent, Sakstemakode.FOR)
 
         val result = runCatching {
             runBlocking {
-                failingConsumer.hentSakstemaer(request, dummyToken)
+                failingConsumer.hentJournalposter(dummyIdent, request, dummyToken)
             }
         }
 
@@ -116,11 +140,11 @@ internal class SafConsumerTest {
         }
         val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val request = SakstemaerRequest.create(dummyIdent)
+        val request = JournalposterRequest.create(dummyIdent, Sakstemakode.FOR)
 
         val result = runCatching {
             runBlocking {
-                consumer.hentSakstemaer(request, dummyToken)
+                consumer.hentJournalposter(dummyIdent, request, dummyToken)
             }
         }
 
@@ -142,11 +166,11 @@ internal class SafConsumerTest {
         }
         val consumerConsistentlyFailing = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val request = SakstemaerRequest.create(dummyIdent)
+        val request = JournalposterRequest.create(dummyIdent, Sakstemakode.DAG)
 
-        val result = runCatching {
+        val result = kotlin.runCatching {
             runBlocking {
-                consumerConsistentlyFailing.hentSakstemaer(request, dummyToken)
+                consumerConsistentlyFailing.hentJournalposter(dummyIdent, request, dummyToken)
             }
         }
 
@@ -170,11 +194,11 @@ internal class SafConsumerTest {
         }
         val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val request = SakstemaerRequest.create(dummyIdent)
+        val request = JournalposterRequest.create(dummyIdent, Sakstemakode.FOR)
 
         val result = runCatching {
             runBlocking {
-                consumer.hentSakstemaer(request, dummyToken)
+                consumer.hentJournalposter(dummyIdent, request, dummyToken)
             }
         }
 
@@ -185,7 +209,7 @@ internal class SafConsumerTest {
 
     @Test
     fun `Skal returnere data til bruker, hvis det mottas baade data og det rapporteres feil fra SAF`() {
-        val externalResponseWithDataAndError = HentSakstemaerObjectMother.giveMeResponseWithDataAndError()
+        val externalResponseWithDataAndError = HentJournalposterResultObjectMother.giveMeResponseWithDataAndError()
         val safErrorResponseAsJson = objectMapper.writeValueAsString(externalResponseWithDataAndError)
         val mockHttpClient = createMockHttpClient {
             respond(
@@ -195,11 +219,11 @@ internal class SafConsumerTest {
         }
         val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val request = SakstemaerRequest.create(dummyIdent)
+        val request = JournalposterRequest.create(dummyIdent, Sakstemakode.FOR)
 
         val result = runCatching {
             runBlocking {
-                consumer.hentSakstemaer(request, dummyToken)
+                consumer.hentJournalposter(dummyIdent, request, dummyToken)
             }
         }
 

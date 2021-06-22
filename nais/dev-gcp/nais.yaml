@@ -36,10 +36,14 @@ spec:
     outbound:
       external:
         - host: "safselvbetjening.dev-fss-pub.nais.io"
+        - host: "sosialhjelp-soknad-api-intern.dev.nav.no"
       rules:
         - application: "safselvbetjening"
           namespace: "teamdokumenthandtering"
           cluster: "dev-fss"
+        - application: "sosialhjelp-soknad-api-intern"
+          namespace: "teamdigisos"
+          cluster: "dev-sbs"
   ingresses:
     - "https://mine-saker-api.dev.nav.no/person/mine-saker-api"
   resources:
