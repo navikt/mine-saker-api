@@ -35,6 +35,7 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
         tokenCookieName = "mine_saker_api_token"
         setAsDefault = true
         securityLevel = LEVEL_4
+        tokenRefreshEnabled = true
     }
 
     install(ContentNegotiation) {
