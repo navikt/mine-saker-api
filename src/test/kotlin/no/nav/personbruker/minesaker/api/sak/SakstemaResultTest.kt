@@ -3,6 +3,7 @@ package no.nav.personbruker.minesaker.api.sak
 import io.ktor.http.*
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
+import java.time.ZonedDateTime
 
 internal class SakstemaResultTest {
 
@@ -25,6 +26,26 @@ internal class SakstemaResultTest {
         val result = SakstemaResultObjectMother.createResultWithTwoErrors()
 
         result.determineHttpCode() `should be equal to` HttpStatusCode.ServiceUnavailable
+    }
+
+    @Test
+    fun `Skal returnere resultatene sortert etter siste endret`() {
+        val nyeste = ForenkletSakstemaObjectMother.giveMeDagpengerResult(ZonedDateTime.now().minusDays(5))
+        val midterste = ForenkletSakstemaObjectMother.giveMePensjonResult(ZonedDateTime.now().minusDays(60))
+        val eldste = ForenkletSakstemaObjectMother.giveMeOkonomiskSosialhjelpResult(ZonedDateTime.now().minusDays(100))
+        val unsortedResults = listOf(
+            eldste,
+            nyeste,
+            midterste
+        )
+
+        val sakstemaResult = SakstemaResult(unsortedResults)
+
+        val sortedResults = sakstemaResult.resultsSorted()
+        sortedResults.size `should be equal to` unsortedResults.size
+        sortedResults[0] `should be equal to` nyeste
+        sortedResults[1] `should be equal to` midterste
+        sortedResults[2] `should be equal to` eldste
     }
     
 }

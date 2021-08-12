@@ -7,22 +7,22 @@ import java.time.ZonedDateTime
 
 object ForenkletSakstemaObjectMother {
 
-    fun giveMeDagpengerResult() = ForenkletSakstema(
+    fun giveMeDagpengerResult(sisteEndret: ZonedDateTime = ZonedDateTime.now()) = ForenkletSakstema(
         Navn("Dagpenger"),
         Sakstemakode.DAG,
-        ZonedDateTime.now()
+        sisteEndret
     )
 
-    fun giveMePensjonResult() = ForenkletSakstema(
+    fun giveMePensjonResult(sisteEndret: ZonedDateTime = ZonedDateTime.now()) = ForenkletSakstema(
         Navn("Pensjon"),
         Sakstemakode.PEN,
-        ZonedDateTime.now()
+        sisteEndret
     )
 
-    fun giveMeOkonomiskSosialhjelpResult() = ForenkletSakstema(
+    fun giveMeOkonomiskSosialhjelpResult(sisteEndret: ZonedDateTime = ZonedDateTime.now()) = ForenkletSakstema(
         Navn("Økonomisk sosialhjelp"),
         Sakstemakode.KOM,
-        ZonedDateTime.now()
+        sisteEndret
     )
 
 }

@@ -52,7 +52,7 @@ fun Route.sakApi(
             if(result.hasErrors()) {
                 log.warn("En eller flere kilder feilet: ${result.errors()}. Klienten får en passende http-svarkode.")
             }
-            call.respond(result.determineHttpCode(), result.results())
+            call.respond(result.determineHttpCode(), result.resultsSorted())
 
         } catch (exception: Exception) {
             val errorCode = ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)

@@ -13,7 +13,10 @@ data class SakstemaResult(
     operator fun plus(result: SakstemaResult): SakstemaResult =
         SakstemaResult(this.results + result.results, this.errors + result.errors)
 
-    fun results() = mutableListOf<ForenkletSakstema>().apply { addAll(results) }
+    fun resultsSorted() = mutableListOf<ForenkletSakstema>().apply {
+        addAll(results)
+        sortByDescending {r -> r.sistEndret}
+    }
 
     fun hasErrors() = errors.isNotEmpty()
     fun errors() = mutableListOf<Kildetype>().apply { addAll(errors) }

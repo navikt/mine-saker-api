@@ -41,10 +41,10 @@ internal class DigiSosConsumerTest {
             consumer.hentSakstemaer(dummyToken)
         }
 
-        internalSakstema.results().size `should be equal to` externalResponse.size
-        internalSakstema.results()[0] `should be instance of` ForenkletSakstema::class
-        internalSakstema.results()[0].navn.value `should be equal to` externalResponse[0].navn
-        internalSakstema.results()[0].kode.toString() `should be equal to` externalResponse[0].kode
+        internalSakstema.resultsSorted().size `should be equal to` externalResponse.size
+        internalSakstema.resultsSorted()[0] `should be instance of` ForenkletSakstema::class
+        internalSakstema.resultsSorted()[0].navn.value `should be equal to` externalResponse[0].navn
+        internalSakstema.resultsSorted()[0].kode.toString() `should be equal to` externalResponse[0].kode
         internalSakstema `should not be equal to` externalResponse
     }
 
@@ -64,7 +64,7 @@ internal class DigiSosConsumerTest {
         }
 
         sakstemarespons.hasErrors() `should be equal to` true
-        sakstemarespons.results().shouldBeEmpty()
+        sakstemarespons.resultsSorted().shouldBeEmpty()
         sakstemarespons.errors() `should contain` Kildetype.DIGISOS
     }
 
