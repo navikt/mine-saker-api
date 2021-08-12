@@ -1,5 +1,5 @@
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import com.expediagroup.graphql.plugin.gradle.graphql
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -22,7 +22,7 @@ tasks.withType<KotlinCompile> {
 repositories {
     // Use jcenter for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
-    jcenter()
+    mavenCentral()
     maven("https://packages.confluent.io/maven")
     maven("https://jitpack.io")
     mavenLocal()

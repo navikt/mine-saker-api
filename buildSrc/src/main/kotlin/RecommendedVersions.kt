@@ -50,7 +50,7 @@ object Jjwt {
 }
 
 object Kluent {
-    private const val version = "1.61"
+    private const val version = "1.68"
     const val kluent = "org.amshove.kluent:kluent:$version"
 }
 
