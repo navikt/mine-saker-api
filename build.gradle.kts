@@ -96,7 +96,7 @@ tasks {
         environment("SENSU_HOST", "stub")
         environment("SENSU_PORT", "")
 
-        main = application.mainClass.get()
+        mainClass.set(application.mainClass)
         classpath = sourceSets["main"].runtimeClasspath
     }
 }
@@ -107,10 +107,5 @@ graphql {
         packageName = "no.nav.dokument.saf.selvbetjening.generated.dto"
     }
 }
-
-// TODO: Fjern følgende work around når Shadow-plugin-et har blitt oppdatert:
-// 'shadowJar' er litt ute av synk med Gradle sin fjerning av property-en mainClassName
-// Dette kan fjernes i det denne er merge-et: https://github.com/johnrengelman/shadow/pull/612
-project.setProperty("mainClassName", application.mainClass.get())
 
 apply(plugin = Shadow.pluginId)
