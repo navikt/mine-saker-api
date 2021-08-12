@@ -10,7 +10,7 @@ import no.nav.personbruker.minesaker.api.domain.Tittel
 fun HentJournalposter.Journalpost.toInternal(innloggetBruker: Fodselsnummer) = Journalpost(
         Tittel(tittel ?: "Uten tittel"),
         JournalpostId(journalpostId),
-        journalposttype?.toInternal() ?: throw TransformationException.withMissingFieldName("journalposttype"),
+        journalposttype.toInternal(),
         avsender?.toInternal(innloggetBruker),
         mottaker?.toInternal(innloggetBruker),
         relevanteDatoer.toInternal(),

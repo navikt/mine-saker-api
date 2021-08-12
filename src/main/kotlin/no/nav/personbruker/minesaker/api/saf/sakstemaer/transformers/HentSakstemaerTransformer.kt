@@ -1,8 +1,6 @@
 package no.nav.personbruker.minesaker.api.saf.sakstemaer
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
-import no.nav.personbruker.minesaker.api.common.exception.TransformationException
-import no.nav.personbruker.minesaker.api.saf.common.transformers.finnSistEndret
 import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
 import no.nav.personbruker.minesaker.api.domain.Navn
 import no.nav.personbruker.minesaker.api.saf.journalposter.transformers.toInternalSaktemakode
@@ -11,8 +9,8 @@ import java.time.ZonedDateTime
 
 fun HentSakstemaer.Sakstema.toInternal(): ForenkletSakstema {
     return ForenkletSakstema(
-        Navn(navn ?: throw TransformationException.withMissingFieldName("navn")),
-        kode?.toInternalSaktemakode() ?: throw TransformationException.withMissingFieldName("kode"),
+        Navn(navn),
+        kode.toInternalSaktemakode(),
         journalposter.toInternal()
     )
 }

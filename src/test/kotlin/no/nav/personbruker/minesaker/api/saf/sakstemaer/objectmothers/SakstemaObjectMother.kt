@@ -5,8 +5,8 @@ import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
 object SakstemaObjectMother {
 
     fun giveMeOneSakstema(
-        navn: String? = "navn",
-        kode: String? = "FOR",
+        navn: String = "navn",
+        kode: String = "FOR",
         journalposter: List<HentSakstemaer.Journalpost> = listOf(JournalpostObjectMother.giveMeOneInngaaendeDokument())
     ): HentSakstemaer.Sakstema {
         return HentSakstemaer.Sakstema(navn, kode, journalposter)

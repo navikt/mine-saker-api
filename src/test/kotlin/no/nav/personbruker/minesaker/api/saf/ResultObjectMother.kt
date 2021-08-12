@@ -14,7 +14,7 @@ object ResultObjectMother {
 
     fun giveMeHentSakstemaResultMedUfullstendigeData(): HentSakstemaer.Result {
         val sakstemaUtenKodeSatt =
-            no.nav.personbruker.minesaker.api.saf.sakstemaer.objectmothers.SakstemaObjectMother.giveMeOneSakstema(kode = null)
+            no.nav.personbruker.minesaker.api.saf.sakstemaer.objectmothers.SakstemaObjectMother.giveMeOneSakstema(kode = "UGYLDIG_VERDI")
         val dokumentoversikt = HentSakstemaer.Dokumentoversikt(listOf(sakstemaUtenKodeSatt))
         return HentSakstemaer.Result(dokumentoversikt)
     }
@@ -26,7 +26,7 @@ object ResultObjectMother {
     }
 
     fun giveMeHentJournalposterResultMedUfullstendigeData(): HentJournalposter.Result {
-        val sakstemaUtenKodeSatt = SakstemaObjectMother.giveMeSakstemaWithUtgaaendeDokument(kode = null)
+        val sakstemaUtenKodeSatt = SakstemaObjectMother.giveMeSakstemaWithUtgaaendeDokument(kode = "UGYLDIG_VERDI")
         val dokumentoversikt = HentJournalposter.Dokumentoversikt(listOf(sakstemaUtenKodeSatt))
         return HentJournalposter.Result(dokumentoversikt)
     }
