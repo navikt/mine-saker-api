@@ -60,6 +60,20 @@ fun Route.sakApi(
         }
     }
 
+    get("/sakstemaer/sistendret") {
+        try {
+            val result = service.hentSakstemaer(idportenUser)
+            if(result.hasErrors()) {
+                log.warn("En eller flere kilder feilet: ${result.errors()}. Klienten får en passende http-svarkode.")
+            }
+            call.respond(result.determineHttpCode(), result.theTwoMostRecentlyModifiedResults())
+
+        } catch (exception: Exception) {
+            val errorCode = ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
+            call.respond(errorCode)
+        }
+    }
+
     get("/dokument/{$journalpostIdParameterName}/{$dokumentIdParameterName}") {
         try {
             val journalpostId = call.extractJournalpostId()

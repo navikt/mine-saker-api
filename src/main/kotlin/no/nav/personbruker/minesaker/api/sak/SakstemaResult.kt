@@ -18,6 +18,10 @@ data class SakstemaResult(
         sortByDescending {r -> r.sistEndret}
     }
 
+    fun theTwoMostRecentlyModifiedResults() : List<ForenkletSakstema> {
+        return resultsSorted().subList(0, 2)
+    }
+
     fun hasErrors() = errors.isNotEmpty()
     fun errors() = mutableListOf<Kildetype>().apply { addAll(errors) }
 
