@@ -3,7 +3,10 @@ package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 import no.nav.personbruker.minesaker.api.common.exception.TransformationException
 import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
 import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.JournalpostObjectMother
-import org.amshove.kluent.*
+import org.amshove.kluent.`should be equal to`
+import org.amshove.kluent.`should be instance of`
+import org.amshove.kluent.shouldNotBeEmpty
+import org.amshove.kluent.shouldNotBeNull
 import org.junit.jupiter.api.Test
 
 internal class JournalpostTransformerTest {
@@ -34,21 +37,6 @@ internal class JournalpostTransformerTest {
         val result = external.toInternal(dummyIdent)
 
         result.tittel.value `should be equal to` "Uten tittel"
-    }
-
-    @Test
-    fun `Skal kaste feil hvis journalposttype ikke er satt`() {
-        val external = JournalpostObjectMother.giveMeOneInngaaendeDokument(journalposttype = null)
-
-        val result = runCatching {
-            external.toInternal(dummyIdent)
-        }
-
-        result.isFailure `should be equal to` true
-        result.exceptionOrNull().`should not be null`()
-        result.exceptionOrNull() `should be instance of` TransformationException::class
-        val exception = result.exceptionOrNull() as TransformationException
-        exception.context[TransformationException.feltnavnKey] `should be equal to` "journalposttype"
     }
 
     @Test

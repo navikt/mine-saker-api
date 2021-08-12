@@ -7,7 +7,7 @@ object JournalpostObjectMother {
     fun giveMeOneInngaaendeDokument(
         tittel: String? = "Dummytittel Inngående",
         journalpostId: String = "dummyId-Inngående",
-        journalposttype: HentJournalposter.Journalposttype? = HentJournalposter.Journalposttype.I,
+        journalposttype: HentJournalposter.Journalposttype = HentJournalposter.Journalposttype.I,
         avsender: HentJournalposter.AvsenderMottaker? = AvsenderMottakerObjectMother.giveMePerson("123"),
         mottaker: HentJournalposter.AvsenderMottaker? = AvsenderMottakerObjectMother.giveMeOrganisasjon("654"),
         relevanteDatoer: List<HentJournalposter.RelevantDato?> = listOf(
