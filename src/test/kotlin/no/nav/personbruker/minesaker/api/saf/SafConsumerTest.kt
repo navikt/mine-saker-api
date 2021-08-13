@@ -52,10 +52,10 @@ internal class SafConsumerTest {
         }
 
         val externalSakstema = externalResponse.data!!.dokumentoversiktSelvbetjening.tema
-        sakstemarespons.results().size `should be equal to` externalSakstema.size
-        sakstemarespons.results()[0] `should be instance of` ForenkletSakstema::class
-        sakstemarespons.results()[0].navn.value `should be equal to` externalSakstema[0].navn
-        sakstemarespons.results()[0].kode.toString() `should be equal to` externalSakstema[0].kode.toString()
+        sakstemarespons.resultsSorted().size `should be equal to` externalSakstema.size
+        sakstemarespons.resultsSorted()[0] `should be instance of` ForenkletSakstema::class
+        sakstemarespons.resultsSorted()[0].navn.value `should be equal to` externalSakstema[0].navn
+        sakstemarespons.resultsSorted()[0].kode.toString() `should be equal to` externalSakstema[0].kode
         sakstemarespons `should not be equal to` externalSakstema
     }
 
@@ -77,7 +77,7 @@ internal class SafConsumerTest {
         }
 
         sakstemarespons.hasErrors() `should be equal to` true
-        sakstemarespons.results().shouldBeEmpty()
+        sakstemarespons.resultsSorted().shouldBeEmpty()
         sakstemarespons.errors() `should contain` Kildetype.SAF
     }
 
@@ -103,7 +103,7 @@ internal class SafConsumerTest {
         internalSakstema.size `should be equal to` externalSakstema.size
         internalSakstema[0] `should be instance of` Sakstema::class
         internalSakstema[0].navn.value `should be equal to` externalSakstema[0].navn
-        internalSakstema[0].kode.toString() `should be equal to` externalSakstema[0].kode.toString()
+        internalSakstema[0].kode.toString() `should be equal to` externalSakstema[0].kode
         internalSakstema `should not be equal to` externalSakstema
     }
 

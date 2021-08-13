@@ -81,7 +81,7 @@ internal class SakServiceTest {
 
         result.hasErrors() `should be equal to` true
         result.errors().`should contain`(Kildetype.DIGISOS)
-        result.results().shouldNotBeEmpty()
+        result.resultsSorted().shouldNotBeEmpty()
     }
 
     @Test

@@ -50,7 +50,7 @@ object Jjwt {
 }
 
 object Kluent {
-    private const val version = "1.61"
+    private const val version = "1.68"
     const val kluent = "org.amshove.kluent:kluent:$version"
 }
 
@@ -131,7 +131,7 @@ object Prometheus {
 }
 
 object Shadow {
-    const val version = "6.1.0"
+    const val version = "7.0.0"
     const val pluginId = "com.github.johnrengelman.shadow"
 }
 
