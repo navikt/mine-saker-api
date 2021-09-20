@@ -45,7 +45,7 @@ spec:
           namespace: "teamdigisos"
           cluster: "dev-sbs"
   ingresses:
-    - "https://mine-saker-api.dev.nav.no/person/mine-saker-api"
+    - "https://person.dev.nav.no/person/mine-saker-api"
   resources:
     limits:
       cpu: "3"
