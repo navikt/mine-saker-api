@@ -11,14 +11,14 @@ spec:
   image: {{version}}
   port: 8080
   liveness:
-    path: /person/mine-saker-api/internal/isAlive
+    path: /mine-saker-api/internal/isAlive
     initialDelay: 10
   readiness:
-    path: /person/mine-saker-api/internal/isReady
+    path: /mine-saker-api/internal/isReady
     initialDelay: 10
   prometheus:
     enabled: true
-    path: /person/mine-saker-api/metrics
+    path: /mine-saker-api/metrics
   replicas:
     min: 2
     max: 4
@@ -45,7 +45,7 @@ spec:
           namespace: "teamdigisos"
           cluster: "dev-sbs"
   ingresses:
-    - "https://person.dev.nav.no/person/mine-saker-api"
+    - "https://person.dev.nav.no/mine-saker-api"
   resources:
     limits:
       cpu: "3"
