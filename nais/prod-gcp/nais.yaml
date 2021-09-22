@@ -41,7 +41,7 @@ spec:
           namespace: "teamdokumenthandtering"
           cluster: "prod-fss"
   ingresses:
-    - "https://mine-saker-api.intern.nav.no/mine-saker-api"
+    - "https://person.nav.no/mine-saker-api"
   resources:
     limits:
       cpu: "3"
