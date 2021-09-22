@@ -11,14 +11,14 @@ spec:
   image: {{version}}
   port: 8080
   liveness:
-    path: /person/mine-saker-api/internal/isAlive
+    path: /mine-saker-api/internal/isAlive
     initialDelay: 10
   readiness:
-    path: /person/mine-saker-api/internal/isReady
+    path: /mine-saker-api/internal/isReady
     initialDelay: 10
   prometheus:
     enabled: true
-    path: /person/mine-saker-api/metrics
+    path: /mine-saker-api/metrics
   replicas:
     min: 2
     max: 4
@@ -41,7 +41,7 @@ spec:
           namespace: "teamdokumenthandtering"
           cluster: "prod-fss"
   ingresses:
-    - "https://mine-saker-api.intern.nav.no/person/mine-saker-api"
+    - "https://person.nav.no/mine-saker-api"
   resources:
     limits:
       cpu: "3"
