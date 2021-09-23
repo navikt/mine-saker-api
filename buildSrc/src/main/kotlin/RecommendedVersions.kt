@@ -69,6 +69,15 @@ object Kotlinx {
     const val atomicfu = "$groupId:atomicfu:0.14.4"
 }
 
+object Kotest {
+    const val version = "4.4.3"
+    private const val groupId = "io.kotest"
+
+    const val runnerJunit5 = "$groupId:kotest-runner-junit5:$version"
+    const val assertionsCore = "$groupId:kotest-assertions-core:$version"
+    const val extensions = "$groupId:kotest-extensions:$version"
+}
+
 object Ktor {
     const val version = "1.5.4"
     private const val groupId = "io.ktor"

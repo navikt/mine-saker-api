@@ -10,9 +10,9 @@ import io.ktor.routing.*
 import io.ktor.util.*
 import io.ktor.util.pipeline.*
 import io.prometheus.client.hotspot.DefaultExports
-import no.nav.personbruker.minesaker.api.sak.sakApi
 import no.nav.personbruker.minesaker.api.debug.exchangeApi
 import no.nav.personbruker.minesaker.api.health.healthApi
+import no.nav.personbruker.minesaker.api.sak.sakApi
 import no.nav.tms.token.support.idporten.SecurityLevel.LEVEL_4
 import no.nav.tms.token.support.idporten.installIdPortenAuth
 import no.nav.tms.token.support.idporten.user.IdportenUserFactory
@@ -49,7 +49,7 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
 
         authenticate {
             sakApi(appContext.sakService)
-            exchangeApi(appContext.safTokendings, appContext.digiSosTokendings, appContext.environment.clusterName)
+            exchangeApi(appContext.safTokendings, appContext.digiSosTokendings, appContext.environment)
         }
     }
 
