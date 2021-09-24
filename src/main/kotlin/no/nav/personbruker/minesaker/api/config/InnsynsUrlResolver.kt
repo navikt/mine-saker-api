@@ -36,7 +36,7 @@ class InnsynsUrlResolver(
     }
 
     fun urlFor(kode : Sakstemakode) : URL {
-        return temaspesifikkeLenker.getOrDefault(kode, generellLenke)
+        return temaspesifikkeLenker.getOrDefault(kode, URL("$generellLenke$kode"))
     }
 
 }

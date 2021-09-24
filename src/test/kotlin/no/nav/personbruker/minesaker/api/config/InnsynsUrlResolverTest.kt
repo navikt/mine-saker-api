@@ -18,7 +18,7 @@ internal class InnsynsUrlResolverTest {
         }
 
         sakstemakoderMedGenerellLenkeIProd.forEach { tema ->
-            resolver.urlFor(tema) `should be equal to` generellInnsynslenkeProd
+            resolver.urlFor(tema).toString() `should be equal to` "$generellInnsynslenkeProd$tema"
         }
     }
 
@@ -34,7 +34,7 @@ internal class InnsynsUrlResolverTest {
         }
 
         sakstemakoderMedGenerellLenkeIDev.forEach { tema ->
-            resolver.urlFor(tema) `should be equal to` generellInnsynslenkeDev
+            resolver.urlFor(tema).toString() `should be equal to` "$generellInnsynslenkeDev$tema"
         }
     }
 
