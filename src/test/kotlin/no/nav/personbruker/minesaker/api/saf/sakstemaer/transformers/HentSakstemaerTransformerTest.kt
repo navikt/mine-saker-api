@@ -1,7 +1,6 @@
 package no.nav.personbruker.minesaker.api.saf.sakstemaer.transformers
 
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.objectmothers.SakstemaObjectMother
-import no.nav.personbruker.minesaker.api.saf.sakstemaer.toInternal
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be null`
 import org.amshove.kluent.shouldNotBeNull
