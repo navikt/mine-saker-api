@@ -18,3 +18,11 @@ fun getEnvVar(varName: String, default: String? = null): String {
             ?: default
             ?: throw IllegalArgumentException("Appen kan ikke starte uten av miljøvariabelen $varName er satt.")
 }
+
+fun Environment.isRunningInDev(): Boolean {
+    return !isRunningInProd()
+}
+
+fun Environment.isRunningInProd(): Boolean {
+    return "prod-gcp" == clusterName
+}

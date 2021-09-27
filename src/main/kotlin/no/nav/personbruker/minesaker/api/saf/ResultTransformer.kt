@@ -6,7 +6,7 @@ import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
 import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
 import no.nav.personbruker.minesaker.api.domain.Sakstema
 import no.nav.personbruker.minesaker.api.saf.journalposter.transformers.toInternal
-import no.nav.personbruker.minesaker.api.saf.sakstemaer.toInternal
+import no.nav.personbruker.minesaker.api.saf.sakstemaer.transformers.toInternal
 
 fun HentSakstemaer.Result.toInternal(): List<ForenkletSakstema> =
     dokumentoversiktSelvbetjening.tema.map { externalTema -> externalTema.toInternal() }

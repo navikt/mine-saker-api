@@ -56,6 +56,9 @@ dependencies {
     testImplementation(Ktor.clientMock)
     testImplementation(Ktor.clientMockJvm)
     testImplementation(Kluent.kluent)
+    testImplementation(Kotest.runnerJunit5)
+    testImplementation(Kotest.assertionsCore)
+    testImplementation(Kotest.extensions)
     testImplementation(Mockk.mockk)
     testImplementation(Jjwt.api)
 
