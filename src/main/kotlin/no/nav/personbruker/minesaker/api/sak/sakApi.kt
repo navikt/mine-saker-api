@@ -16,11 +16,12 @@ val sakstemakode = "sakstemakode"
 val dokumentIdParameterName = "dokumentId"
 val journalpostIdParameterName = "journalpostId"
 
+val log = LoggerFactory.getLogger(SakService::class.java)
+
 fun Route.sakApi(
     service: SakService
 ) {
 
-    val log = LoggerFactory.getLogger(SakService::class.java)
 
     get("/journalposter") {
         try {
@@ -53,20 +54,6 @@ fun Route.sakApi(
                 log.warn("En eller flere kilder feilet: ${result.errors()}. Klienten får en passende http-svarkode.")
             }
             call.respond(result.determineHttpCode(), result.resultsSorted())
-
-        } catch (exception: Exception) {
-            val errorCode = ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
-            call.respond(errorCode)
-        }
-    }
-
-    get("/sakstemaer/sistendret") {
-        try {
-            val result = service.hentSakstemaer(idportenUser)
-            if(result.hasErrors()) {
-                log.warn("En eller flere kilder feilet: ${result.errors()}. Klienten får en passende http-svarkode.")
-            }
-            call.respond(result.determineHttpCode(), result.theTwoMostRecentlyModifiedResults())
 
         } catch (exception: Exception) {
             val errorCode = ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
