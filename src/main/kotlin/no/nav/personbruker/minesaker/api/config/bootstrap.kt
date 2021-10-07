@@ -76,4 +76,4 @@ private fun Application.configureShutdownHook(httpClient: HttpClient) {
 }
 
 val PipelineContext<*, ApplicationCall>.idportenUser get() = IdportenUserFactory.createIdportenUser(call)
-val PipelineContext<*, ApplicationCall>.tokenXUser get() = TokenXUserFactory.createTokenXUser(call)
+val PipelineContext<*, ApplicationCall>.tokenXUser get() = TokenXUserFactory.createTokenXUser(call, "sub")
