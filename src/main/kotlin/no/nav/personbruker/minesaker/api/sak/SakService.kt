@@ -19,7 +19,7 @@ class SakService(
     private val digiSosTokendings: DigiSosTokendings
 ) {
 
-    suspend fun hentSakstemaer(user: IdportenUser): SakstemaResult = withContext(Dispatchers.IO) {
+    suspend fun hentSakstemaer(user: AuthenticatedUser): SakstemaResult = withContext(Dispatchers.IO) {
         val sakstemaerFraSaf = async {
             hentSakstemaerFraSaf(user)
         }
@@ -29,14 +29,14 @@ class SakService(
         sakstemaerFraSaf.await() + sakstemaerFraDigiSos.await()
     }
 
-    suspend fun hentSakstemaerFraSaf(user: IdportenUser): SakstemaResult {
+    suspend fun hentSakstemaerFraSaf(user: AuthenticatedUser): SakstemaResult {
         val exchangedToken = safTokendings.exchangeToken(user)
         val fodselsnummer = Fodselsnummer(user.ident)
         val sakstemaerRequest = SakstemaerRequest.create(fodselsnummer)
         return safConsumer.hentSakstemaer(sakstemaerRequest, exchangedToken)
     }
 
-    suspend fun hentSakstemaerFraDigiSos(user: IdportenUser): SakstemaResult {
+    suspend fun hentSakstemaerFraDigiSos(user: AuthenticatedUser): SakstemaResult {
         val exchangedToken = digiSosTokendings.exchangeToken(user)
         return digiSosConsumer.hentSakstemaer(exchangedToken)
     }

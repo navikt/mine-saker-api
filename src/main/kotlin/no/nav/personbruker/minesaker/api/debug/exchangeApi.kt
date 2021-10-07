@@ -7,6 +7,7 @@ import no.nav.personbruker.minesaker.api.config.Environment
 import no.nav.personbruker.minesaker.api.config.idportenUser
 import no.nav.personbruker.minesaker.api.config.isRunningInDev
 import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings
+import no.nav.personbruker.minesaker.api.domain.AuthenticatedUser
 import no.nav.personbruker.minesaker.api.saf.SafTokendings
 
 fun Route.exchangeApi(safTokendings: SafTokendings, digiSosTokendings: DigiSosTokendings, environment : Environment) {
@@ -26,7 +27,8 @@ fun Route.exchangeApi(safTokendings: SafTokendings, digiSosTokendings: DigiSosTo
         }
 
         get("/exchange/digisos") {
-            val token = digiSosTokendings.exchangeToken(idportenUser)
+            val user = AuthenticatedUser.createIdPortenUser(idportenUser)
+            val token = digiSosTokendings.exchangeToken(user)
 
             call.respondText(token.value)
         }

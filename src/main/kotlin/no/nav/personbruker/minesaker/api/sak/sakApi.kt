@@ -7,6 +7,7 @@ import io.ktor.routing.*
 import no.nav.personbruker.minesaker.api.common.ExceptionResponseHandler
 import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.config.idportenUser
+import no.nav.personbruker.minesaker.api.domain.AuthenticatedUser
 import no.nav.personbruker.minesaker.api.domain.DokumentInfoId
 import no.nav.personbruker.minesaker.api.domain.JournalpostId
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
@@ -49,7 +50,8 @@ fun Route.sakApi(
 
     get("/sakstemaer") {
         try {
-            val result = service.hentSakstemaer(idportenUser)
+            val user = AuthenticatedUser.createIdPortenUser(idportenUser)
+            val result = service.hentSakstemaer(user)
             if(result.hasErrors()) {
                 log.warn("En eller flere kilder feilet: ${result.errors()}. Klienten får en passende http-svarkode.")
             }
