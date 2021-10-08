@@ -32,7 +32,9 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        - application: mine-saker
+        - application: dittnav-api
+          namespace: "personbruker"
+          cluster: "dev-sbs"
     outbound:
       external:
         - host: "safselvbetjening.dev-fss-pub.nais.io"

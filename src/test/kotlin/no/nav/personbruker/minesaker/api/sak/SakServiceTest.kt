@@ -2,6 +2,7 @@ package no.nav.personbruker.minesaker.api.sak
 
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
+import no.nav.personbruker.minesaker.api.common.AuthenticatedUserObjectMother
 import no.nav.personbruker.minesaker.api.common.IdportenUserObjectMother
 import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
@@ -23,7 +24,8 @@ import org.junit.jupiter.api.Test
 
 internal class SakServiceTest {
 
-    private val dummyUser = IdportenUserObjectMother.createIdportenUser()
+    private val dummyIdportenUser = IdportenUserObjectMother.createIdportenUser()
+    private val dummyTokenXUser = AuthenticatedUserObjectMother.createTokenXUser()
 
     private val safDummyToken = AccessToken("saf<access_token>")
     private val digiSosDummyToken = AccessToken("digiSos<access_token>")
@@ -33,8 +35,9 @@ internal class SakServiceTest {
 
     @BeforeEach
     fun setup() {
-        coEvery { safTokendings.exchangeToken(dummyUser) } returns safDummyToken
-        coEvery { digiSosTokendings.exchangeToken(dummyUser) } returns digiSosDummyToken
+        coEvery { safTokendings.exchangeToken(dummyIdportenUser) } returns safDummyToken
+        coEvery { safTokendings.exchangeToken(dummyTokenXUser) } returns safDummyToken
+        coEvery { digiSosTokendings.exchangeToken(dummyTokenXUser) } returns digiSosDummyToken
     }
 
     @AfterEach
@@ -54,7 +57,7 @@ internal class SakServiceTest {
         coEvery { digiSosConsumer.hentSakstemaer(any()) } returns SakstemaResultObjectMother.createDigiSosResults()
 
         runBlocking {
-            service.hentSakstemaer(dummyUser)
+            service.hentSakstemaer(dummyTokenXUser)
         }
 
         coVerify(exactly = 1) { safConsumer.hentSakstemaer(capture(parameterSendtVidere), any()) }
@@ -76,7 +79,7 @@ internal class SakServiceTest {
         coEvery { digiSosConsumer.hentSakstemaer(any()) } returns SakstemaResultObjectMother.createDigiSosError()
 
         val result = runBlocking {
-            service.hentSakstemaer(dummyUser)
+            service.hentSakstemaer(dummyTokenXUser)
         }
 
         result.hasErrors() `should be equal to` true
@@ -95,12 +98,12 @@ internal class SakServiceTest {
         val parameterSendtVidere = slot<JournalposterRequest>()
 
         runBlocking {
-            service.hentJournalposterForSakstema(dummyUser, expectedSakstemakode)
+            service.hentJournalposterForSakstema(dummyIdportenUser, expectedSakstemakode)
         }
 
         coVerify(exactly = 1) {
             safConsumer.hentJournalposter(
-                Fodselsnummer(dummyUser.ident),
+                Fodselsnummer(dummyIdportenUser.ident),
                 capture(parameterSendtVidere),
                 safDummyToken
             )
@@ -121,13 +124,13 @@ internal class SakServiceTest {
         val service = SakService(safConsumer, safTokendings, digiSosConsumer, digiSosTokendings)
 
         coEvery {
-            safConsumer.hentJournalposter(Fodselsnummer(dummyUser.ident), any(), any())
+            safConsumer.hentJournalposter(Fodselsnummer(dummyIdportenUser.ident), any(), any())
         } throws expectedException
 
         val result = runCatching {
             runBlocking {
                 val dummykode = Sakstemakode.FOR
-                service.hentJournalposterForSakstema(dummyUser, dummykode)
+                service.hentJournalposterForSakstema(dummyIdportenUser, dummykode)
             }
         }
 
