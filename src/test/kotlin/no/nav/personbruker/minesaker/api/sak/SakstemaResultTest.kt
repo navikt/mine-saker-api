@@ -49,7 +49,7 @@ internal class SakstemaResultTest {
         sortedResults[1] `should be equal to` midterste
         sortedResults[2] `should be equal to` eldste
     }
-    
+
     @Test
     fun `Skal returnere de to siste endrede sakene`() {
         val nyeste = ForenkletSakstemaObjectMother.giveMeDagpengerResult(ZonedDateTime.now().minusDays(5))
@@ -68,6 +68,18 @@ internal class SakstemaResultTest {
         twoNewestResults `should contain` nyeste
         twoNewestResults `should contain` midterste
         twoNewestResults `should not contain` eldste
+    }
+
+    @Test
+    fun `Skal returnere et sakstema, hvis det ikke finnes flere`() {
+        val enesteSakstema = ForenkletSakstemaObjectMother.giveMeDagpengerResult(ZonedDateTime.now().minusDays(5))
+        val results = listOf(enesteSakstema)
+
+        val sakstemaResult = SakstemaResult(results)
+
+        val newestResult = sakstemaResult.theTwoMostRecentlyModifiedResults()
+        newestResult.size `should be equal to` 1
+        newestResult `should contain` enesteSakstema
     }
 
 }
