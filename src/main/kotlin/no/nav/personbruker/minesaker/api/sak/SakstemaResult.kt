@@ -15,12 +15,18 @@ data class SakstemaResult(
 
     fun resultsSorted() = mutableListOf<ForenkletSakstema>().apply {
         addAll(results)
-        sortByDescending {r -> r.sistEndret}
+        sortByDescending { r -> r.sistEndret }
     }
 
-    fun theTwoMostRecentlyModifiedResults() : List<ForenkletSakstema> {
-        return resultsSorted().subList(0, 2)
+    fun theTwoMostRecentlyModifiedResults(): List<ForenkletSakstema> {
+        return if (moreThanTwoResults()) {
+            resultsSorted().subList(0, 2)
+        } else {
+            results
+        }
     }
+
+    private fun moreThanTwoResults() = results.size > 2
 
     fun hasErrors() = errors.isNotEmpty()
     fun errors() = mutableListOf<Kildetype>().apply { addAll(errors) }
