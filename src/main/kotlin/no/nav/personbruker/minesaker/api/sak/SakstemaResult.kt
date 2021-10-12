@@ -2,6 +2,8 @@ package no.nav.personbruker.minesaker.api.sak
 
 import io.ktor.http.*
 import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
+import no.nav.personbruker.minesaker.api.domain.Sakstemakode
+import no.nav.personbruker.minesaker.api.domain.SistEndredeSakstemaer
 
 data class SakstemaResult(
     private val results: List<ForenkletSakstema>,
@@ -18,13 +20,24 @@ data class SakstemaResult(
         sortByDescending { r -> r.sistEndret }
     }
 
-    fun theTwoMostRecentlyModifiedResults(): List<ForenkletSakstema> {
+    fun recentlyModifiedSakstemaResults(): SistEndredeSakstemaer {
+        val sortedResults = resultsSorted()
+        return SistEndredeSakstemaer(
+            sistEndret(sortedResults),
+            hentSistEndretForDagpenger(sortedResults)
+        )
+    }
+
+    private fun sistEndret(sortedResults : List<ForenkletSakstema>): List<ForenkletSakstema> {
         return if (moreThanTwoResults()) {
-            resultsSorted().subList(0, 2)
+            sortedResults.subList(0, 2)
         } else {
-            results
+            sortedResults
         }
     }
+
+    private fun hentSistEndretForDagpenger(sortedResults: MutableList<ForenkletSakstema>) =
+        sortedResults.find { s -> s.kode == Sakstemakode.DAG }?.sistEndret
 
     private fun moreThanTwoResults() = results.size > 2
 

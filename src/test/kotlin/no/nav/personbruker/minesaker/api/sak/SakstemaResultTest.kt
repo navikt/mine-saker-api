@@ -4,6 +4,7 @@ import io.ktor.http.*
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain`
 import org.amshove.kluent.`should not contain`
+import org.amshove.kluent.shouldBeNull
 import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
 
@@ -51,23 +52,60 @@ internal class SakstemaResultTest {
     }
 
     @Test
-    fun `Skal returnere de to siste endrede sakene`() {
-        val nyeste = ForenkletSakstemaObjectMother.giveMeDagpengerResult(ZonedDateTime.now().minusDays(5))
+    fun `Skal returnere de to siste endrede sakene, og dato for siste endring for dagpenger`() {
+        val nyeste = ForenkletSakstemaObjectMother.giveMeOkonomiskSosialhjelpResult(ZonedDateTime.now().minusDays(5))
         val midterste = ForenkletSakstemaObjectMother.giveMePensjonResult(ZonedDateTime.now().minusDays(60))
-        val eldste = ForenkletSakstemaObjectMother.giveMeOkonomiskSosialhjelpResult(ZonedDateTime.now().minusDays(100))
+        val forGammelDagpengeSak = ForenkletSakstemaObjectMother.giveMeDagpengerResult(ZonedDateTime.now().minusDays(100))
         val unsortedResults = listOf(
-            eldste,
+            forGammelDagpengeSak,
             nyeste,
             midterste
         )
 
         val sakstemaResult = SakstemaResult(unsortedResults)
 
-        val twoNewestResults = sakstemaResult.theTwoMostRecentlyModifiedResults()
-        twoNewestResults.size `should be equal to` 2
-        twoNewestResults `should contain` nyeste
-        twoNewestResults `should contain` midterste
-        twoNewestResults `should not contain` eldste
+        val lastModified = sakstemaResult.recentlyModifiedSakstemaResults()
+        lastModified.sistEndrede.size `should be equal to` 2
+        lastModified.sistEndrede `should contain` nyeste
+        lastModified.sistEndrede `should contain` midterste
+        lastModified.sistEndrede `should not contain` forGammelDagpengeSak
+        lastModified.dagpengerSistEndret `should be equal to` forGammelDagpengeSak.sistEndret
+    }
+
+    @Test
+    fun `Skal returnere de to siste endrede sakene, og dato for siste endring for dagpenger selv om dagpenger er en av de to siste`() {
+        val nyeste = ForenkletSakstemaObjectMother.giveMeOkonomiskSosialhjelpResult(ZonedDateTime.now().minusDays(5))
+        val dagpenger = ForenkletSakstemaObjectMother.giveMeDagpengerResult(ZonedDateTime.now().minusDays(100))
+        val unsortedResults = listOf(
+            dagpenger,
+            nyeste
+        )
+
+        val sakstemaResult = SakstemaResult(unsortedResults)
+
+        val lastModified = sakstemaResult.recentlyModifiedSakstemaResults()
+        lastModified.sistEndrede.size `should be equal to` 2
+        lastModified.sistEndrede `should contain` nyeste
+        lastModified.sistEndrede `should contain` dagpenger
+        lastModified.dagpengerSistEndret `should be equal to` dagpenger.sistEndret
+    }
+
+    @Test
+    fun `Skal returnere de to siste endrede sakene, og tom dato for dagpenger (hvis bruker ikke har hatt dagpenger)`() {
+        val nyeste = ForenkletSakstemaObjectMother.giveMeOkonomiskSosialhjelpResult(ZonedDateTime.now().minusDays(5))
+        val midterste = ForenkletSakstemaObjectMother.giveMePensjonResult(ZonedDateTime.now().minusDays(60))
+        val unsortedResults = listOf(
+            nyeste,
+            midterste
+        )
+
+        val sakstemaResult = SakstemaResult(unsortedResults)
+
+        val lastModified = sakstemaResult.recentlyModifiedSakstemaResults()
+        lastModified.sistEndrede.size `should be equal to` 2
+        lastModified.sistEndrede `should contain` nyeste
+        lastModified.sistEndrede `should contain` midterste
+        lastModified.dagpengerSistEndret.shouldBeNull()
     }
 
     @Test
@@ -77,9 +115,9 @@ internal class SakstemaResultTest {
 
         val sakstemaResult = SakstemaResult(results)
 
-        val newestResult = sakstemaResult.theTwoMostRecentlyModifiedResults()
-        newestResult.size `should be equal to` 1
-        newestResult `should contain` enesteSakstema
+        val newestResult = sakstemaResult.recentlyModifiedSakstemaResults()
+        newestResult.sistEndrede.size `should be equal to` 1
+        newestResult.sistEndrede `should contain` enesteSakstema
     }
 
 }

@@ -18,7 +18,7 @@ fun Route.dittNavSakApi(
             if(result.hasErrors()) {
                 log.warn("En eller flere kilder feilet: ${result.errors()}. Klienten får en passende http-svarkode.")
             }
-            call.respond(result.determineHttpCode(), result.theTwoMostRecentlyModifiedResults())
+            call.respond(result.determineHttpCode(), result.recentlyModifiedSakstemaResults())
 
         } catch (exception: Exception) {
             val errorCode = ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
