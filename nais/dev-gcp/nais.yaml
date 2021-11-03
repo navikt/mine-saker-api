@@ -43,9 +43,6 @@ spec:
         - application: "safselvbetjening"
           namespace: "teamdokumenthandtering"
           cluster: "dev-fss"
-        - application: "sosialhjelp-soknad-api-intern"
-          namespace: "teamdigisos"
-          cluster: "dev-sbs"
   ingresses:
     - "https://person.dev.nav.no/mine-saker-api"
   resources:
