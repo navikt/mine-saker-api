@@ -4,7 +4,10 @@ import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter.Variantformat.ARKIV
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter.Variantformat.SLADDET
 import no.nav.personbruker.minesaker.api.common.exception.TransformationException
-import no.nav.personbruker.minesaker.api.domain.*
+import no.nav.personbruker.minesaker.api.domain.DokumentInfoId
+import no.nav.personbruker.minesaker.api.domain.Dokumentinfo
+import no.nav.personbruker.minesaker.api.domain.Dokumenttype
+import no.nav.personbruker.minesaker.api.domain.Tittel
 import org.slf4j.LoggerFactory
 
 private val log = LoggerFactory.getLogger(HentJournalposter.DokumentInfo::class.java)
@@ -59,7 +62,7 @@ fun HentJournalposter.DokumentInfo.toInternal(
         plukkUtEventuelleGrunnerTilManglendeTilgang(externalVariant.brukerHarTilgang, externalVariant)
     return Dokumentinfo(
         Tittel(tittel ?: "Uten tittel"),
-        DokumentInfoId(dokumentInfoId),
+        if (externalVariant.brukerHarTilgang) DokumentInfoId(dokumentInfoId) else DokumentInfoId("-"),
         dokumenttype,
         externalVariant.brukerHarTilgang,
         eventuelleGrunnerTilManglendeTilgang,

@@ -2,6 +2,7 @@
 .idea
 /out
 build
+buildSrc/out
 *.iml
 *.ipr
 *.iws
