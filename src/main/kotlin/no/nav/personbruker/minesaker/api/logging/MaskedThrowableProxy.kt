@@ -25,13 +25,17 @@ class MaskedThrowableProxy private constructor(private val throwableProxy: IThro
         return mask(throwableProxy.cause)
     }
 
-    override fun getSuppressed(): Array<IThrowableProxy?>? {
+    override fun getSuppressed(): Array<IThrowableProxy?> {
         val suppressed = throwableProxy.suppressed
         val maskedSuppressed = arrayOfNulls<IThrowableProxy>(suppressed.size)
         for (i in suppressed.indices) {
             maskedSuppressed[i] = mask(suppressed[i])
         }
         return maskedSuppressed
+    }
+
+    override fun isCyclic(): Boolean {
+        return throwableProxy.isCyclic
     }
 
     companion object {
