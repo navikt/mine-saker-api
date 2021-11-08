@@ -99,7 +99,9 @@ object Ktor {
 }
 
 object Logback {
-    private const val version = "1.2.3"
+    // Velger å ta i bruk følgende alpha-versjon, fordi det har fikset feilen som kan gi stackoverflow i Logback i Ktor:
+    // https://youtrack.jetbrains.com/issue/KTOR-2040#focus=Comments-27-5225266.0-0
+    private const val version = "1.3.0-alpha10"
     const val classic = "ch.qos.logback:logback-classic:$version"
 }
 
