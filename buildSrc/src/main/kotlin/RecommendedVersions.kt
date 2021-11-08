@@ -64,13 +64,12 @@ object Kotlin {
 object Kotlinx {
     private const val groupId = "org.jetbrains.kotlinx"
 
-    const val coroutines = "$groupId:kotlinx-coroutines-core:1.4.2"
+    const val coroutines = "$groupId:kotlinx-coroutines-core:1.5.2"
     const val htmlJvm = "$groupId:kotlinx-html-jvm:0.7.2"
-    const val atomicfu = "$groupId:atomicfu:0.14.4"
 }
 
 object Kotest {
-    const val version = "4.4.3"
+    const val version = "4.6.3"
     private const val groupId = "io.kotest"
 
     const val runnerJunit5 = "$groupId:kotest-runner-junit5:$version"
@@ -79,7 +78,7 @@ object Kotest {
 }
 
 object Ktor {
-    const val version = "1.5.4"
+    const val version = "1.6.5"
     private const val groupId = "io.ktor"
 
     const val auth = "$groupId:ktor-auth:$version"
@@ -89,8 +88,6 @@ object Ktor {
     const val jackson = "$groupId:ktor-jackson:$version"
     const val serverNetty = "$groupId:ktor-server-netty:$version"
     const val clientApache = "$groupId:ktor-client-apache:$version"
-    const val clientCio = "$groupId:ktor-client-cio:$version"
-    const val clientCore = "$groupId:ktor-client-core:$version"
     const val clientJson = "$groupId:ktor-client-json:$version"
     const val clientSerializationJvm = "$groupId:ktor-client-serialization-jvm:$version"
     const val clientJackson = "$groupId:ktor-client-jackson:$version"
