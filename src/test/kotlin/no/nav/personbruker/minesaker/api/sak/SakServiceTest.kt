@@ -5,19 +5,19 @@ import kotlinx.coroutines.runBlocking
 import no.nav.personbruker.minesaker.api.common.AuthenticatedUserObjectMother
 import no.nav.personbruker.minesaker.api.common.IdportenUserObjectMother
 import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
+import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
 import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings
+import no.nav.personbruker.minesaker.api.domain.DokumentInfoId
 import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
+import no.nav.personbruker.minesaker.api.domain.JournalpostId
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.saf.SafTokendings
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.personbruker.minesaker.api.tokenx.AccessToken
-import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should be instance of`
-import org.amshove.kluent.`should contain`
-import org.amshove.kluent.shouldNotBeEmpty
+import org.amshove.kluent.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -136,6 +136,29 @@ internal class SakServiceTest {
 
         result.isFailure `should be equal to` true
         result.exceptionOrNull() `should be instance of` CommunicationException::class
+    }
+
+    @Test
+    fun `Skal forkaste forsok paa aa hente dokumenter bruker ikke har tilgang til`() {
+        val journapostId = JournalpostId("x")
+        val safConsumer = mockk<SafConsumer>(relaxed = true)
+        val digiSosConsumer = mockk<DigiSosConsumer>()
+        val service = SakService(safConsumer, safTokendings, digiSosConsumer, digiSosTokendings)
+
+        val dokumentIdUtenTilgang = DokumentInfoId("-")
+        val rejectedInvocation = runCatching {
+            runBlocking {
+                service.hentDokument(dummyIdportenUser, journapostId, dokumentIdUtenTilgang)
+            }
+        }
+        rejectedInvocation.isFailure `should be equal to` true
+        rejectedInvocation.exceptionOrNull() `should be instance of` InvalidRequestException::class
+
+        val dokumentIdMedTilgang = DokumentInfoId("123")
+        runBlocking {
+            service.hentDokument(dummyIdportenUser, journapostId, dokumentIdMedTilgang)
+        }.shouldNotBeNull()
+
     }
 
 }
