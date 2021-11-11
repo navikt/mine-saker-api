@@ -307,6 +307,7 @@ internal class SafConsumerTest {
             install(JsonFeature) {
                 serializer = buildJsonSerializer()
             }
+            install(HttpTimeout)
         }
     }
 

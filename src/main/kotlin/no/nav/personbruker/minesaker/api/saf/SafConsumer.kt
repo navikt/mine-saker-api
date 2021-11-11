@@ -15,7 +15,10 @@ import no.nav.personbruker.minesaker.api.common.exception.AbstractMineSakerExcep
 import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.common.exception.DocumentNotFoundException
 import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
-import no.nav.personbruker.minesaker.api.domain.*
+import no.nav.personbruker.minesaker.api.domain.DokumentInfoId
+import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
+import no.nav.personbruker.minesaker.api.domain.JournalpostId
+import no.nav.personbruker.minesaker.api.domain.Sakstema
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.personbruker.minesaker.api.sak.Kildetype
@@ -135,6 +138,11 @@ class SafConsumer(
                     header(Authorization, "Bearer ${accessToken.value}")
                     contentType(ContentType.Application.Json)
                     accept(ContentType.Application.Json)
+                    timeout {
+                        socketTimeoutMillis = 25000
+                        connectTimeoutMillis = 10000
+                        requestTimeoutMillis = 35000
+                    }
                     body = request
                 }
             }
