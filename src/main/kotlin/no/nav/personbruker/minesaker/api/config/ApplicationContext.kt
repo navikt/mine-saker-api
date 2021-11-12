@@ -15,7 +15,7 @@ class ApplicationContext {
     val httpClient = HttpClientBuilder.build()
     val healthService = HealthService(this)
 
-    val tokendingsService = TokendingsServiceBuilder.buildTokendingsService()
+    val tokendingsService = TokendingsServiceBuilder.buildTokendingsService(maxCachedEntries = 5000)
 
     val safTokendings = SafTokendings(tokendingsService, environment.safClientId)
     val digiSosTokendings = DigiSosTokendings(tokendingsService, environment.digiSosClientId)
