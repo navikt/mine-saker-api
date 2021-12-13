@@ -16,5 +16,4 @@ class SafTokendings(
     suspend fun exchangeToken(user: AuthenticatedUser): AccessToken {
         return AccessToken(tokendingsService.exchangeToken(user.tokenString, safselvbetjeningClientId))
     }
-
 }
