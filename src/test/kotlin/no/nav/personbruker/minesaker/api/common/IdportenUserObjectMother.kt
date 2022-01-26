@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
-import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
+import no.nav.tms.token.support.idporten.user.IdportenUser
 import java.security.Key
 import java.time.ZonedDateTime
 import java.util.*
