@@ -1,6 +1,6 @@
 package no.nav.personbruker.minesaker.api.domain
 
-import no.nav.tms.token.support.idporten.user.IdportenUser
+import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 import no.nav.tms.token.support.tokenx.validation.user.TokenXUser
 
 data class AuthenticatedUser(

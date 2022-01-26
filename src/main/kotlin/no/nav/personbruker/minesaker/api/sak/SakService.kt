@@ -11,7 +11,7 @@ import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.saf.SafTokendings
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
-import no.nav.tms.token.support.idporten.user.IdportenUser
+import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 
 class SakService(
     private val safConsumer: SafConsumer,

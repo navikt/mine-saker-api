@@ -2,7 +2,7 @@ package no.nav.personbruker.minesaker.api.saf
 
 import no.nav.personbruker.minesaker.api.domain.AuthenticatedUser
 import no.nav.personbruker.minesaker.api.tokenx.AccessToken
-import no.nav.tms.token.support.idporten.user.IdportenUser
+import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 import no.nav.tms.token.support.tokendings.exchange.TokendingsService
 
 class SafTokendings(
