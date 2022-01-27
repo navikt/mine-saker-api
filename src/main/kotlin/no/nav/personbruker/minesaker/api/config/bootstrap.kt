@@ -14,9 +14,10 @@ import no.nav.personbruker.minesaker.api.health.healthApi
 import no.nav.personbruker.minesaker.api.sak.dittNavSakApi
 import no.nav.personbruker.minesaker.api.sak.sakApi
 import no.nav.tms.token.support.authentication.installer.installAuthenticators
-import no.nav.tms.token.support.idporten.SecurityLevel.LEVEL_4
-import no.nav.tms.token.support.idporten.user.IdportenUserFactory
+import no.nav.tms.token.support.idporten.sidecar.LoginLevel.LEVEL_4
+import no.nav.tms.token.support.idporten.sidecar.user.IdportenUserFactory
 import no.nav.tms.token.support.tokenx.validation.TokenXAuthenticator
+import no.nav.tms.token.support.tokenx.validation.TokenXHeader
 import no.nav.tms.token.support.tokenx.validation.user.TokenXUserFactory
 
 fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()) {
@@ -34,10 +35,7 @@ fun Application.mainModule(appContext: ApplicationContext = ApplicationContext()
     installAuthenticators {
         installIdPortenAuth {
             setAsDefault = true
-            postLogoutRedirectUri = appContext.environment.postLogoutUrl
-            tokenCookieName = "mine_saker_api_token"
-            securityLevel = LEVEL_4
-            tokenRefreshEnabled = true
+            loginLevel = LEVEL_4
         }
         installTokenXAuth {
             setAsDefault = false

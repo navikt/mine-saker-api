@@ -49,7 +49,7 @@ dependencies {
     implementation(Prometheus.common)
     implementation(Prometheus.hotspot)
     implementation(Prometheus.logback)
-    implementation(Tms.KtorTokenSupport.idporten)
+    implementation(Tms.KtorTokenSupport.idportenSidecar)
     implementation(Tms.KtorTokenSupport.tokendingsExchange)
     implementation(Tms.KtorTokenSupport.authenticationInstaller)
     implementation(Tms.KtorTokenSupport.tokenXValidation)
