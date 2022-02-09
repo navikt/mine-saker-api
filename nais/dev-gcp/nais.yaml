@@ -37,6 +37,9 @@ spec:
         - application: dittnav-api
           namespace: "personbruker"
           cluster: "dev-sbs"
+        - application: dittnav-api
+          namespace: "personbruker"
+          cluster: "dev-gcp"
     outbound:
       external:
         - host: "safselvbetjening.dev-fss-pub.nais.io"
