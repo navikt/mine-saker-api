@@ -42,10 +42,10 @@ spec:
           cluster: "dev-gcp"
     outbound:
       external:
-        - host: "safselvbetjening.dev-fss-pub.nais.io"
+        - host: "safselvbetjening-q1.dev-fss-pub.nais.io"
         - host: "sosialhjelp-soknad-api-intern.dev.nav.no"
       rules:
-        - application: "safselvbetjening"
+        - application: "safselvbetjening-q1"
           namespace: "teamdokumenthandtering"
           cluster: "dev-fss"
   ingresses:
