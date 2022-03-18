@@ -15,7 +15,7 @@ plugins {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "13"
+    kotlinOptions.jvmTarget = "17"
     kotlinOptions.freeCompilerArgs = listOf("-Xinline-classes")
 }
 
