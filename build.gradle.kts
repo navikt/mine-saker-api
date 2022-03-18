@@ -7,15 +7,15 @@ plugins {
     kotlin("jvm").version(Kotlin.version)
     kotlin("plugin.allopen").version(Kotlin.version)
 
-    id(GraphQL.pluginId) version GraphQL.version
+    id(GraphQL.pluginId) version "3.7.0"
+    id(Shadow.pluginId) version "7.0.0"
 
-    id(Shadow.pluginId) version (Shadow.version)
     // Apply the application plugin to add support for building a CLI application.
     application
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "13"
+    kotlinOptions.jvmTarget = "17"
     kotlinOptions.freeCompilerArgs = listOf("-Xinline-classes")
 }
 
@@ -29,7 +29,7 @@ repositories {
 }
 
 dependencies {
-    implementation(GraphQL.client)
+    implementation("com.expediagroup:graphql-kotlin-client:3.7.0")
     implementation(Jackson.dataTypeJsr310)
     implementation(Kotlinx.coroutines)
     implementation(Kotlinx.htmlJvm)
@@ -44,7 +44,9 @@ dependencies {
     implementation(Ktor.htmlBuilder)
     implementation(Ktor.jackson)
     implementation(Ktor.serverNetty)
-    implementation(Logback.classic)
+    // Velger å ta i bruk følgende alpha-versjon, fordi det har fikset feilen som kan gi stackoverflow i Logback i Ktor:
+    // https://youtrack.jetbrains.com/issue/KTOR-2040#focus=Comments-27-5225266.0-0
+    implementation("ch.qos.logback:logback-classic:1.3.0-alpha10")
     implementation(Logstash.logbackEncoder)
     implementation(Prometheus.common)
     implementation(Prometheus.hotspot)
