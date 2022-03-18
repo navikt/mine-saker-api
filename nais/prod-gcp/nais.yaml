@@ -35,6 +35,8 @@ spec:
     inbound:
       rules:
         - application: dittnav-api
+          namespace: min-side
+        - application: dittnav-api
           namespace: "personbruker"
           cluster: "prod-sbs"
     outbound:
