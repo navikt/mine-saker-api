@@ -7,9 +7,9 @@ plugins {
     kotlin("jvm").version(Kotlin.version)
     kotlin("plugin.allopen").version(Kotlin.version)
 
-    id(GraphQL.pluginId) version GraphQL.version
+    id(GraphQL.pluginId) version "3.7.0"
+    id(Shadow.pluginId) version "7.0.0"
 
-    id(Shadow.pluginId) version ("7.0.0")
     // Apply the application plugin to add support for building a CLI application.
     application
 }
