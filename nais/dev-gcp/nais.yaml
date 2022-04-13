@@ -2,9 +2,9 @@ apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
   name: mine-saker-api
-  namespace: personbruker
+  namespace: min-side
   labels:
-    team: personbruker
+    team: min-side
 spec:
   envFrom:
     - secret: mine-saker-api-secrets
@@ -35,13 +35,6 @@ spec:
     inbound:
       rules:
         - application: dittnav-api
-          namespace: min-side
-        - application: dittnav-api
-          namespace: "personbruker"
-          cluster: "dev-sbs"
-        - application: dittnav-api
-          namespace: "personbruker"
-          cluster: "dev-gcp"
     outbound:
       external:
         - host: "safselvbetjening-q1.dev-fss-pub.nais.io"
