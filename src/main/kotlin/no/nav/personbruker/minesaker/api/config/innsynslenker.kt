@@ -7,7 +7,7 @@ val generellInnsynslenkeDev = URL("https://person.dev.nav.no/mine-saker/tema/")
 val innsynslenkerDev : Map<Sakstemakode, URL> = mapOf(
     Sakstemakode.DAG to URL("https://arbeid.dev.nav.no/arbeid/dagpenger/mine-dagpenger"),
     Sakstemakode.HJE to URL("https://hjelpemidler.dev.nav.no/hjelpemidler/dinehjelpemidler"),
-    Sakstemakode.KOM to URL("https://www-q1.dev.nav.no/sosialhjelp/innsyn"),
+    Sakstemakode.KOM to URL("https://www-q0.dev.nav.no/sosialhjelp/innsyn"),
 )
 
 val generellInnsynslenkeProd = URL("https://person.nav.no/mine-saker/tema/")
