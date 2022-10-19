@@ -40,7 +40,7 @@ class DigiSosConsumer(
             log.info("Gjør kall mot DígiSos med correlationId=$callId")
             withContext(Dispatchers.IO) {
                 httpClient.get {
-                    url("$digiSosEndpoint/sosialhjelp/soknad-api/minesaker/innsendte")
+                    url("$digiSosEndpoint/minesaker/innsendte")
                     method = HttpMethod.Get
                     header(callIdHeaderName, callId)
                     header(HttpHeaders.Authorization, "Bearer ${accessToken.value}")
