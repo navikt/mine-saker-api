@@ -39,6 +39,7 @@ spec:
       external:
         - host: "safselvbetjening-q1.dev-fss-pub.nais.io"
         - host: "sosialhjelp-soknad-api-intern.dev.nav.no"
+        - host: "sosialhjelp-soknad-api.dev-fss-pub.nais.io"
       rules:
         - application: "safselvbetjening-q1"
           namespace: "teamdokumenthandtering"
