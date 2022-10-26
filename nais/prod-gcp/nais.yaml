@@ -38,6 +38,7 @@ spec:
     outbound:
       external:
         - host: "https://safselvbetjening.prod-fss-pub.nais.io"
+        - host: "https://sosialhjelp-soknad-api.prod-fss-pub.nais.io"
         - host: "https://sosialhjelp-soknad-api.nais.oera.no"
       rules:
         - application: "safselvbetjening"
