@@ -19,4 +19,6 @@ val innsynslenkerProd : Map<Sakstemakode, URL> = mapOf(
     Sakstemakode.HJE to URL("https://www.nav.no/hjelpemidler/dinehjelpemidler"),
     Sakstemakode.KOM to URL("https://www.nav.no/sosialhjelp/innsyn"),
     Sakstemakode.AAP to URL("https://www.nav.no/aap/mine-aap"),
+    Sakstemakode.SYK to URL("https://www.nav.no/syk/sykefravaer"),
+    Sakstemakode.SYM to URL("https://www.nav.no/syk/sykefravaer"),
 )
