@@ -8,9 +8,9 @@ val innsynslenkerDev : Map<Sakstemakode, URL> = mapOf(
     Sakstemakode.DAG to URL("https://arbeid.dev.nav.no/arbeid/dagpenger/mine-dagpenger"),
     Sakstemakode.HJE to URL("https://hjelpemidler.dev.nav.no/hjelpemidler/dinehjelpemidler"),
     Sakstemakode.KOM to URL("https://www-q0.dev.nav.no/sosialhjelp/innsyn"),
-    Sakstemakode.AAP to URL("https://aap-innsyn.dev.nav.no/aap/mine-aap/"),
-    Sakstemakode.SYK to URL("https://www-gcp.dev.nav.no/syk/sykefravaer/"),
-    Sakstemakode.SYM to URL("https://www-gcp.dev.nav.no/syk/sykefravaer/"),
+    Sakstemakode.AAP to URL("https://aap-innsyn.dev.nav.no/aap/mine-aap"),
+    Sakstemakode.SYK to URL("https://www-gcp.dev.nav.no/syk/sykefravaer"),
+    Sakstemakode.SYM to URL("https://www-gcp.dev.nav.no/syk/sykefravaer"),
 )
 
 val generellInnsynslenkeProd = URL("https://person.nav.no/mine-saker/tema/")
