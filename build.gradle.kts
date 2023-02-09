@@ -67,7 +67,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("package no.nav.personbruker.minesaker.api.config.AppKt")
+    mainClass.set("no.nav.personbruker.minesaker.api.config.AppKt")
 }
 
 tasks {
