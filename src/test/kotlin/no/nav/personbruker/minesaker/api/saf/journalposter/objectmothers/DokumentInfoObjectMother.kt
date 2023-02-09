@@ -1,42 +1,43 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers
 
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
+import no.nav.personbruker.minesaker.api.saf.journalposter.transformers.GraphQLDokumentInfo
+import no.nav.personbruker.minesaker.api.saf.journalposter.transformers.GraphQLDokumentvariant
 
 object DokumentInfoObjectMother {
 
-    fun giveMeDokumentMedArkivertVariant(): HentJournalposter.DokumentInfo {
+    fun giveMeDokumentMedArkivertVariant(): GraphQLDokumentInfo {
         val varianter = listOf(
             DokumentVariantObjectMother.giveMeSladdetVariant(),
             DokumentVariantObjectMother.giveMeArkivertVariant()
         )
         val dokumentInfoId = "dummyId001"
-        return HentJournalposter.DokumentInfo("Dummytittel med arkivert", dokumentInfoId, varianter)
+        return GraphQLDokumentInfo("Dummytittel med arkivert", dokumentInfoId, varianter)
     }
 
-    fun giveMeDokumentMedArkivertVariantMenUtenTittel(): HentJournalposter.DokumentInfo {
+    fun giveMeDokumentMedArkivertVariantMenUtenTittel(): GraphQLDokumentInfo {
         val varianter = listOf(
             DokumentVariantObjectMother.giveMeArkivertVariant()
         )
         val dokumentInfoId = "dummyId002"
-        return HentJournalposter.DokumentInfo(null, dokumentInfoId, varianter)
+        return GraphQLDokumentInfo(null, dokumentInfoId, varianter)
     }
 
-    fun giveMeDokumentUtenNoenVarianter(): HentJournalposter.DokumentInfo {
+    fun giveMeDokumentUtenNoenVarianter(): GraphQLDokumentInfo {
         val dokumentInfoId = "dummyId004"
-        return HentJournalposter.DokumentInfo("Dummytittel uten arkiverte varianger", dokumentInfoId, emptyList())
+        return GraphQLDokumentInfo("Dummytittel uten arkiverte varianger", dokumentInfoId, emptyList())
     }
 
-    fun giveMeDokumentMedSladdetOgArkivertVariant(): HentJournalposter.DokumentInfo {
+    fun giveMeDokumentMedSladdetOgArkivertVariant(): GraphQLDokumentInfo {
         val varianter = listOf(
             DokumentVariantObjectMother.giveMeSladdetVariant(),
             DokumentVariantObjectMother.giveMeArkivertVariant()
         )
         val dokumentInfoId = "dummyId005"
         val tittel = "Dummytittel medflere dokument varianter"
-        return HentJournalposter.DokumentInfo(tittel, dokumentInfoId, varianter)
+        return GraphQLDokumentInfo(tittel, dokumentInfoId, varianter)
     }
 
-    fun giveMeTreGyldigeDokumenter(): List<HentJournalposter.DokumentInfo> {
+    fun giveMeTreGyldigeDokumenter(): List<GraphQLDokumentInfo> {
         return listOf(
             giveMeDokument("Hveddok", "dummyId5", DokumentVariantObjectMother.giveMeArkivertVariant()),
             giveMeDokument("Vedlegg1", "dummyId6", DokumentVariantObjectMother.giveMeSladdetVariant()),
@@ -47,9 +48,9 @@ object DokumentInfoObjectMother {
     private fun giveMeDokument(
         tittel: String = "Dummytittel gyldig dokument 11",
         dokumentInfoId: String = "dummyId011",
-        variant: HentJournalposter.Dokumentvariant = DokumentVariantObjectMother.giveMeArkivertVariant()
-    ): HentJournalposter.DokumentInfo {
-        return HentJournalposter.DokumentInfo(tittel, dokumentInfoId, listOf(variant))
+        variant: GraphQLDokumentvariant = DokumentVariantObjectMother.giveMeArkivertVariant()
+    ): GraphQLDokumentInfo {
+        return GraphQLDokumentInfo(tittel, dokumentInfoId, listOf(variant))
     }
 
 }

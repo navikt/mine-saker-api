@@ -1,17 +1,17 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
+import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldNotContain
+
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
-import org.amshove.kluent.`should contain`
-import org.amshove.kluent.`should not contain`
 import org.junit.jupiter.api.Test
 
 internal class JournalposterRequestTest {
 
     private val objectMapper = jacksonObjectMapper()
 
-    private val dummyIdent = Fodselsnummer("123")
+    private val dummyIdent = "123"
 
     @Test
     fun `Skal bygge opp en korrekt sporring`() {
@@ -25,11 +25,11 @@ internal class JournalposterRequestTest {
 
         val requestAsJson = objectMapper.writeValueAsString(request)
 
-        requestAsJson `should contain` expectedFirstJournalpostFields
-        requestAsJson `should contain` identAsQueryVarible
-        requestAsJson `should contain` sakstemaAsQueryVarible
-        requestAsJson `should contain` expectedSakstemaAsInputVariable
-        requestAsJson `should contain` """"ident":"${dummyIdent.value}"""
+        requestAsJson shouldContain expectedFirstJournalpostFields
+        requestAsJson shouldContain identAsQueryVarible
+        requestAsJson shouldContain sakstemaAsQueryVarible
+        requestAsJson shouldContain expectedSakstemaAsInputVariable
+        requestAsJson shouldContain """"ident":"$dummyIdent"""
     }
 
     @Test
@@ -38,9 +38,9 @@ internal class JournalposterRequestTest {
 
         val requestAsJson = objectMapper.writeValueAsString(request)
 
-        requestAsJson `should not contain` "\\n"
-        requestAsJson `should not contain` "\\r"
-        requestAsJson `should not contain` "  "
+        requestAsJson shouldNotContain "\\n"
+        requestAsJson shouldNotContain "\\r"
+        requestAsJson shouldNotContain "  "
     }
 
 }

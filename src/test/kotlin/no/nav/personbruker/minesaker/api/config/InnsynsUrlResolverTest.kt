@@ -1,7 +1,7 @@
 package no.nav.personbruker.minesaker.api.config
 
+import io.kotest.matchers.shouldBe
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
-import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 
 internal class InnsynsUrlResolverTest {
@@ -14,11 +14,11 @@ internal class InnsynsUrlResolverTest {
             .minus(temaerMedSpesifikkeLenkerIProd)
 
         temaerMedSpesifikkeLenkerIProd.forEach { tema ->
-            resolver.urlFor(tema) `should be equal to` innsynslenkerProd[tema]
+            resolver.urlFor(tema) shouldBe innsynslenkerProd[tema]
         }
 
         sakstemakoderMedGenerellLenkeIProd.forEach { tema ->
-            resolver.urlFor(tema).toString() `should be equal to` "$generellInnsynslenkeProd$tema"
+            resolver.urlFor(tema).toString() shouldBe "$generellInnsynslenkeProd$tema"
         }
     }
 
@@ -30,11 +30,11 @@ internal class InnsynsUrlResolverTest {
             .minus(temaerMedSpesifikkeLenkerIDev)
 
         temaerMedSpesifikkeLenkerIDev.forEach { tema ->
-            resolver.urlFor(tema) `should be equal to` innsynslenkerDev[tema]
+            resolver.urlFor(tema) shouldBe innsynslenkerDev[tema]
         }
 
         sakstemakoderMedGenerellLenkeIDev.forEach { tema ->
-            resolver.urlFor(tema).toString() `should be equal to` "$generellInnsynslenkeDev$tema"
+            resolver.urlFor(tema).toString() shouldBe "$generellInnsynslenkeDev$tema"
         }
     }
 

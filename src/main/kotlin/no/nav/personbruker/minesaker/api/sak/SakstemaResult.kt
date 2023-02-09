@@ -46,13 +46,11 @@ data class SakstemaResult(
 
     fun determineHttpCode(): HttpStatusCode {
         return when {
-            hasPartialResult() -> HttpStatusCode.PartialContent
             allSourcesFailed() -> HttpStatusCode.ServiceUnavailable
             else -> HttpStatusCode.OK
         }
     }
 
-    private fun hasPartialResult(): Boolean = errors.size == 1
     private fun allSourcesFailed(): Boolean = errors.size == Kildetype.values().size
 
 }

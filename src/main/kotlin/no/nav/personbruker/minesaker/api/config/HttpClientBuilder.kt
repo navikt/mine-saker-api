@@ -1,9 +1,14 @@
 package no.nav.personbruker.minesaker.api.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.HttpTimeout
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.jackson.*
 
 object HttpClientBuilder {
 
@@ -12,10 +17,19 @@ object HttpClientBuilder {
     }
 
     fun config() = HttpClient(Apache) {
-        install(JsonFeature) {
-            serializer = buildJsonSerializer()
+        install(ContentNegotiation) {
+            jackson {
+                enableMineSakerJsonConfig()
+            }
         }
         install(HttpTimeout)
     }
 
+}
+
+fun ObjectMapper.enableMineSakerJsonConfig(): ObjectMapper {
+    registerKotlinModule()
+    registerModule(JavaTimeModule())
+    disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    return this
 }

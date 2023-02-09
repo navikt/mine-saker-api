@@ -1,7 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf.common.transformers
 
-import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should not be null`
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 internal class DateTimeTransformerTest {
@@ -16,15 +16,15 @@ internal class DateTimeTransformerTest {
         val expectedSeconds = 50
         val external = "$expectedYear-$expectedMonth-${expectedDay}T$expectedHour:$expectedMinutes:$expectedSeconds"
 
-        val internal = external.toInternal()
+        val internal = external.parseAsUtcZonedDateTime()
 
-        internal.`should not be null`()
-        internal.year `should be equal to` expectedYear
-        internal.monthValue `should be equal to` expectedMonth
-        internal.dayOfMonth `should be equal to` expectedDay
-        internal.hour `should be equal to` expectedHour
-        internal.minute `should be equal to` expectedMinutes
-        internal.second `should be equal to` expectedSeconds
+        internal.shouldNotBeNull()
+        internal.year shouldBe expectedYear
+        internal.monthValue shouldBe expectedMonth
+        internal.dayOfMonth shouldBe expectedDay
+        internal.hour shouldBe expectedHour
+        internal.minute shouldBe expectedMinutes
+        internal.second shouldBe expectedSeconds
     }
 
 }

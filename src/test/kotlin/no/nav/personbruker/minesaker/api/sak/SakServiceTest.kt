@@ -1,5 +1,11 @@
 package no.nav.personbruker.minesaker.api.sak
 
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldNotBeEmpty
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import no.nav.personbruker.minesaker.api.common.AuthenticatedUserObjectMother
@@ -8,16 +14,11 @@ import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
 import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings
-import no.nav.personbruker.minesaker.api.domain.DokumentInfoId
-import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
-import no.nav.personbruker.minesaker.api.domain.JournalpostId
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.saf.SafTokendings
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
-import no.nav.personbruker.minesaker.api.tokenx.AccessToken
-import org.amshove.kluent.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -27,8 +28,8 @@ internal class SakServiceTest {
     private val dummyIdportenUser = IdportenUserObjectMother.createIdportenUser()
     private val dummyTokenXUser = AuthenticatedUserObjectMother.createTokenXUser()
 
-    private val safDummyToken = AccessToken("saf<access_token>")
-    private val digiSosDummyToken = AccessToken("digiSos<access_token>")
+    private val safDummyToken = "saf<access_token>"
+    private val digiSosDummyToken = "digiSos<access_token>"
 
     private val safTokendings = mockk<SafTokendings>()
     private val digiSosTokendings = mockk<DigiSosTokendings>()
@@ -63,7 +64,7 @@ internal class SakServiceTest {
         coVerify(exactly = 1) { safConsumer.hentSakstemaer(capture(parameterSendtVidere), any()) }
         coVerify(exactly = 1) { digiSosConsumer.hentSakstemaer(any()) }
 
-        parameterSendtVidere.captured `should be instance of` SakstemaerRequest::class
+        parameterSendtVidere.captured.shouldBeInstanceOf<SakstemaerRequest>()
 
         confirmVerified(safConsumer)
         confirmVerified(digiSosConsumer)
@@ -82,8 +83,8 @@ internal class SakServiceTest {
             service.hentSakstemaer(dummyTokenXUser)
         }
 
-        result.hasErrors() `should be equal to` true
-        result.errors().`should contain`(Kildetype.DIGISOS)
+        result.hasErrors() shouldBe true
+        result.errors() shouldContain Kildetype.DIGISOS
         result.resultsSorted().shouldNotBeEmpty()
     }
 
@@ -103,14 +104,14 @@ internal class SakServiceTest {
 
         coVerify(exactly = 1) {
             safConsumer.hentJournalposter(
-                Fodselsnummer(dummyIdportenUser.ident),
+                dummyIdportenUser.ident,
                 capture(parameterSendtVidere),
                 safDummyToken
             )
         }
 
-        parameterSendtVidere.captured `should be instance of` JournalposterRequest::class
-        parameterSendtVidere.captured.variables.entries.toString() `should contain` expectedSakstemakode.toString()
+        parameterSendtVidere.captured.shouldBeInstanceOf<JournalposterRequest>()
+        parameterSendtVidere.captured.variables.temaetSomSkalHentes shouldContain expectedSakstemakode.toString()
 
         confirmVerified(safConsumer)
     }
@@ -124,7 +125,7 @@ internal class SakServiceTest {
         val service = SakService(safConsumer, safTokendings, digiSosConsumer, digiSosTokendings)
 
         coEvery {
-            safConsumer.hentJournalposter(Fodselsnummer(dummyIdportenUser.ident), any(), any())
+            safConsumer.hentJournalposter(dummyIdportenUser.ident, any(), any())
         } throws expectedException
 
         val result = runCatching {
@@ -134,27 +135,27 @@ internal class SakServiceTest {
             }
         }
 
-        result.isFailure `should be equal to` true
-        result.exceptionOrNull() `should be instance of` CommunicationException::class
+        result.isFailure shouldBe true
+        result.exceptionOrNull().shouldBeInstanceOf<CommunicationException>()
     }
 
     @Test
     fun `Skal forkaste forsok paa aa hente dokumenter bruker ikke har tilgang til`() {
-        val journapostId = JournalpostId("x")
+        val journapostId = "x"
         val safConsumer = mockk<SafConsumer>(relaxed = true)
         val digiSosConsumer = mockk<DigiSosConsumer>()
         val service = SakService(safConsumer, safTokendings, digiSosConsumer, digiSosTokendings)
 
-        val dokumentIdUtenTilgang = DokumentInfoId("-")
+        val dokumentIdUtenTilgang = "-"
         val rejectedInvocation = runCatching {
             runBlocking {
                 service.hentDokument(dummyIdportenUser, journapostId, dokumentIdUtenTilgang)
             }
         }
-        rejectedInvocation.isFailure `should be equal to` true
-        rejectedInvocation.exceptionOrNull() `should be instance of` InvalidRequestException::class
+        rejectedInvocation.isFailure shouldBe true
+        rejectedInvocation.exceptionOrNull().shouldBeInstanceOf<InvalidRequestException>()
 
-        val dokumentIdMedTilgang = DokumentInfoId("123")
+        val dokumentIdMedTilgang = "123"
         runBlocking {
             service.hentDokument(dummyIdportenUser, journapostId, dokumentIdMedTilgang)
         }.shouldNotBeNull()

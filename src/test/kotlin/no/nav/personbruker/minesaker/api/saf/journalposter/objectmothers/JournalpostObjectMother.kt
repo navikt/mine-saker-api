@@ -1,21 +1,21 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers
 
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
+import no.nav.personbruker.minesaker.api.saf.journalposter.transformers.*
 
 object JournalpostObjectMother {
 
     fun giveMeOneInngaaendeDokument(
         tittel: String? = "Dummytittel Inngående",
         journalpostId: String = "dummyId-Inngående",
-        journalposttype: HentJournalposter.Journalposttype = HentJournalposter.Journalposttype.I,
-        avsender: HentJournalposter.AvsenderMottaker? = AvsenderMottakerObjectMother.giveMePerson("123"),
-        mottaker: HentJournalposter.AvsenderMottaker? = AvsenderMottakerObjectMother.giveMeOrganisasjon("654"),
-        relevanteDatoer: List<HentJournalposter.RelevantDato?> = listOf(
+        journalposttype: GraphQLJournalposttype = GraphQLJournalposttype.I,
+        avsender: GraphQLAvsenderMottaker? = AvsenderMottakerObjectMother.giveMePerson("123"),
+        mottaker: GraphQLAvsenderMottaker? = AvsenderMottakerObjectMother.giveMeOrganisasjon("654"),
+        relevanteDatoer: List<GraphQLRelevantDato?> = listOf(
             RelevantDatoObjectMother.giveMeDatoForInngaaendeDokument(),
             RelevantDatoObjectMother.giveMeDatoForUtgaaendeDokument()
         ),
-        dokumenter: List<HentJournalposter.DokumentInfo?>? = listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertVariant())
-    ) = HentJournalposter.Journalpost(
+        dokumenter: List<GraphQLDokumentInfo?>? = listOf(DokumentInfoObjectMother.giveMeDokumentMedArkivertVariant())
+    ) = GraphQLJournalpost(
         tittel,
         journalpostId,
         journalposttype,
@@ -26,6 +26,6 @@ object JournalpostObjectMother {
     )
 
     fun giveMeOneUtgaaendeDokument() =
-        giveMeOneInngaaendeDokument(journalposttype = HentJournalposter.Journalposttype.U)
+        giveMeOneInngaaendeDokument(journalposttype = GraphQLJournalposttype.U)
 
 }

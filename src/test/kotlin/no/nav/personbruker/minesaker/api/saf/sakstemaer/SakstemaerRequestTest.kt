@@ -1,15 +1,15 @@
 package no.nav.personbruker.minesaker.api.saf.sakstemaer
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
-import org.amshove.kluent.`should contain`
+import io.kotest.matchers.string.shouldContain
+
 import org.junit.jupiter.api.Test
 
 internal class SakstemaerRequestTest {
 
     private val objectMapper = jacksonObjectMapper()
 
-    private val dummyIdent = Fodselsnummer("123")
+    private val dummyIdent = "123"
 
     @Test
     fun `Skal bygge opp en korrekt sporring`() {
@@ -20,10 +20,10 @@ internal class SakstemaerRequestTest {
         val request = SakstemaerRequest.create(dummyIdent)
         val requestAsJson = objectMapper.writeValueAsString(request)
 
-        requestAsJson `should contain` expectedFields
-        requestAsJson `should contain` identAsQueryVarible
-        requestAsJson `should contain` expectedAllSakstemar
-        requestAsJson `should contain` """"ident":"${dummyIdent.value}"""
+        requestAsJson shouldContain expectedFields
+        requestAsJson shouldContain identAsQueryVarible
+        requestAsJson shouldContain expectedAllSakstemar
+        requestAsJson shouldContain """"ident":"$dummyIdent"""
     }
 
 }

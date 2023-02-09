@@ -1,10 +1,10 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers
 
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
+import no.nav.personbruker.minesaker.api.saf.journalposter.transformers.GraphQLSakstema
 
 object SakstemaObjectMother {
 
-    fun giveMeListOfSakstemaer(): List<HentJournalposter.Sakstema> {
+    fun giveMeListOfSakstemaer(): List<GraphQLSakstema> {
         return listOf(
             giveMeSakstemaWithUtgaaendeDokument(),
             giveMeSakstemaWithInngaaendeDokument()
@@ -12,9 +12,9 @@ object SakstemaObjectMother {
     }
 
     fun giveMeSakstemaWithUtgaaendeDokument(navn: String = "navn1", kode: String = "AAP") =
-        HentJournalposter.Sakstema(navn, kode, listOf(JournalpostObjectMother.giveMeOneInngaaendeDokument()))
+        GraphQLSakstema(navn, kode, listOf(JournalpostObjectMother.giveMeOneInngaaendeDokument()))
 
     fun giveMeSakstemaWithInngaaendeDokument(navn: String = "navn2", kode: String = "KON") =
-        HentJournalposter.Sakstema(navn, kode, listOf(JournalpostObjectMother.giveMeOneUtgaaendeDokument()))
+        GraphQLSakstema(navn, kode, listOf(JournalpostObjectMother.giveMeOneUtgaaendeDokument()))
 
 }

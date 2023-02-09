@@ -1,6 +1,6 @@
 package no.nav.personbruker.minesaker.api.saf.common.transformers
 
-import org.amshove.kluent.`should be equal to`
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
 
@@ -13,7 +13,7 @@ internal class ZonedDateTimeTransformerTest {
 
         val nyesteDato = toLikeDatoer.finnSistEndret()
 
-        nyesteDato `should be equal to` expectedDato
+        nyesteDato shouldBe expectedDato
     }
 
 }

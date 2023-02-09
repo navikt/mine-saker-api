@@ -1,8 +1,8 @@
 package no.nav.personbruker.minesaker.api.domain
 
+import io.kotest.matchers.shouldBe
 import no.nav.personbruker.minesaker.api.common.IdportenUserObjectMother
 import no.nav.personbruker.minesaker.api.common.TokenXUserObjectMother
-import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 
 internal class AuthenticatedUserTest {
@@ -12,8 +12,8 @@ internal class AuthenticatedUserTest {
         val expectedUser = IdportenUserObjectMother.createIdportenUser()
         val innloggetBruker = AuthenticatedUser.createIdPortenUser(expectedUser)
 
-        innloggetBruker.ident `should be equal to` expectedUser.ident
-        innloggetBruker.tokenString `should be equal to` expectedUser.tokenString
+        innloggetBruker.ident shouldBe expectedUser.ident
+        innloggetBruker.tokenString shouldBe expectedUser.tokenString
     }
 
     @Test
@@ -21,8 +21,8 @@ internal class AuthenticatedUserTest {
         val expectedUser = TokenXUserObjectMother.createTokenXUser()
         val innloggetBruker = AuthenticatedUser.createTokenXUser(expectedUser)
 
-        innloggetBruker.ident `should be equal to` expectedUser.ident
-        innloggetBruker.tokenString `should be equal to` expectedUser.tokenString
+        innloggetBruker.ident shouldBe expectedUser.ident
+        innloggetBruker.tokenString shouldBe expectedUser.tokenString
     }
 
 }

@@ -1,13 +1,12 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import no.nav.personbruker.minesaker.api.common.exception.TransformationException
 import no.nav.personbruker.minesaker.api.domain.Dokumenttype
 import no.nav.personbruker.minesaker.api.domain.Dokumentvariant
 import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.DokumentInfoObjectMother
-import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should be instance of`
-import org.amshove.kluent.shouldNotBeEmpty
-import org.amshove.kluent.shouldNotBeNull
 import org.junit.jupiter.api.Test
 
 internal class DokumentinfoTransformerTest {
@@ -19,13 +18,13 @@ internal class DokumentinfoTransformerTest {
         val internals = externals.toInternal()
 
         internals.shouldNotBeNull()
-        internals.size `should be equal to` externals.size
-        internals[0].dokumenttype `should be equal to` Dokumenttype.HOVED
-        internals[0].tittel.value `should be equal to` externals[0].tittel
-        internals[1].dokumenttype `should be equal to` Dokumenttype.VEDLEGG
-        internals[1].tittel.value `should be equal to` externals[1].tittel
-        internals[2].dokumenttype `should be equal to` Dokumenttype.VEDLEGG
-        internals[2].tittel.value `should be equal to` externals[2].tittel
+        internals.size shouldBe externals.size
+        internals[0].dokumenttype shouldBe Dokumenttype.HOVED
+        internals[0].tittel shouldBe externals[0].tittel
+        internals[1].dokumenttype shouldBe Dokumenttype.VEDLEGG
+        internals[1].tittel shouldBe externals[1].tittel
+        internals[2].dokumenttype shouldBe Dokumenttype.VEDLEGG
+        internals[2].tittel shouldBe externals[2].tittel
     }
 
     @Test
@@ -36,10 +35,10 @@ internal class DokumentinfoTransformerTest {
             externals.toInternal()
         }
 
-        result.isFailure `should be equal to` true
-        result.exceptionOrNull() `should be instance of` TransformationException::class
+        result.isFailure shouldBe true
+        result.exceptionOrNull().shouldBeInstanceOf<TransformationException>()
         val exception = result.exceptionOrNull() as TransformationException
-        exception.context["feltnavn"] `should be equal to` "dokumentvarianter"
+        exception.context["feltnavn"] shouldBe "dokumentvarianter"
     }
 
     @Test
@@ -49,8 +48,8 @@ internal class DokumentinfoTransformerTest {
         val internals = externals.toInternal()
 
         internals.shouldNotBeNull()
-        internals.size `should be equal to` 1
-        internals.first().variant `should be equal to` Dokumentvariant.SLADDET
+        internals.size shouldBe 1
+        internals.first().variant shouldBe Dokumentvariant.SLADDET
     }
 
     @Test
@@ -59,7 +58,7 @@ internal class DokumentinfoTransformerTest {
 
         val result = externals.toInternal()
 
-        result[0].tittel.value `should be equal to` "Uten tittel"
+        result[0].tittel shouldBe "Uten tittel"
     }
 
 }

@@ -1,10 +1,11 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers
 
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
+import no.nav.personbruker.minesaker.api.saf.journalposter.transformers.GraphQLDatotype
+import no.nav.personbruker.minesaker.api.saf.journalposter.transformers.GraphQLRelevantDato
 
 object RelevantDatoObjectMother {
 
-    fun giveMeOneOfEachEkspederRegistertAndOpprettet(): List<HentJournalposter.RelevantDato> {
+    fun giveMeOneOfEachEkspederRegistertAndOpprettet(): List<GraphQLRelevantDato> {
         return listOf(
             giveMeDatoForInngaaendeDokument(),
             giveMeDatoForUtgaaendeDokument(),
@@ -12,16 +13,16 @@ object RelevantDatoObjectMother {
         )
     }
 
-    fun giveMeDatoForUtgaaendeDokument(): HentJournalposter.RelevantDato {
-        return HentJournalposter.RelevantDato("2018-01-01T12:00:00", HentJournalposter.Datotype.DATO_EKSPEDERT)
+    fun giveMeDatoForUtgaaendeDokument(): GraphQLRelevantDato {
+        return GraphQLRelevantDato("2018-01-01T12:00:00", GraphQLDatotype.DATO_EKSPEDERT)
     }
 
-    fun giveMeDatoForInngaaendeDokument(): HentJournalposter.RelevantDato {
-        return HentJournalposter.RelevantDato("2018-02-02T12:00:00", HentJournalposter.Datotype.DATO_REGISTRERT)
+    fun giveMeDatoForInngaaendeDokument(): GraphQLRelevantDato {
+        return GraphQLRelevantDato("2018-02-02T12:00:00", GraphQLDatotype.DATO_REGISTRERT)
     }
 
-    fun giveMeDatoForNotat(): HentJournalposter.RelevantDato {
-        return HentJournalposter.RelevantDato("2018-03-03T12:00:00", HentJournalposter.Datotype.DATO_OPPRETTET)
+    fun giveMeDatoForNotat(): GraphQLRelevantDato {
+        return GraphQLRelevantDato("2018-03-03T12:00:00", GraphQLDatotype.DATO_OPPRETTET)
     }
 
 }

@@ -1,18 +1,13 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter.Variantformat.ARKIV
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter.Variantformat.SLADDET
+import mu.KotlinLogging
 import no.nav.personbruker.minesaker.api.common.exception.TransformationException
-import no.nav.personbruker.minesaker.api.domain.DokumentInfoId
 import no.nav.personbruker.minesaker.api.domain.Dokumentinfo
 import no.nav.personbruker.minesaker.api.domain.Dokumenttype
-import no.nav.personbruker.minesaker.api.domain.Tittel
-import org.slf4j.LoggerFactory
 
-private val log = LoggerFactory.getLogger(HentJournalposter.DokumentInfo::class.java)
+private val log = KotlinLogging.logger {}
 
-fun List<HentJournalposter.DokumentInfo?>.toInternal(): List<Dokumentinfo> {
+fun List<GraphQLDokumentInfo?>.toInternal(): List<Dokumentinfo> {
     val internals = mutableListOf<Dokumentinfo>()
     filterNotNull()
         .forEachIndexed { index, externalDokument ->
@@ -31,21 +26,21 @@ fun List<HentJournalposter.DokumentInfo?>.toInternal(): List<Dokumentinfo> {
     return internals
 }
 
-private fun HentJournalposter.DokumentInfo.velgSladdetVariantOverArkivertVariant(): HentJournalposter.Dokumentvariant? {
-    var variant = dokumentvarianter.find { v -> v?.variantformat == SLADDET }
+private fun GraphQLDokumentInfo.velgSladdetVariantOverArkivertVariant(): GraphQLDokumentvariant? {
+    var variant = dokumentvarianter.find { v -> v?.variantformat == GraphQLVariantformat.SLADDET }
     if (variant == null) {
-        variant = dokumentvarianter.find { v -> v?.variantformat == ARKIV }
+        variant = dokumentvarianter.find { v -> v?.variantformat == GraphQLVariantformat.ARKIV }
     }
     return variant
 }
 
-private fun HentJournalposter.DokumentInfo.kastFeilHvisManglerVarianter() {
+private fun GraphQLDokumentInfo.kastFeilHvisManglerVarianter() {
     if (utenVarianter()) {
         throw TransformationException.withMissingFieldName("dokumentvarianter")
     }
 }
 
-private fun HentJournalposter.DokumentInfo.utenVarianter() =
+private fun GraphQLDokumentInfo.utenVarianter() =
     dokumentvarianter.isEmpty()
 
 private fun avgjorDokumenttype(index: Int) = if (index == 0) {
@@ -54,15 +49,15 @@ private fun avgjorDokumenttype(index: Int) = if (index == 0) {
     Dokumenttype.VEDLEGG
 }
 
-fun HentJournalposter.DokumentInfo.toInternal(
-    externalVariant: HentJournalposter.Dokumentvariant,
+fun GraphQLDokumentInfo.toInternal(
+    externalVariant: GraphQLDokumentvariant,
     dokumenttype: Dokumenttype
 ): Dokumentinfo {
     val eventuelleGrunnerTilManglendeTilgang =
         plukkUtEventuelleGrunnerTilManglendeTilgang(externalVariant.brukerHarTilgang, externalVariant)
     return Dokumentinfo(
-        Tittel(tittel ?: "Uten tittel"),
-        if (externalVariant.brukerHarTilgang) DokumentInfoId(dokumentInfoId) else DokumentInfoId("-"),
+        tittel ?: "Uten tittel",
+        if (externalVariant.brukerHarTilgang) dokumentInfoId else "-",
         dokumenttype,
         externalVariant.brukerHarTilgang,
         eventuelleGrunnerTilManglendeTilgang,
@@ -72,7 +67,7 @@ fun HentJournalposter.DokumentInfo.toInternal(
 
 private fun plukkUtEventuelleGrunnerTilManglendeTilgang(
     brukerHarTilgang: Boolean,
-    externalVariant: HentJournalposter.Dokumentvariant
+    externalVariant: GraphQLDokumentvariant
 ): List<String> = if (brukerHarTilgang) {
     emptyList()
 } else {

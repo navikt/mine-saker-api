@@ -1,8 +1,8 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import no.nav.personbruker.minesaker.api.common.exception.TransformationException
-import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should be instance of`
 import org.junit.jupiter.api.Test
 
 internal class SakstemakodeTransformerTest {
@@ -15,10 +15,10 @@ internal class SakstemakodeTransformerTest {
             externalUgylidgTema.toInternalSaktemakode()
         }
 
-        res.isFailure `should be equal to` true
-        res.exceptionOrNull() `should be instance of` TransformationException::class
+        res.isFailure shouldBe true
+        res.exceptionOrNull().shouldBeInstanceOf<TransformationException>()
         val exception = res.exceptionOrNull() as TransformationException
-        exception.context["ukjentVerdi"] `should be equal to` externalUgylidgTema
+        exception.context["ukjentVerdi"] shouldBe externalUgylidgTema
     }
 
 }

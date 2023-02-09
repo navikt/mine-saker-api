@@ -1,16 +1,17 @@
 package no.nav.personbruker.minesaker.api.saf.sakstemaer.objectmothers
 
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
+import no.nav.personbruker.minesaker.api.saf.sakstemaer.transformers.GraphQLJournalpost
+import no.nav.personbruker.minesaker.api.saf.sakstemaer.transformers.GraphQLRelevantDato
 
 object JournalpostObjectMother {
 
     fun giveMeOneInngaaendeDokument(
-        relevanteDatoer: List<HentSakstemaer.RelevantDato?> = listOf(
+        relevanteDatoer: List<GraphQLRelevantDato?> = listOf(
             RelevantDatoObjectMother.giveMeDatoForInngaaendeDokument(),
             RelevantDatoObjectMother.giveMeDatoForUtgaaendeDokument()
         ),
-    ) = HentSakstemaer.Journalpost(
-        relevanteDatoer,
+    ) = GraphQLJournalpost(
+        relevanteDatoer
     )
 
 }
