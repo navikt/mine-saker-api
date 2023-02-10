@@ -1,18 +1,19 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers
 
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
+import no.nav.personbruker.minesaker.api.saf.journalposter.transformers.GraphQLDokumentvariant
+import no.nav.personbruker.minesaker.api.saf.journalposter.transformers.GraphQLVariantformat
 
 object DokumentVariantObjectMother {
 
     private val ingenFeilkode = listOf("ok")
-    
-    fun giveMeArkivertVariant(): HentJournalposter.Dokumentvariant {
-        return HentJournalposter.Dokumentvariant(HentJournalposter.Variantformat.ARKIV, true, ingenFeilkode)
+
+    fun giveMeArkivertVariant(): GraphQLDokumentvariant {
+        return GraphQLDokumentvariant(GraphQLVariantformat.ARKIV, true, ingenFeilkode)
     }
 
-    fun giveMeSladdetVariant(): HentJournalposter.Dokumentvariant {
+    fun giveMeSladdetVariant(): GraphQLDokumentvariant {
         val feilkode = listOf("Skannet_dokument")
-        return HentJournalposter.Dokumentvariant(HentJournalposter.Variantformat.SLADDET, true, feilkode)
+        return GraphQLDokumentvariant(GraphQLVariantformat.SLADDET, true, feilkode)
     }
 
 }

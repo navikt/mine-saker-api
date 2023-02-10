@@ -1,15 +1,14 @@
 package no.nav.personbruker.minesaker.api.sak
 
-import io.ktor.application.*
+
 import io.ktor.http.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import no.nav.personbruker.minesaker.api.common.ExceptionResponseHandler
 import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.config.idportenUser
 import no.nav.personbruker.minesaker.api.domain.AuthenticatedUser
-import no.nav.personbruker.minesaker.api.domain.DokumentInfoId
-import no.nav.personbruker.minesaker.api.domain.JournalpostId
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import org.slf4j.LoggerFactory
 
@@ -104,14 +103,12 @@ private fun ApplicationCall.extractSakstemakodeFromParameters(): Sakstemakode {
     return verifiserSakstemakode(sakstemakodeUverifisert)
 }
 
-private fun ApplicationCall.extractJournalpostId(): JournalpostId {
-    val value = parameters[journalpostIdParameterName]
+private fun ApplicationCall.extractJournalpostId(): String {
+    return parameters[journalpostIdParameterName]
         ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$journalpostIdParameterName' er spesifisert.")
-    return JournalpostId(value)
 }
 
-private fun ApplicationCall.extractDokumentInfoId(): DokumentInfoId {
-    val value = parameters[dokumentIdParameterName]
+private fun ApplicationCall.extractDokumentInfoId(): String {
+    return parameters[dokumentIdParameterName]
         ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$dokumentIdParameterName' er spesifisert.")
-    return DokumentInfoId(value)
 }

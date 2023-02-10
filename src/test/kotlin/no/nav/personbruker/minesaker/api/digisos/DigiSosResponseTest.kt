@@ -1,10 +1,12 @@
 package no.nav.personbruker.minesaker.api.digisos
 
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.personbruker.minesaker.api.config.enableMineSakerJsonConfig
-import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.shouldNotBeNull
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 internal class DigiSosResponseTest {
@@ -19,7 +21,11 @@ internal class DigiSosResponseTest {
         ]
     """.trimIndent()
 
-    private val objectMapper = jacksonObjectMapper().enableMineSakerJsonConfig()
+    private val objectMapper = jacksonObjectMapper().apply {
+        registerKotlinModule()
+        registerModule(JavaTimeModule())
+        disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    }
 
     @Test
     fun `Skal kunne konvertere til intern type`() {
@@ -28,9 +34,9 @@ internal class DigiSosResponseTest {
         val internal = externalDto.toInternal()
 
         internal.shouldNotBeNull()
-        internal.navn.value `should be equal to` externalDto.navn
-        internal.kode.toString() `should be equal to` externalDto.kode
-        internal.sistEndret?.toLocalDateTime() `should be equal to` externalDto.sistEndret
+        internal.navn shouldBe externalDto.navn
+        internal.kode.toString() shouldBe externalDto.kode
+        internal.sistEndret?.toLocalDateTime() shouldBe externalDto.sistEndret
     }
 
     @Test

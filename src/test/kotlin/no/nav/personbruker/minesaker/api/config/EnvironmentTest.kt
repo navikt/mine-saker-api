@@ -1,8 +1,8 @@
 package no.nav.personbruker.minesaker.api.config
 
 import io.kotest.extensions.system.withEnvironment
-import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should be instance of`
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 
 internal class EnvironmentTest {
@@ -25,8 +25,8 @@ internal class EnvironmentTest {
                 Environment()
             }
 
-            result.isFailure `should be equal to` true
-            result.exceptionOrNull() `should be instance of` IllegalArgumentException::class
+            result.isFailure shouldBe true
+            result.exceptionOrNull().shouldBeInstanceOf<IllegalStateException>()
         }
     }
 
@@ -35,8 +35,8 @@ internal class EnvironmentTest {
         withEnvironment(envVars) {
             val prod = Environment(clusterName = "prod-gcp")
 
-            prod.isRunningInProd() `should be equal to` true
-            prod.isRunningInDev() `should be equal to` false
+            prod.isRunningInProd() shouldBe true
+            prod.isRunningInDev() shouldBe false
         }
     }
 
@@ -45,8 +45,8 @@ internal class EnvironmentTest {
         withEnvironment(envVars) {
             val dev = Environment(clusterName = "dev-gcp")
 
-            dev.isRunningInProd() `should be equal to` false
-            dev.isRunningInDev() `should be equal to` true
+            dev.isRunningInProd() shouldBe false
+            dev.isRunningInDev() shouldBe true
         }
     }
 
@@ -55,8 +55,8 @@ internal class EnvironmentTest {
         withEnvironment(envVars) {
             val ugyldig = Environment(clusterName = "ugyldig")
 
-            ugyldig.isRunningInProd() `should be equal to` false
-            ugyldig.isRunningInDev() `should be equal to` true
+            ugyldig.isRunningInProd() shouldBe false
+            ugyldig.isRunningInDev() shouldBe true
         }
     }
 

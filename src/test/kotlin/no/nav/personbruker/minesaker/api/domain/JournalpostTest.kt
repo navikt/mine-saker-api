@@ -1,41 +1,47 @@
 package no.nav.personbruker.minesaker.api.domain
 
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.personbruker.minesaker.api.config.enableMineSakerJsonConfig
-import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should contain`
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import org.junit.jupiter.api.Test
 
 internal class JournalpostTest {
 
-    private val objectMapper = jacksonObjectMapper().enableMineSakerJsonConfig()
+    private val objectMapper = jacksonObjectMapper().apply {
+        registerKotlinModule()
+        registerModule(JavaTimeModule())
+        disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    }
 
     @Test
     fun `Skal indikere at Journalposter uten dokumenter ikke har vedlegg`() {
         val journalpostUtenDokumenter = JournalpostObjectMother.giveMeJournalpostUtenDokumenter()
 
-        journalpostUtenDokumenter.harVedlegg `should be equal to` false
+        journalpostUtenDokumenter.harVedlegg shouldBe false
 
         val asJson = objectMapper.writeValueAsString(journalpostUtenDokumenter)
-        asJson `should contain` """"harVedlegg":false"""
+        asJson shouldContain """"harVedlegg":false"""
     }
 
     @Test
     fun `Skal indikere at Journalposter med kun et dokument ikke har vedlegg`() {
         val journalpostUtenVedlegg = JournalpostObjectMother.giveMeJournalpostUtenVedlegg()
 
-        journalpostUtenVedlegg.harVedlegg `should be equal to` false
+        journalpostUtenVedlegg.harVedlegg shouldBe false
         val asJson = objectMapper.writeValueAsString(journalpostUtenVedlegg)
-        asJson `should contain` """"harVedlegg":false"""
+        asJson shouldContain """"harVedlegg":false"""
     }
 
     @Test
     fun `Skal indikere at Journalposter med flere dokumenter har vedlegg`() {
         val journalpostMedVedlegg = JournalpostObjectMother.giveMeJournalpostMedVedlegg()
 
-        journalpostMedVedlegg.harVedlegg `should be equal to` true
+        journalpostMedVedlegg.harVedlegg shouldBe true
         val asJson = objectMapper.writeValueAsString(journalpostMedVedlegg)
-        asJson `should contain` """"harVedlegg":true"""
+        asJson shouldContain """"harVedlegg":true"""
     }
 
 }

@@ -2,7 +2,6 @@ package no.nav.personbruker.minesaker.api.digisos
 
 import no.nav.personbruker.minesaker.api.config.innsynsUrlResolverSingleton
 import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
-import no.nav.personbruker.minesaker.api.domain.Navn
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -17,7 +16,7 @@ data class DigiSosResponse(
 fun DigiSosResponse.toInternal(): ForenkletSakstema {
     val sakstemakode = Sakstemakode.valueOf(kode)
     return ForenkletSakstema(
-        Navn(navn),
+        navn,
         sakstemakode,
         sistEndret.toZonedDateTimeUTC(),
         innsynsUrlResolverSingleton.urlFor(sakstemakode)

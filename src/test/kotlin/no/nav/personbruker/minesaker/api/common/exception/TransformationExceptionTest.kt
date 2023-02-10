@@ -1,7 +1,7 @@
 package no.nav.personbruker.minesaker.api.common.exception
 
-import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should contain`
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import org.junit.jupiter.api.Test
 
 internal class TransformationExceptionTest {
@@ -14,10 +14,10 @@ internal class TransformationExceptionTest {
         val exception = TransformationException(expectedMessage, expectedErrorType)
         exception.addContext("dummyKey", "dummyValue")
 
-        exception.type `should be equal to` expectedErrorType
-        exception.message `should be equal to` expectedMessage
+        exception.type shouldBe expectedErrorType
+        exception.message shouldBe expectedMessage
         println(exception.toString())
-        exception.toString() `should contain` expectedErrorType.toString()
+        exception.toString() shouldContain expectedErrorType.toString()
     }
 
     @Test
@@ -26,9 +26,9 @@ internal class TransformationExceptionTest {
 
         val exception = TransformationException.withMissingFieldName(expectedFieldName)
 
-        exception.type `should be equal to` TransformationException.ErrorType.MISSING_FIELD
-        exception.context[TransformationException.feltnavnKey] `should be equal to` expectedFieldName
-        exception.toString() `should contain` expectedFieldName
+        exception.type shouldBe TransformationException.ErrorType.MISSING_FIELD
+        exception.context[TransformationException.feltnavnKey] shouldBe expectedFieldName
+        exception.toString() shouldContain expectedFieldName
     }
 
 }

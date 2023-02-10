@@ -3,8 +3,8 @@ package no.nav.personbruker.minesaker.api.domain
 import java.time.ZonedDateTime
 
 data class Journalpost(
-    val tittel: Tittel,
-    val journalpostId: JournalpostId,
+    val tittel: String,
+    val journalpostId: String,
     val journalposttype: Journalposttype,
     val avsender: Dokumentkilde?,
     val mottaker: Dokumentkilde?,

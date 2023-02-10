@@ -2,7 +2,6 @@ package no.nav.personbruker.minesaker.api.config
 
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
 import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings
-import no.nav.personbruker.minesaker.api.health.HealthService
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.saf.SafTokendings
 import no.nav.personbruker.minesaker.api.sak.SakService
@@ -13,7 +12,6 @@ class ApplicationContext {
     val environment = Environment()
 
     val httpClient = HttpClientBuilder.build()
-    val healthService = HealthService(this)
 
     val tokendingsService = TokendingsServiceBuilder.buildTokendingsService(maxCachedEntries = 10000)
 

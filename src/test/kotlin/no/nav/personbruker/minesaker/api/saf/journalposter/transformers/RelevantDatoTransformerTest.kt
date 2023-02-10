@@ -1,7 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
+import io.kotest.matchers.shouldBe
 import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.RelevantDatoObjectMother
-import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 
 internal class RelevantDatoTransformerTest {
@@ -12,7 +12,7 @@ internal class RelevantDatoTransformerTest {
 
         val nyesteDato = datoer.toInternal()
 
-        nyesteDato `should be equal to` RelevantDatoObjectMother.giveMeDatoForNotat().toInternal()
+        nyesteDato shouldBe RelevantDatoObjectMother.giveMeDatoForNotat().toInternal()
     }
 
 }

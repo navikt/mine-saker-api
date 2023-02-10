@@ -6,8 +6,9 @@ plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin on the JVM.
     kotlin("jvm").version(Kotlin.version)
     kotlin("plugin.allopen").version(Kotlin.version)
+    kotlin("plugin.serialization").version(Kotlin.version)
 
-    id(GraphQL.pluginId) version "3.7.0"
+    id(GraphQL.pluginId) version GraphQL6.version
     id(Shadow.pluginId) version "7.0.0"
 
     // Apply the application plugin to add support for building a CLI application.
@@ -16,50 +17,43 @@ plugins {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "17"
-    kotlinOptions.freeCompilerArgs = listOf("-Xinline-classes")
 }
 
 repositories {
-    // Use jcenter for resolving your dependencies.
-    // You can declare any Maven/Ivy/file repository here.
     mavenCentral()
-    maven("https://packages.confluent.io/maven")
     maven("https://jitpack.io")
     mavenLocal()
 }
 
 dependencies {
-    implementation("com.expediagroup:graphql-kotlin-client:3.7.0")
-    implementation(Jackson.dataTypeJsr310)
+    implementation(DittNAVCommonLib.utils)
+    implementation(GraphQL6.kotlinClient)
+    implementation(JacksonDatatype.datatypeJsr310)
     implementation(Kotlinx.coroutines)
     implementation(Kotlinx.htmlJvm)
-    implementation(Ktor.auth)
-    implementation(Ktor.authJwt)
-    implementation(Ktor.clientApache)
-    implementation(Ktor.clientJackson)
-    implementation(Ktor.clientJson)
-    implementation(Ktor.clientLogging)
-    implementation(Ktor.clientLoggingJvm)
-    implementation(Ktor.clientSerializationJvm)
-    implementation(Ktor.htmlBuilder)
-    implementation(Ktor.jackson)
-    implementation(Ktor.serverNetty)
-    // Velger å ta i bruk følgende alpha-versjon, fordi det har fikset feilen som kan gi stackoverflow i Logback i Ktor:
-    // https://youtrack.jetbrains.com/issue/KTOR-2040#focus=Comments-27-5225266.0-0
-    implementation("ch.qos.logback:logback-classic:1.3.0-alpha10")
-    implementation(Logstash.logbackEncoder)
+    implementation(KotlinLogging.logging)
+    implementation(KtorClientLogging.logging)
+    implementation(Ktor2.Server.auth)
+    implementation(Ktor2.Server.authJwt)
+    implementation(Ktor2.Client.apache)
+    implementation(Ktor2.Client.contentNegotiation)
+    implementation(Ktor2.Serialization.jackson)
+    implementation(Ktor2.Server.contentNegotiation)
+    implementation(Ktor2.Server.cors)
+    implementation(Ktor2.Server.defaultHeaders)
+    implementation(Ktor2.Server.htmlDsl)
+    implementation(Ktor2.Server.netty)
+    implementation(KotlinLogging.logging)
     implementation(Prometheus.common)
     implementation(Prometheus.hotspot)
     implementation(Prometheus.logback)
-    implementation(Tms.KtorTokenSupport.idportenSidecar)
-    implementation(Tms.KtorTokenSupport.tokendingsExchange)
-    implementation(Tms.KtorTokenSupport.authenticationInstaller)
-    implementation(Tms.KtorTokenSupport.tokenXValidation)
+    implementation(KtorTokenSupport201.idportenSidecar)
+    implementation(KtorTokenSupport201.tokendingsExchange)
+    implementation(KtorTokenSupport201.authenticationInstaller)
+    implementation(KtorTokenSupport201.tokenXValidation)
 
     testImplementation(Junit.api)
-    testImplementation(Ktor.clientMock)
-    testImplementation(Ktor.clientMockJvm)
-    testImplementation(Kluent.kluent)
+    testImplementation(Ktor2.Test.clientMock)
     testImplementation(Kotest.runnerJunit5)
     testImplementation(Kotest.assertionsCore)
     testImplementation(Kotest.extensions)
@@ -73,7 +67,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("io.ktor.server.netty.EngineMain")
+    mainClass.set("no.nav.personbruker.minesaker.api.config.AppKt")
 }
 
 tasks {
@@ -83,28 +77,6 @@ tasks {
             exceptionFormat = TestExceptionFormat.FULL
             events("passed", "skipped", "failed")
         }
-    }
-
-    register("runServer", JavaExec::class) {
-        println("Setting default environment variables for running with DittNAV docker-compose")
-
-        environment("SAF_API_URL", "http://localhost:8080/graphql")
-        environment("CORS_ALLOWED_ORIGINS", "localhost:9002")
-
-        environment("OIDC_ISSUER", "http://localhost:9000")
-        environment("OIDC_DISCOVERY_URL", "http://localhost:9000/.well-known/openid-configuration")
-        environment("OIDC_ACCEPTED_AUDIENCE", "stubOidcClient")
-        environment("LOGINSERVICE_IDPORTEN_DISCOVERY_URL", "http://localhost:9000/.well-known/openid-configuration")
-        environment("LOGINSERVICE_IDPORTEN_AUDIENCE", "stubOidcClient")
-        environment("OIDC_CLAIM_CONTAINING_THE_IDENTITY", "pid")
-
-        environment("NAIS_CLUSTER_NAME", "dev-sbs")
-        environment("NAIS_NAMESPACE", "personbruker")
-        environment("SENSU_HOST", "stub")
-        environment("SENSU_PORT", "")
-
-        mainClass.set(application.mainClass)
-        classpath = sourceSets["main"].runtimeClasspath
     }
 }
 

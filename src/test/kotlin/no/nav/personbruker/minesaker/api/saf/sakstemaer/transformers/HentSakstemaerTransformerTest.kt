@@ -1,9 +1,9 @@
 package no.nav.personbruker.minesaker.api.saf.sakstemaer.transformers
 
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.objectmothers.SakstemaObjectMother
-import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should be null`
-import org.amshove.kluent.shouldNotBeNull
 import org.junit.jupiter.api.Test
 
 internal class HentSakstemaerTransformerTest {
@@ -14,8 +14,8 @@ internal class HentSakstemaerTransformerTest {
 
         val internal = external.toInternal()
 
-        internal.navn.value `should be equal to` external.navn
-        internal.kode.toString() `should be equal to` external.kode.toString()
+        internal.navn shouldBe external.navn
+        internal.kode.toString() shouldBe external.kode
         internal.sistEndret.shouldNotBeNull()
     }
 
@@ -25,7 +25,7 @@ internal class HentSakstemaerTransformerTest {
 
         val internal = external.toInternal()
 
-        internal.sistEndret.`should be null`()
+        internal.sistEndret.shouldBeNull()
     }
 
 }

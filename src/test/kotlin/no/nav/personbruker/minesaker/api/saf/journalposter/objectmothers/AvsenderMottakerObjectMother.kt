@@ -1,19 +1,20 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers
 
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
+import no.nav.personbruker.minesaker.api.saf.journalposter.transformers.GraphQLAvsenderMottaker
+import no.nav.personbruker.minesaker.api.saf.journalposter.transformers.GraphQLAvsenderMottakerIdType
 
 object AvsenderMottakerObjectMother {
 
     fun giveMePerson(
         ident: String = "123",
-        idType: HentJournalposter.AvsenderMottakerIdType = HentJournalposter.AvsenderMottakerIdType.FNR
+        idType: GraphQLAvsenderMottakerIdType = GraphQLAvsenderMottakerIdType.FNR
     ) =
-        HentJournalposter.AvsenderMottaker(ident, idType)
+        GraphQLAvsenderMottaker(ident, idType)
 
     fun giveMeOrganisasjon(
         ident: String = "987654",
-        idType: HentJournalposter.AvsenderMottakerIdType = HentJournalposter.AvsenderMottakerIdType.ORGNR
+        idType: GraphQLAvsenderMottakerIdType = GraphQLAvsenderMottakerIdType.ORGNR
     ) =
-        HentJournalposter.AvsenderMottaker(ident, idType)
+        GraphQLAvsenderMottaker(ident, idType)
 
 }

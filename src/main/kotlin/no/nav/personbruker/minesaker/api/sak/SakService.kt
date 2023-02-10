@@ -32,8 +32,7 @@ class SakService(
 
     suspend fun hentSakstemaerFraSaf(user: AuthenticatedUser): SakstemaResult {
         val exchangedToken = safTokendings.exchangeToken(user)
-        val fodselsnummer = Fodselsnummer(user.ident)
-        val sakstemaerRequest = SakstemaerRequest.create(fodselsnummer)
+        val sakstemaerRequest = SakstemaerRequest.create(user.ident)
         return safConsumer.hentSakstemaer(sakstemaerRequest, exchangedToken)
     }
 
@@ -44,17 +43,16 @@ class SakService(
 
     suspend fun hentJournalposterForSakstema(user: IdportenUser, sakstema: Sakstemakode): List<Sakstema> {
         val exchangedToken = safTokendings.exchangeToken(user)
-        val fodselsnummer = Fodselsnummer(user.ident)
-        val journalposterRequest = JournalposterRequest.create(fodselsnummer, sakstema)
-        return safConsumer.hentJournalposter(fodselsnummer, journalposterRequest, exchangedToken)
+        val journalposterRequest = JournalposterRequest.create(user.ident, sakstema)
+        return safConsumer.hentJournalposter(user.ident, journalposterRequest, exchangedToken)
     }
 
     suspend fun hentDokument(
         user: IdportenUser,
-        journapostId: JournalpostId,
-        dokumentinfoId: DokumentInfoId
+        journapostId: String,
+        dokumentinfoId: String
     ): ByteArray {
-        if(dokumentinfoId.value == "-") {
+        if(dokumentinfoId == "-") {
             throw InvalidRequestException("Det ble forsøkt hentet et dokument som bruker ikke har tilgang til")
         }
         val exchangedToken = safTokendings.exchangeToken(user)

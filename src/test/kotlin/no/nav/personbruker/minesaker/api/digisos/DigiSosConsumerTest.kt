@@ -1,29 +1,39 @@
 package no.nav.personbruker.minesaker.api.digisos
 
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import io.ktor.client.*
 import io.ktor.client.engine.mock.*
-import io.ktor.client.features.json.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.serialization.jackson.*
 import kotlinx.coroutines.runBlocking
-import no.nav.personbruker.minesaker.api.config.buildJsonSerializer
 import no.nav.personbruker.minesaker.api.config.enableMineSakerJsonConfig
-import no.nav.personbruker.minesaker.api.domain.Fodselsnummer
+
 import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
 import no.nav.personbruker.minesaker.api.sak.Kildetype
-import no.nav.personbruker.minesaker.api.tokenx.AccessToken
-import org.amshove.kluent.*
 import org.junit.jupiter.api.Test
 
 import java.net.URL
 
 internal class DigiSosConsumerTest {
 
-    private val objectMapper = jacksonObjectMapper().enableMineSakerJsonConfig()
+    private val objectMapper = jacksonObjectMapper().apply {
+        registerKotlinModule()
+        registerModule(JavaTimeModule())
+        disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    }
     private val digiSosDummyEndpoint = URL("https://www.dummy.no")
-    private val dummyToken = AccessToken("<access_token>")
-    private val dummyIdent = Fodselsnummer("123")
+    private val dummyToken = "<access_token>"
+    private val dummyIdent = "123"
 
     @Test
     fun `Skal kunne hente sakstemaer`() {
@@ -41,11 +51,11 @@ internal class DigiSosConsumerTest {
             consumer.hentSakstemaer(dummyToken)
         }
 
-        internalSakstema.resultsSorted().size `should be equal to` externalResponse.size
-        internalSakstema.resultsSorted()[0] `should be instance of` ForenkletSakstema::class
-        internalSakstema.resultsSorted()[0].navn.value `should be equal to` externalResponse[0].navn
-        internalSakstema.resultsSorted()[0].kode.toString() `should be equal to` externalResponse[0].kode
-        internalSakstema `should not be equal to` externalResponse
+        internalSakstema.resultsSorted().size shouldBe externalResponse.size
+        internalSakstema.resultsSorted()[0].shouldBeInstanceOf<ForenkletSakstema>()
+        internalSakstema.resultsSorted()[0].navn shouldBe externalResponse[0].navn
+        internalSakstema.resultsSorted()[0].kode.toString() shouldBe externalResponse[0].kode
+        internalSakstema shouldNotBe externalResponse
     }
 
     @Test
@@ -63,9 +73,9 @@ internal class DigiSosConsumerTest {
             consumer.hentSakstemaer(dummyToken)
         }
 
-        sakstemarespons.hasErrors() `should be equal to` true
+        sakstemarespons.hasErrors() shouldBe true
         sakstemarespons.resultsSorted().shouldBeEmpty()
-        sakstemarespons.errors() `should contain` Kildetype.DIGISOS
+        sakstemarespons.errors() shouldContain Kildetype.DIGISOS
     }
 
     private fun createMockHttpClient(respond: MockRequestHandleScope.() -> HttpResponseData): HttpClient {
@@ -75,8 +85,10 @@ internal class DigiSosConsumerTest {
                     respond()
                 }
             }
-            install(JsonFeature) {
-                serializer = buildJsonSerializer()
+            install(ContentNegotiation) {
+                jackson {
+                    enableMineSakerJsonConfig()
+                }
             }
         }
     }

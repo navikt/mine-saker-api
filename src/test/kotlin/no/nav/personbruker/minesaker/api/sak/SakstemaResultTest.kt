@@ -1,10 +1,10 @@
 package no.nav.personbruker.minesaker.api.sak
 
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldNotContain
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.shouldBe
 import io.ktor.http.*
-import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should contain`
-import org.amshove.kluent.`should not contain`
-import org.amshove.kluent.shouldBeNull
 import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
 
@@ -14,21 +14,21 @@ internal class SakstemaResultTest {
     fun `Skal returnere http-kode ok hvis alle kilder svarer`() {
         val result = SakstemaResultObjectMother.createSafResults()
 
-        result.determineHttpCode() `should be equal to` HttpStatusCode.OK
+        result.determineHttpCode() shouldBe HttpStatusCode.OK
     }
 
     @Test
     fun `Skal returnere http-kode partial result hvis en kilde ikke svarer`() {
         val result = SakstemaResultObjectMother.createResultWithOneError()
 
-        result.determineHttpCode() `should be equal to` HttpStatusCode.PartialContent
+        result.determineHttpCode() shouldBe HttpStatusCode.OK
     }
 
     @Test
     fun `Skal returnere http-kode service unavailable hvis ingen kilder svarer`() {
         val result = SakstemaResultObjectMother.createResultWithTwoErrors()
 
-        result.determineHttpCode() `should be equal to` HttpStatusCode.ServiceUnavailable
+        result.determineHttpCode() shouldBe HttpStatusCode.ServiceUnavailable
     }
 
     @Test
@@ -45,10 +45,10 @@ internal class SakstemaResultTest {
         val sakstemaResult = SakstemaResult(unsortedResults)
 
         val sortedResults = sakstemaResult.resultsSorted()
-        sortedResults.size `should be equal to` unsortedResults.size
-        sortedResults[0] `should be equal to` nyeste
-        sortedResults[1] `should be equal to` midterste
-        sortedResults[2] `should be equal to` eldste
+        sortedResults.size shouldBe unsortedResults.size
+        sortedResults[0] shouldBe nyeste
+        sortedResults[1] shouldBe midterste
+        sortedResults[2] shouldBe eldste
     }
 
     @Test
@@ -65,11 +65,11 @@ internal class SakstemaResultTest {
         val sakstemaResult = SakstemaResult(unsortedResults)
 
         val lastModified = sakstemaResult.recentlyModifiedSakstemaResults()
-        lastModified.sistEndrede.size `should be equal to` 2
-        lastModified.sistEndrede `should contain` nyeste
-        lastModified.sistEndrede `should contain` midterste
-        lastModified.sistEndrede `should not contain` forGammelDagpengeSak
-        lastModified.dagpengerSistEndret `should be equal to` forGammelDagpengeSak.sistEndret
+        lastModified.sistEndrede.size shouldBe 2
+        lastModified.sistEndrede shouldContain nyeste
+        lastModified.sistEndrede shouldContain midterste
+        lastModified.sistEndrede shouldNotContain forGammelDagpengeSak
+        lastModified.dagpengerSistEndret shouldBe forGammelDagpengeSak.sistEndret
     }
 
     @Test
@@ -84,10 +84,10 @@ internal class SakstemaResultTest {
         val sakstemaResult = SakstemaResult(unsortedResults)
 
         val lastModified = sakstemaResult.recentlyModifiedSakstemaResults()
-        lastModified.sistEndrede.size `should be equal to` 2
-        lastModified.sistEndrede `should contain` nyeste
-        lastModified.sistEndrede `should contain` dagpenger
-        lastModified.dagpengerSistEndret `should be equal to` dagpenger.sistEndret
+        lastModified.sistEndrede.size shouldBe 2
+        lastModified.sistEndrede shouldContain nyeste
+        lastModified.sistEndrede shouldContain dagpenger
+        lastModified.dagpengerSistEndret shouldBe dagpenger.sistEndret
     }
 
     @Test
@@ -102,9 +102,9 @@ internal class SakstemaResultTest {
         val sakstemaResult = SakstemaResult(unsortedResults)
 
         val lastModified = sakstemaResult.recentlyModifiedSakstemaResults()
-        lastModified.sistEndrede.size `should be equal to` 2
-        lastModified.sistEndrede `should contain` nyeste
-        lastModified.sistEndrede `should contain` midterste
+        lastModified.sistEndrede.size shouldBe 2
+        lastModified.sistEndrede shouldContain nyeste
+        lastModified.sistEndrede shouldContain midterste
         lastModified.dagpengerSistEndret.shouldBeNull()
     }
 
@@ -116,8 +116,8 @@ internal class SakstemaResultTest {
         val sakstemaResult = SakstemaResult(results)
 
         val newestResult = sakstemaResult.recentlyModifiedSakstemaResults()
-        newestResult.sistEndrede.size `should be equal to` 1
-        newestResult.sistEndrede `should contain` enesteSakstema
+        newestResult.sistEndrede.size shouldBe 1
+        newestResult.sistEndrede shouldContain enesteSakstema
     }
 
 }

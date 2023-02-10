@@ -1,16 +1,15 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.personbruker.minesaker.api.domain.DokumentkildeType
 
-fun HentJournalposter.AvsenderMottakerIdType.toInternal(): DokumentkildeType {
+fun GraphQLAvsenderMottakerIdType.toInternal(): DokumentkildeType {
     return when (this) {
-        HentJournalposter.AvsenderMottakerIdType.FNR -> DokumentkildeType.PERSON
-        HentJournalposter.AvsenderMottakerIdType.HPRNR -> DokumentkildeType.HELSEPERSONELL
-        HentJournalposter.AvsenderMottakerIdType.ORGNR -> DokumentkildeType.ORGANISASJON
-        HentJournalposter.AvsenderMottakerIdType.UTL_ORG -> DokumentkildeType.ORGANISASJON
-        HentJournalposter.AvsenderMottakerIdType.NULL -> DokumentkildeType.UKJENT
-        HentJournalposter.AvsenderMottakerIdType.UKJENT -> DokumentkildeType.UKJENT
-        HentJournalposter.AvsenderMottakerIdType.__UNKNOWN_VALUE -> DokumentkildeType.UKJENT
+        GraphQLAvsenderMottakerIdType.FNR -> DokumentkildeType.PERSON
+        GraphQLAvsenderMottakerIdType.HPRNR -> DokumentkildeType.HELSEPERSONELL
+        GraphQLAvsenderMottakerIdType.ORGNR -> DokumentkildeType.ORGANISASJON
+        GraphQLAvsenderMottakerIdType.UTL_ORG -> DokumentkildeType.ORGANISASJON
+        GraphQLAvsenderMottakerIdType.NULL -> DokumentkildeType.UKJENT
+        GraphQLAvsenderMottakerIdType.UKJENT -> DokumentkildeType.UKJENT
+        GraphQLAvsenderMottakerIdType.__UNKNOWN_VALUE -> DokumentkildeType.UKJENT
     }
 }

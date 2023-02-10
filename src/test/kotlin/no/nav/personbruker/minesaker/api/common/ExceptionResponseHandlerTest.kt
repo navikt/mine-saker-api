@@ -1,5 +1,6 @@
 package no.nav.personbruker.minesaker.api.common
 
+import io.kotest.matchers.shouldBe
 import io.ktor.http.*
 import io.mockk.clearMocks
 import io.mockk.coVerify
@@ -10,7 +11,6 @@ import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.common.exception.DocumentNotFoundException
 import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
-import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.Logger
@@ -32,7 +32,7 @@ internal class ExceptionResponseHandlerTest {
             ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
         }
 
-        errorCode `should be equal to` HttpStatusCode.NotFound
+        errorCode shouldBe HttpStatusCode.NotFound
         coVerify(exactly = 1) { log.warn(any<String>(), any()) }
         confirmVerified(log)
     }
@@ -45,7 +45,7 @@ internal class ExceptionResponseHandlerTest {
             ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
         }
 
-        errorCode `should be equal to` HttpStatusCode.ServiceUnavailable
+        errorCode shouldBe HttpStatusCode.ServiceUnavailable
         coVerify(exactly = 1) { log.warn(any<String>(), any()) }
         confirmVerified(log)
     }
@@ -58,7 +58,7 @@ internal class ExceptionResponseHandlerTest {
             ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
         }
 
-        errorCode `should be equal to` HttpStatusCode.BadRequest
+        errorCode shouldBe HttpStatusCode.BadRequest
         coVerify(exactly = 1) { log.warn(any<String>(), any()) }
         confirmVerified(log)
     }
@@ -71,7 +71,7 @@ internal class ExceptionResponseHandlerTest {
             ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
         }
 
-        errorCode `should be equal to` HttpStatusCode.ServiceUnavailable
+        errorCode shouldBe HttpStatusCode.ServiceUnavailable
         coVerify(exactly = 1) { log.warn(any<String>(), any()) }
         confirmVerified(log)
     }
@@ -84,7 +84,7 @@ internal class ExceptionResponseHandlerTest {
             ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
         }
 
-        errorCode `should be equal to` HttpStatusCode.InternalServerError
+        errorCode shouldBe HttpStatusCode.InternalServerError
         coVerify(exactly = 1) { log.error(any<String>(), any()) }
         confirmVerified(log)
     }
