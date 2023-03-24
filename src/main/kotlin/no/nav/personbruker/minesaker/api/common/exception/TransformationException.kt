@@ -4,7 +4,7 @@ class TransformationException(
     message: String,
     val type: ErrorType,
     cause: Throwable?
-) : AbstractMineSakerException(message, cause) {
+) : MineSakerException(message, cause) {
 
     constructor(message: String, type: ErrorType) : this(message, type, null)
 
