@@ -12,9 +12,9 @@ import no.nav.personbruker.minesaker.api.domain.AuthenticatedUser
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import org.slf4j.LoggerFactory
 
-val sakstemakode = "sakstemakode"
-val dokumentIdParameterName = "dokumentId"
-val journalpostIdParameterName = "journalpostId"
+const val sakstemakode = "sakstemakode"
+const val dokumentIdParameterName = "dokumentId"
+const val journalpostIdParameterName = "journalpostId"
 
 val log = LoggerFactory.getLogger(SakService::class.java)
 
