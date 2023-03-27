@@ -75,11 +75,11 @@ fun Route.sakApi(
 
 private fun ApplicationCall.sakstemaFromQueryParameters() =
     request.queryParameters["sakstemakode"]
-        ?.let { queryParam -> verifiserSakstemakode(queryParam) }
+        ?.let { queryParam -> resolveSakstemakode(queryParam) }
         ?: throw InvalidRequestException("Parameter sakstemakode mangler")
 
 
-private fun verifiserSakstemakode(sakstemakode: String): Sakstemakode =
+private fun resolveSakstemakode(sakstemakode: String): Sakstemakode =
     try {
         Sakstemakode.valueOf(sakstemakode)
     } catch (cause: Exception) {
@@ -91,7 +91,7 @@ private fun ApplicationCall.extractSakstemakodeFromParameters(): Sakstemakode {
     val sakstemakodeUverifisert = parameters[sakstemakode]
         ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$sakstemakode' er spesifisert.")
 
-    return verifiserSakstemakode(sakstemakodeUverifisert)
+    return resolveSakstemakode(sakstemakodeUverifisert)
 }
 
 private fun ApplicationCall.extractJournalpostId(): String {

@@ -9,10 +9,13 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.defaultheaders.*
 import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.pipeline.*
 import io.prometheus.client.hotspot.DefaultExports
+import mu.KotlinLogging
+import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.health.healthApi
 import no.nav.personbruker.minesaker.api.sak.SakService
@@ -24,6 +27,7 @@ import no.nav.tms.token.support.idporten.sidecar.user.IdportenUserFactory
 import no.nav.tms.token.support.tokenx.validation.TokenXAuthenticator
 import no.nav.tms.token.support.tokenx.validation.user.TokenXUserFactory
 
+
 fun Application.mineSakerApi(
     sakService: SakService,
     httpClient: HttpClient,
@@ -34,13 +38,26 @@ fun Application.mineSakerApi(
 
     ) {
     DefaultExports.initialize()
+    val log = KotlinLogging.logger { }
+    val secureLog = KotlinLogging.logger("secureLogs")
 
     install(DefaultHeaders)
     install(StatusPages) {
         exception<Throwable> { call, cause ->
             when (cause) {
                 is InvalidRequestException -> {
-                    call.respond(HttpStatusCode.BadRequest, cause.message ?: "Ukjen feil i request")
+                    call.respond(HttpStatusCode.BadRequest, cause.message ?: "Ukjent feil i request")
+                }
+                is CommunicationException -> {
+                    log.error { cause.message }
+                    cause.sensitiveMessage?.let {
+                        secureLog.error { it }
+                    }
+                    call.respond(HttpStatusCode.ServiceUnavailable)
+                }
+                else -> {
+                    secureLog.error { "Kall til ${call.request.uri} feiler: ${cause.message}" }
+                    call.respond(HttpStatusCode.InternalServerError)
                 }
             }
 

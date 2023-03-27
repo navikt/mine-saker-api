@@ -2,7 +2,8 @@ package no.nav.personbruker.minesaker.api.common.exception
 
 import com.expediagroup.graphql.client.types.GraphQLClientError
 
-open class MineSakerException(message: String, cause: Throwable?) : Exception(message, cause) {
+open class MineSakerException(message: String, cause: Throwable?, val sensitiveMessage: String? = null) :
+    Exception(message, cause) {
 
     constructor(message: String) : this(message, null)
 
@@ -22,7 +23,8 @@ open class MineSakerException(message: String, cause: Throwable?) : Exception(me
 
 }
 
-class CommunicationException(message: String, cause: Throwable? = null) : MineSakerException(message, cause)
+class CommunicationException(message: String, cause: Throwable? = null, sensitiveMessage: String? = null) :
+    MineSakerException(message, cause, sensitiveMessage)
 
 class DocumentNotFoundException(message: String, cause: Throwable? = null) : MineSakerException(message, cause)
 
@@ -36,4 +38,5 @@ class GraphQLResultException(
     override fun toString(): String = "${super.toString()}, errors=$errors, extensions=$extensions)"
 }
 
+class TokendingsException(val clientId: String, val service: String) : Exception()
 

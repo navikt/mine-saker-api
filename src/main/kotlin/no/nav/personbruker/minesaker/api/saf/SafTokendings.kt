@@ -16,3 +16,5 @@ class SafTokendings(
         return tokendingsService.exchangeToken(user.tokenString, safselvbetjeningClientId)
     }
 }
+
+class TokendingsError: Throwable()
