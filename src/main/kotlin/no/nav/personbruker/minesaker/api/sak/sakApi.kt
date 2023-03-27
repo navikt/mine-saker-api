@@ -24,15 +24,9 @@ fun Route.sakApi(
 
 
     get("/journalposter") {
-        try {
-            val sakstema = call.extractSakstemaFromQueryParameters()
-            val result = service.hentJournalposterForSakstema(idportenUser, sakstema)
-            call.respond(HttpStatusCode.OK, result)
-
-        } catch (exception: Exception) {
-            val errorCode = ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
-            call.respond(errorCode)
-        }
+        val sakstema = call.sakstemaFromQueryParameters()
+        val result = service.hentJournalposterForSakstema(idportenUser, sakstema)
+        call.respond(HttpStatusCode.OK, result)
     }
 
     get("/journalposter/{$sakstemakode}") {
@@ -51,7 +45,7 @@ fun Route.sakApi(
         try {
             val user = AuthenticatedUser.createIdPortenUser(idportenUser)
             val result = service.hentSakstemaer(user)
-            if(result.hasErrors()) {
+            if (result.hasErrors()) {
                 log.warn("En eller flere kilder feilet: ${result.errors()}. Klienten får en passende http-svarkode.")
             }
             call.respond(result.determineHttpCode(), result.resultsSorted())
@@ -78,23 +72,20 @@ fun Route.sakApi(
 
 }
 
-private fun ApplicationCall.extractSakstemaFromQueryParameters(): Sakstemakode {
-    val sakstemakode: String = request.queryParameters["sakstemakode"]
-        ?: throw InvalidRequestException("Kallet kan ikke utføres uten at tema er valgt.")
 
-    return verifiserSakstemakode(sakstemakode)
-}
+private fun ApplicationCall.sakstemaFromQueryParameters() =
+    request.queryParameters["sakstemakode"]
+        ?.let { queryParam -> verifiserSakstemakode(queryParam) }
+        ?: throw InvalidRequestException("Parameter sakstemakode mangler")
 
-private fun verifiserSakstemakode(sakstemakode: String): Sakstemakode {
-    val sakstema = runCatching {
+
+private fun verifiserSakstemakode(sakstemakode: String): Sakstemakode =
+    try {
         Sakstemakode.valueOf(sakstemakode)
-
-    }.onFailure { cause ->
-        throw InvalidRequestException("Ugyldig sakstemakode ble brukt", cause)
+    } catch (cause: Exception) {
+        throw InvalidRequestException("Ugyldig verdi for sakstemakode", cause)
     }
 
-    return sakstema.getOrThrow()
-}
 
 private fun ApplicationCall.extractSakstemakodeFromParameters(): Sakstemakode {
     val sakstemakodeUverifisert = parameters[sakstemakode]

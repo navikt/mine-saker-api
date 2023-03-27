@@ -43,6 +43,7 @@ dependencies {
     implementation(Ktor2.Server.defaultHeaders)
     implementation(Ktor2.Server.htmlDsl)
     implementation(Ktor2.Server.netty)
+    implementation(Ktor2.Server.statusPages)
     implementation(KotlinLogging.logging)
     implementation(Prometheus.common)
     implementation(Prometheus.hotspot)
@@ -54,6 +55,9 @@ dependencies {
 
     testImplementation(Junit.api)
     testImplementation(Ktor2.Test.clientMock)
+    testImplementation(Ktor2.Test.serverTestHost)
+    testImplementation(TmsKtorTokenSupport.authenticationInstallerMock)
+    testImplementation(TmsKtorTokenSupport.idportenSidecarMock)
     testImplementation(Kotest.runnerJunit5)
     testImplementation(Kotest.assertionsCore)
     testImplementation(Kotest.extensions)
