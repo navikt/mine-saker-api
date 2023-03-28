@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
+import no.nav.personbruker.minesaker.api.config.InnsynsUrlResolver
 import no.nav.personbruker.minesaker.api.sak.Kildetype
 import no.nav.personbruker.minesaker.api.sak.SakstemaResult
 import java.net.URL
@@ -16,7 +17,8 @@ import java.util.*
 
 class DigiSosConsumer(
     private val httpClient: HttpClient,
-    private val digiSosEndpoint: URL
+    private val digiSosEndpoint: URL,
+    private val innsynsUrlResolver: InnsynsUrlResolver
 ) {
 
     private val log = KotlinLogging.logger {}
@@ -30,7 +32,7 @@ class DigiSosConsumer(
                     throw CommunicationException("Klarte ikke hente data fra digisos. Http-status [${response.status}]")
                 }
                 val responseElements: List<DigiSosResponse> = response.body()
-                return SakstemaResult(responseElements.toInternal())
+                return SakstemaResult(responseElements.toInternal(innsynsUrlResolver))
             }
 
         } catch (e: Exception) {

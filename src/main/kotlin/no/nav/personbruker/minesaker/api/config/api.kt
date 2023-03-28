@@ -19,6 +19,7 @@ import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.common.exception.DocumentNotFoundException
 import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
+import no.nav.personbruker.minesaker.api.common.exception.TransformationException
 import no.nav.personbruker.minesaker.api.health.healthApi
 import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.personbruker.minesaker.api.sak.dittNavSakApi
@@ -76,6 +77,10 @@ fun Application.mineSakerApi(
                     }
                     call.respond(HttpStatusCode.NotFound)
                 }
+                is TransformationException -> {
+                    log.warn { cause.message }
+                    call.respond(HttpStatusCode.InternalServerError)
+                }
                 else -> {
                     secureLog.error { "Kall til ${call.request.uri} feiler: ${cause.message}" }
                     call.respond(HttpStatusCode.InternalServerError)
@@ -94,7 +99,7 @@ fun Application.mineSakerApi(
 
     install(ContentNegotiation) {
         jackson {
-            enableMineSakerJsonConfig()
+            jsonConfig()
         }
     }
 

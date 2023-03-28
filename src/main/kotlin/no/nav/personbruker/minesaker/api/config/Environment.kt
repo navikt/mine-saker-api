@@ -2,6 +2,7 @@ package no.nav.personbruker.minesaker.api.config
 
 import no.nav.personbruker.dittnav.common.util.config.IntEnvVar.getEnvVarAsInt
 import no.nav.personbruker.dittnav.common.util.config.StringEnvVar.getEnvVar
+import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import java.net.URL
 
 data class Environment(
@@ -14,13 +15,14 @@ data class Environment(
     val digiSosEndpoint: URL = URL(getEnvVar("DIGISOS_API_URL")),
     val digiSosClientId: String = getEnvVar("DIGISOS_CLIENT_ID"),
     val clusterName: String = getEnvVar("NAIS_CLUSTER_NAME"),
-    val postLogoutUrl: String = getEnvVar("POST_LOGOUT_URL")
+    val postLogoutUrl: String = getEnvVar("POST_LOGOUT_URL"),
+    val defaultInnsynLenke: URL = URL(getEnvVar("DEFAULT_INNSYN_LENKE")),
+    val innsynsLenker: Map<Sakstemakode, URL> = mapOf(
+        Sakstemakode.DAG to URL(getEnvVar("DAGPENGER_INNSYN")),
+        Sakstemakode.HJE to URL(getEnvVar("HJELPEMIDLER_INNSYN")),
+        Sakstemakode.KOM to URL(getEnvVar("SOSIALHJELP_INNSYN")),
+        Sakstemakode.AAP to URL(getEnvVar("AAP_INNSYN")),
+        Sakstemakode.SYK to URL(getEnvVar("SYKEFRAVÆR_INNSYN")),
+        Sakstemakode.SYM to URL(getEnvVar("SYKEFRAVÆR_INNSYN"))
+    )
 )
-
-fun Environment.isRunningInDev(): Boolean {
-    return !isRunningInProd()
-}
-
-fun Environment.isRunningInProd(): Boolean {
-    return "prod-gcp" == clusterName
-}

@@ -15,6 +15,7 @@ import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
 import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.common.exception.DocumentNotFoundException
 import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
+import no.nav.personbruker.minesaker.api.config.InnsynsUrlResolver
 import no.nav.personbruker.minesaker.api.domain.Sakstema
 import no.nav.personbruker.minesaker.api.saf.common.GraphQLResponse
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
@@ -26,27 +27,23 @@ import java.util.*
 
 class SafConsumer(
     private val httpClient: HttpClient,
-    private val safEndpoint: URL
+    private val safEndpoint: URL,
+    private val  innsynsUrlResolver: InnsynsUrlResolver
 ) {
 
     private val log = KotlinLogging.logger {}
-
     private val safCallIdHeaderName = "Nav-Callid"
     private val navConsumerIdHeaderName = "Nav-Consumer-Id"
-
     private val navConsumerId = "mine-saker-api"
 
-    suspend fun hentSakstemaer(request: SakstemaerRequest, accessToken: String): SakstemaResult {
-        return try {
+    suspend fun hentSakstemaer(request: SakstemaerRequest, accessToken: String): SakstemaResult =
+        try {
             val result: HentSakstemaer.Result = unwrapGraphQLResponse(sendQuery(request, accessToken))
-
-            SakstemaResult(result.toInternal())
-
+            SakstemaResult(result.toInternal(innsynsUrlResolver))
         } catch (e: Exception) {
             log.warn("Klarte ikke å hente data fra SAF.", e)
             SakstemaResult(errors = listOf(Kildetype.SAF))
         }
-    }
 
     suspend fun hentJournalposter(
         innloggetBruker: String,
@@ -62,13 +59,8 @@ class SafConsumer(
         dokumentinfoId: String,
         accessToken: String
     ): ByteArray {
-        try {
             val httpResponse = fetchDocument(journapostId, dokumentinfoId, accessToken)
             return unpackRawResponseBody(httpResponse)
-        } catch (e: Exception) {
-            throw e;
-        }
-
     }
 
     private suspend fun fetchDocument(

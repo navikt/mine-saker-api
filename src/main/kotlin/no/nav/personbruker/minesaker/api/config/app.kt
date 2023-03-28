@@ -12,14 +12,15 @@ import no.nav.tms.token.support.tokendings.exchange.TokendingsServiceBuilder
 fun main() {
     val environment = Environment()
     val httpClient = HttpClientBuilder.build()
+    val innsynsUrlResolver = InnsynsUrlResolver(environment.innsynsLenker,environment.defaultInnsynLenke)
 
     val tokendingsService = TokendingsServiceBuilder.buildTokendingsService(maxCachedEntries = 10000)
 
     val safTokendings = SafTokendings(tokendingsService, environment.safClientId)
     val digiSosTokendings = DigiSosTokendings(tokendingsService, environment.digiSosClientId)
 
-    val safConsumer = SafConsumer(httpClient, environment.safEndpoint)
-    val digiSosConsumer = DigiSosConsumer(httpClient, environment.digiSosEndpoint)
+    val safConsumer = SafConsumer(httpClient, environment.safEndpoint, innsynsUrlResolver)
+    val digiSosConsumer = DigiSosConsumer(httpClient, environment.digiSosEndpoint, innsynsUrlResolver)
     val sakService = SakService(safConsumer, safTokendings, digiSosConsumer, digiSosTokendings)
 
     embeddedServer(Netty, port = environment.port) {
