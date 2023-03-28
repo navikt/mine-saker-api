@@ -3,10 +3,11 @@ package no.nav.personbruker.minesaker.api.sak
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
 import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings
-import no.nav.personbruker.minesaker.api.domain.*
+import no.nav.personbruker.minesaker.api.domain.AuthenticatedUser
+import no.nav.personbruker.minesaker.api.domain.Sakstema
+import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.saf.SafTokendings
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
@@ -52,11 +53,8 @@ class SakService(
         journapostId: String,
         dokumentinfoId: String
     ): ByteArray {
-        if(dokumentinfoId == "-") {
-            throw InvalidRequestException("Det ble forsøkt hentet et dokument som bruker ikke har tilgang til")
-        }
-        val exchangedToken = safTokendings.exchangeToken(user)
-        return safConsumer.hentDokument(journapostId, dokumentinfoId, exchangedToken)
+            val exchangedToken = safTokendings.exchangeToken(user)
+            return safConsumer.hentDokument(journapostId, dokumentinfoId, exchangedToken)
     }
 
 }

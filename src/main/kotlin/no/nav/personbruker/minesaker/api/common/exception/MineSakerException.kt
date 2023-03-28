@@ -26,9 +26,10 @@ open class MineSakerException(message: String, cause: Throwable?, val sensitiveM
 class CommunicationException(message: String, cause: Throwable? = null, sensitiveMessage: String? = null) :
     MineSakerException(message, cause, sensitiveMessage)
 
-class DocumentNotFoundException(message: String, cause: Throwable? = null) : MineSakerException(message, cause)
+class DocumentNotFoundException(message: String, cause: Throwable? = null, sensitiveMessage: String? = null) : MineSakerException(message, cause, sensitiveMessage)
 
-class InvalidRequestException(message: String, cause: Throwable? = null) : MineSakerException(message, cause)
+class InvalidRequestException(message: String, cause: Throwable? = null, sensitiveMessage: String? = null) :
+    MineSakerException(message, cause, sensitiveMessage)
 
 class GraphQLResultException(
     message: String,

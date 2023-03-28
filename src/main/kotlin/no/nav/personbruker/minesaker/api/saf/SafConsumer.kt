@@ -62,9 +62,13 @@ class SafConsumer(
         dokumentinfoId: String,
         accessToken: String
     ): ByteArray {
-        val httpResponse = fetchDocument(journapostId, dokumentinfoId, accessToken)
+        try {
+            val httpResponse = fetchDocument(journapostId, dokumentinfoId, accessToken)
+            return unpackRawResponseBody(httpResponse)
+        } catch (e: Exception) {
+            throw e;
+        }
 
-        return unpackRawResponseBody(httpResponse)
     }
 
     private suspend fun fetchDocument(
@@ -87,7 +91,10 @@ class SafConsumer(
 
     private suspend fun unpackRawResponseBody(response: HttpResponse): ByteArray {
         if (response.status == HttpStatusCode.NotFound) {
-            throw DocumentNotFoundException("Fant ikke dokument hos SAF")
+            throw DocumentNotFoundException(
+                "Fant ikke dokument hos SAF",
+                sensitiveMessage = "Fant ikke dokument hos SAF for url ${response.request.url}"
+            )
         } else if (!response.status.isSuccess()) {
             throw CommunicationException("Klarte ikke å hente dokument fra SAF. Http-status [${response.status}]")
         }
@@ -99,24 +106,25 @@ class SafConsumer(
         }
     }
 
-    private suspend fun sendQuery(request: GraphQLRequest, accessToken: String): HttpResponse = withContext(Dispatchers.IO) {
-        val callId = UUID.randomUUID()
-        log.info("Sender graphql-spørring med correlationId=$callId")
-        httpClient.post {
-            url("$safEndpoint/graphql")
-            method = HttpMethod.Post
-            header(safCallIdHeaderName, callId)
-            header(Authorization, "Bearer $accessToken")
-            contentType(ContentType.Application.Json)
-            accept(ContentType.Application.Json)
-            setBody(request)
-            timeout {
-                socketTimeoutMillis = 25000
-                connectTimeoutMillis = 10000
-                requestTimeoutMillis = 35000
+    private suspend fun sendQuery(request: GraphQLRequest, accessToken: String): HttpResponse =
+        withContext(Dispatchers.IO) {
+            val callId = UUID.randomUUID()
+            log.info("Sender graphql-spørring med correlationId=$callId")
+            httpClient.post {
+                url("$safEndpoint/graphql")
+                method = HttpMethod.Post
+                header(safCallIdHeaderName, callId)
+                header(Authorization, "Bearer $accessToken")
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                setBody(request)
+                timeout {
+                    socketTimeoutMillis = 25000
+                    connectTimeoutMillis = 10000
+                    requestTimeoutMillis = 35000
+                }
             }
         }
-    }
 
     private suspend inline fun <reified T> unwrapGraphQLResponse(response: HttpResponse): T {
         if (!response.status.isSuccess()) {

@@ -16,6 +16,7 @@ import io.ktor.util.pipeline.*
 import io.prometheus.client.hotspot.DefaultExports
 import mu.KotlinLogging
 import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
+import no.nav.personbruker.minesaker.api.common.exception.DocumentNotFoundException
 import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.health.healthApi
@@ -48,6 +49,9 @@ fun Application.mineSakerApi(
             when (cause) {
                 is InvalidRequestException -> {
                     call.respond(HttpStatusCode.BadRequest, cause.message ?: "Ukjent feil i request")
+                    cause.sensitiveMessage?.let {
+                        secureLog.error { it }
+                    }
                 }
                 is CommunicationException -> {
                     log.error { cause.message }
@@ -64,6 +68,13 @@ fun Application.mineSakerApi(
                         }"
                     }
                     call.respond(HttpStatusCode.InternalServerError)
+                }
+                is DocumentNotFoundException -> {
+                    log.warn { cause.message }
+                    cause.sensitiveMessage?.let {
+                        secureLog.warn { it }
+                    }
+                    call.respond(HttpStatusCode.NotFound)
                 }
                 else -> {
                     secureLog.error { "Kall til ${call.request.uri} feiler: ${cause.message}" }

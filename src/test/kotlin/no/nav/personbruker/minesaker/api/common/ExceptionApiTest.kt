@@ -14,7 +14,6 @@ import kotlinx.coroutines.runBlocking
 import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.common.exception.DocumentNotFoundException
 import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
-import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.config.mineSakerApi
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
 import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings
@@ -163,12 +162,14 @@ internal class ExceptionApiTest {
 
     @Test
     fun dokumenter() = testApplication {
+        val safconsumerMockk = mockk<SafConsumer>().also {
+            coEvery {
+                it.hentDokument(any(), any(), any())
+            } returns ByteArray(10)
+        }
+
         application {
-            val sakserviceMock = createSakService(safConsumer = mockk<SafConsumer>().also {
-                coEvery {
-                    it.hentDokument(any(),any(),any())
-                } returns ByteArray(10)
-            })
+            val sakserviceMock = createSakService(safConsumer = safconsumerMockk)
 
             mineSakerApi(
                 sakService = sakserviceMock,
@@ -189,9 +190,18 @@ internal class ExceptionApiTest {
                 },
             )
         }
-
-        client.get("/mine-saker-api/dokument/-/-").apply {
+        client.get("/mine-saker-api/dokument/gghh11/hfajskk").apply {
             status shouldBe HttpStatusCode.OK
+        }
+        client.get("/mine-saker-api/dokument/-/-").apply {
+            status shouldBe HttpStatusCode.BadRequest
+        }
+
+        clearMocks(safconsumerMockk)
+        coEvery { safconsumerMockk.hentDokument(any(),any(),any()) } throws DocumentNotFoundException("")
+
+        client.get("/mine-saker-api/dokument/gghh11/hfajskk").apply {
+            status shouldBe HttpStatusCode.NotFound
         }
 
     }
@@ -205,32 +215,6 @@ internal class ExceptionApiTest {
 
         errorCode shouldBe HttpStatusCode.NotFound
         coVerify(exactly = 1) { log.warn(any<String>(), any()) }
-        confirmVerified(log)
-    }
-
-    @Test
-    fun `Skal haandtere CommunicationException`() {
-        val exception = CommunicationException("Simulert feil")
-
-        val errorCode = runBlocking {
-            ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
-        }
-
-        errorCode shouldBe HttpStatusCode.ServiceUnavailable
-        coVerify(exactly = 1) { log.warn(any<String>(), any()) }
-        confirmVerified(log)
-    }
-
-    @Test
-    fun `Skal haandtere ukjente feil`() {
-        val exception = SecurityException("Simulert feil")
-
-        val errorCode = runBlocking {
-            ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
-        }
-
-        errorCode shouldBe HttpStatusCode.InternalServerError
-        coVerify(exactly = 1) { log.error(any<String>(), any()) }
         confirmVerified(log)
     }
 

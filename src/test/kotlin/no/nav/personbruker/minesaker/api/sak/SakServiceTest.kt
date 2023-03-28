@@ -138,28 +138,4 @@ internal class SakServiceTest {
         result.isFailure shouldBe true
         result.exceptionOrNull().shouldBeInstanceOf<CommunicationException>()
     }
-
-    @Test
-    fun `Skal forkaste forsok paa aa hente dokumenter bruker ikke har tilgang til`() {
-        val journapostId = "x"
-        val safConsumer = mockk<SafConsumer>(relaxed = true)
-        val digiSosConsumer = mockk<DigiSosConsumer>()
-        val service = SakService(safConsumer, safTokendings, digiSosConsumer, digiSosTokendings)
-
-        val dokumentIdUtenTilgang = "-"
-        val rejectedInvocation = runCatching {
-            runBlocking {
-                service.hentDokument(dummyIdportenUser, journapostId, dokumentIdUtenTilgang)
-            }
-        }
-        rejectedInvocation.isFailure shouldBe true
-        rejectedInvocation.exceptionOrNull().shouldBeInstanceOf<InvalidRequestException>()
-
-        val dokumentIdMedTilgang = "123"
-        runBlocking {
-            service.hentDokument(dummyIdportenUser, journapostId, dokumentIdMedTilgang)
-        }.shouldNotBeNull()
-
-    }
-
 }

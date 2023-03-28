@@ -46,8 +46,8 @@ fun Route.sakApi(
     }
 
     get("/dokument/{$journalpostIdParameterName}/{$dokumentIdParameterName}") {
-        val journalpostId = call.extractJournalpostId()
-        val dokumentId = call.extractDokumentInfoId()
+        val journalpostId = call.journalpostId()
+        val dokumentId = call.dokumentInfoId()
         log.info("Skal hente dokumentet $dokumentId, fra journalposten $journalpostId")
         val result = service.hentDokument(idportenUser, journalpostId, dokumentId)
         call.respondBytes(bytes = result, contentType = ContentType.Application.Pdf, status = HttpStatusCode.OK)
@@ -73,10 +73,18 @@ private fun resolveSakstemakode(sakstemakode: String): Sakstemakode =
     }
 
 
-private fun ApplicationCall.extractJournalpostId(): String = parameters[journalpostIdParameterName]
+private fun ApplicationCall.journalpostId(): String = parameters[journalpostIdParameterName]
     ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$journalpostIdParameterName' er spesifisert.")
 
 
-private fun ApplicationCall.extractDokumentInfoId(): String = parameters[dokumentIdParameterName]
+private fun ApplicationCall.dokumentInfoId(): String = parameters[dokumentIdParameterName]
+    ?.let {
+        if (it == "-")
+            throw InvalidRequestException(
+                message = "Forsøkte å hente info for ugyldig dokumment-id",
+                sensitiveMessage = "Forsøkte å hente info for ugyldig dokuemnt-id"
+            )
+        else it
+    }
     ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$dokumentIdParameterName' er spesifisert.")
 
