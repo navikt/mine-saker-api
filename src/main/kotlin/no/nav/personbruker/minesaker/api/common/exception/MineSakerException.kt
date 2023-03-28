@@ -37,6 +37,3 @@ class GraphQLResultException(
 ) : MineSakerException(message) {
     override fun toString(): String = "${super.toString()}, errors=$errors, extensions=$extensions)"
 }
-
-class TokendingsException(val clientId: String, val service: String) : Exception()
-

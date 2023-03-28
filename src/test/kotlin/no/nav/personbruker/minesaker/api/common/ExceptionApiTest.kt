@@ -79,6 +79,43 @@ internal class ExceptionApiTest {
             status shouldBe HttpStatusCode.ServiceUnavailable
         }
 
+    }
+
+    @Test
+    fun `journalposter med pathparameter`() = testApplication {
+        application {
+            val sakserviceMock = createSakService(safConsumer = mockk<SafConsumer>().also {
+                coEvery {
+                    it.hentJournalposter(any(), any(), any())
+                } throws CommunicationException("Fikk http-status [500] fra SAF.")
+            })
+            mineSakerApi(
+                sakService = sakserviceMock,
+                httpClient = mockk(),
+                corsAllowedOrigins = "*",
+                corsAllowedSchemes = "*",
+                rootPath = "mine-saker-api",
+                authConfig = {
+                    installMockedAuthenticators {
+                        installIdPortenAuthMock {
+                            alwaysAuthenticated = true
+                            setAsDefault = true
+                            staticSecurityLevel = SecurityLevel.LEVEL_4
+                            staticUserPid = testfnr
+
+                        }
+                    }
+                },
+            )
+        }
+
+        client.get("/mine-saker-api/journalposter/UGLYDIG").apply {
+            status shouldBe HttpStatusCode.BadRequest
+            bodyAsText() shouldBe "Ugyldig verdi for sakstemakode"
+        }
+        client.get("/mine-saker-api/journalposter/AAP").apply {
+            status shouldBe HttpStatusCode.ServiceUnavailable
+        }
 
     }
 

@@ -5,6 +5,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import mu.KotlinLogging
 import no.nav.personbruker.minesaker.api.common.ExceptionResponseHandler
 import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.config.idportenUser
@@ -16,7 +17,7 @@ const val sakstemakode = "sakstemakode"
 const val dokumentIdParameterName = "dokumentId"
 const val journalpostIdParameterName = "journalpostId"
 
-val log = LoggerFactory.getLogger(SakService::class.java)
+val log = KotlinLogging.logger {  }
 
 fun Route.sakApi(
     service: SakService
@@ -30,15 +31,9 @@ fun Route.sakApi(
     }
 
     get("/journalposter/{$sakstemakode}") {
-        try {
-            val sakstema = call.extractSakstemakodeFromParameters()
-            val result = service.hentJournalposterForSakstema(idportenUser, sakstema)
-            call.respond(HttpStatusCode.OK, result)
-
-        } catch (exception: Exception) {
-            val errorCode = ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
-            call.respond(errorCode)
-        }
+        val sakstema = call.sakstemakodeFromParameters()
+        val result = service.hentJournalposterForSakstema(idportenUser, sakstema)
+        call.respond(HttpStatusCode.OK, result)
     }
 
     get("/sakstemaer") {
@@ -78,6 +73,10 @@ private fun ApplicationCall.sakstemaFromQueryParameters() =
         ?.let { queryParam -> resolveSakstemakode(queryParam) }
         ?: throw InvalidRequestException("Parameter sakstemakode mangler")
 
+private fun ApplicationCall.sakstemakodeFromParameters(): Sakstemakode =
+    parameters[sakstemakode]
+        ?.let { resolveSakstemakode(it) }
+        ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$sakstemakode' er spesifisert.")
 
 private fun resolveSakstemakode(sakstemakode: String): Sakstemakode =
     try {
@@ -87,19 +86,10 @@ private fun resolveSakstemakode(sakstemakode: String): Sakstemakode =
     }
 
 
-private fun ApplicationCall.extractSakstemakodeFromParameters(): Sakstemakode {
-    val sakstemakodeUverifisert = parameters[sakstemakode]
-        ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$sakstemakode' er spesifisert.")
-
-    return resolveSakstemakode(sakstemakodeUverifisert)
-}
-
-private fun ApplicationCall.extractJournalpostId(): String {
-    return parameters[journalpostIdParameterName]
+private fun ApplicationCall.extractJournalpostId(): String = parameters[journalpostIdParameterName]
         ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$journalpostIdParameterName' er spesifisert.")
-}
 
-private fun ApplicationCall.extractDokumentInfoId(): String {
-    return parameters[dokumentIdParameterName]
+
+private fun ApplicationCall.extractDokumentInfoId(): String = parameters[dokumentIdParameterName]
         ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$dokumentIdParameterName' er spesifisert.")
-}
+
