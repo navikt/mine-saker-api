@@ -16,6 +16,7 @@ import io.ktor.util.pipeline.*
 import io.prometheus.client.hotspot.DefaultExports
 import mu.KotlinLogging
 import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
+import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.health.healthApi
 import no.nav.personbruker.minesaker.api.sak.SakService
@@ -55,12 +56,20 @@ fun Application.mineSakerApi(
                     }
                     call.respond(HttpStatusCode.ServiceUnavailable)
                 }
+                is GraphQLResultException -> {
+                    log.warn { cause.message }
+                    secureLog.warn {
+                        "Feil i graphql resultat for kall til ${call.request.uri}: \n${
+                            cause.errors?.joinToString("\n") { it.message }
+                        }"
+                    }
+                    call.respond(HttpStatusCode.InternalServerError)
+                }
                 else -> {
                     secureLog.error { "Kall til ${call.request.uri} feiler: ${cause.message}" }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
             }
-
         }
     }
 

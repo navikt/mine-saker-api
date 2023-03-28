@@ -21,7 +21,9 @@ import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings
 import no.nav.personbruker.minesaker.api.domain.AuthenticatedUser
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.saf.SafTokendings
+import no.nav.personbruker.minesaker.api.sak.Kildetype
 import no.nav.personbruker.minesaker.api.sak.SakService
+import no.nav.personbruker.minesaker.api.sak.SakstemaResult
 import no.nav.tms.token.support.authentication.installer.mock.installMockedAuthenticators
 import no.nav.tms.token.support.idporten.sidecar.mock.SecurityLevel
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
@@ -87,7 +89,7 @@ internal class ExceptionApiTest {
             val sakserviceMock = createSakService(safConsumer = mockk<SafConsumer>().also {
                 coEvery {
                     it.hentJournalposter(any(), any(), any())
-                } throws CommunicationException("Fikk http-status [500] fra SAF.")
+                } throws GraphQLResultException("Ingen data i resultatet fra SAF.", listOf(), mapOf())
             })
             mineSakerApi(
                 sakService = sakserviceMock,
@@ -114,7 +116,82 @@ internal class ExceptionApiTest {
             bodyAsText() shouldBe "Ugyldig verdi for sakstemakode"
         }
         client.get("/mine-saker-api/journalposter/AAP").apply {
+            status shouldBe HttpStatusCode.InternalServerError
+        }
+
+    }
+
+    @Test
+    fun sakstema() = testApplication {
+        val safConsumerMock = mockk<SafConsumer>().also {
+            coEvery { it.hentSakstemaer(any(), any()) } returns SakstemaResult(errors = listOf(Kildetype.SAF))
+        }
+        val digiSosConsumerMockk = mockk<DigiSosConsumer>().also {
+            coEvery { it.hentSakstemaer(any()) } returns SakstemaResult(results = listOf(mockk()))
+        }
+        application {
+            val sakserviceMock = createSakService(safConsumer = safConsumerMock, digiSosConsumer = digiSosConsumerMockk)
+            mineSakerApi(
+                sakService = sakserviceMock,
+                httpClient = mockk(),
+                corsAllowedOrigins = "*",
+                corsAllowedSchemes = "*",
+                rootPath = "mine-saker-api",
+                authConfig = {
+                    installMockedAuthenticators {
+                        installIdPortenAuthMock {
+                            alwaysAuthenticated = true
+                            setAsDefault = true
+                            staticSecurityLevel = SecurityLevel.LEVEL_4
+                            staticUserPid = testfnr
+
+                        }
+                    }
+                },
+            )
+        }
+
+        client.get("/mine-saker-api/sakstemaer").apply {
+            status shouldBe HttpStatusCode.OK
+        }
+        clearMocks(digiSosConsumerMockk)
+        coEvery { digiSosConsumerMockk.hentSakstemaer(any()) } returns SakstemaResult(errors = listOf(Kildetype.DIGISOS))
+        client.get("/mine-saker-api/sakstemaer").apply {
             status shouldBe HttpStatusCode.ServiceUnavailable
+        }
+    }
+
+    @Test
+    fun dokumenter() = testApplication {
+        application {
+            val sakserviceMock = createSakService(safConsumer = mockk<SafConsumer>().also {
+                coEvery {
+                    it.hentDokument(any(),any(),any())
+                } returns ByteArray(10)
+            })
+
+            mineSakerApi(
+                sakService = sakserviceMock,
+                httpClient = mockk(),
+                corsAllowedOrigins = "*",
+                corsAllowedSchemes = "*",
+                rootPath = "mine-saker-api",
+                authConfig = {
+                    installMockedAuthenticators {
+                        installIdPortenAuthMock {
+                            alwaysAuthenticated = true
+                            setAsDefault = true
+                            staticSecurityLevel = SecurityLevel.LEVEL_4
+                            staticUserPid = testfnr
+
+                        }
+                    }
+                },
+            )
+        }
+
+        client.get("/mine-saker-api/dokument/-/-").apply {
+            status shouldBe HttpStatusCode.OK
         }
 
     }
@@ -122,38 +199,11 @@ internal class ExceptionApiTest {
     @Test
     fun `Skal haandtere DocumentNotFoundException`() {
         val exception = DocumentNotFoundException("Simulert feil")
-
         val errorCode = runBlocking {
             ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
         }
 
         errorCode shouldBe HttpStatusCode.NotFound
-        coVerify(exactly = 1) { log.warn(any<String>(), any()) }
-        confirmVerified(log)
-    }
-
-    @Test
-    fun `Skal haandtere GraphQLResultException`() {
-        val exception = GraphQLResultException("Simulert feil", emptyList(), emptyMap())
-
-        val errorCode = runBlocking {
-            ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
-        }
-
-        errorCode shouldBe HttpStatusCode.ServiceUnavailable
-        coVerify(exactly = 1) { log.warn(any<String>(), any()) }
-        confirmVerified(log)
-    }
-
-    @Test
-    fun `Skal haandtere InvalidRequestException`() {
-        val exception = InvalidRequestException("Simulert feil")
-
-        val errorCode = runBlocking {
-            ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
-        }
-
-        errorCode shouldBe HttpStatusCode.BadRequest
         coVerify(exactly = 1) { log.warn(any<String>(), any()) }
         confirmVerified(log)
     }
@@ -185,7 +235,8 @@ internal class ExceptionApiTest {
     }
 
     fun createSakService(
-        safConsumer: SafConsumer = mockk()
+        safConsumer: SafConsumer = mockk(),
+        digiSosConsumer: DigiSosConsumer = mockk()
     ) = SakService(
         safConsumer = safConsumer,
         safTokendings = mockk<SafTokendings>().also {
@@ -193,9 +244,9 @@ internal class ExceptionApiTest {
             coEvery { it.exchangeToken(any<AuthenticatedUser>()) } returns "<dummytoken>"
 
         },
-        digiSosConsumer = DigiSosConsumer(httpClient = mockk(), digiSosEndpoint = mockk()),
+        digiSosConsumer = digiSosConsumer,
         digiSosTokendings = mockk<DigiSosTokendings>().also {
-            coEvery { it.exchangeToken(any()) }
+            coEvery { it.exchangeToken(any()) } returns "<dummytoken>"
         }
     )
 

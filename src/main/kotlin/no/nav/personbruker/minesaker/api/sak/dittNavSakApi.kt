@@ -3,6 +3,7 @@ package no.nav.personbruker.minesaker.api.sak
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import mu.KotlinLogging
 import no.nav.personbruker.minesaker.api.common.ExceptionResponseHandler
 import no.nav.personbruker.minesaker.api.config.tokenXUser
 import no.nav.personbruker.minesaker.api.domain.AuthenticatedUser
@@ -10,6 +11,8 @@ import no.nav.personbruker.minesaker.api.domain.AuthenticatedUser
 fun Route.dittNavSakApi(
     service: SakService
 ) {
+
+    val log = KotlinLogging.logger {  }
 
     get("/sakstemaer/sistendret") {
         try {

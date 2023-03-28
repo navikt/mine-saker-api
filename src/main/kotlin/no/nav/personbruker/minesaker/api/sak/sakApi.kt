@@ -6,22 +6,21 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import mu.KotlinLogging
-import no.nav.personbruker.minesaker.api.common.ExceptionResponseHandler
 import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.config.idportenUser
 import no.nav.personbruker.minesaker.api.domain.AuthenticatedUser
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
-import org.slf4j.LoggerFactory
 
 const val sakstemakode = "sakstemakode"
 const val dokumentIdParameterName = "dokumentId"
 const val journalpostIdParameterName = "journalpostId"
 
-val log = KotlinLogging.logger {  }
-
 fun Route.sakApi(
     service: SakService
 ) {
+
+    val log = KotlinLogging.logger { }
+    val secureLog = KotlinLogging.logger("secureLog")
 
 
     get("/journalposter") {
@@ -37,34 +36,22 @@ fun Route.sakApi(
     }
 
     get("/sakstemaer") {
-        try {
-            val user = AuthenticatedUser.createIdPortenUser(idportenUser)
-            val result = service.hentSakstemaer(user)
-            if (result.hasErrors()) {
-                log.warn("En eller flere kilder feilet: ${result.errors()}. Klienten får en passende http-svarkode.")
-            }
-            call.respond(result.determineHttpCode(), result.resultsSorted())
-
-        } catch (exception: Exception) {
-            val errorCode = ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
-            call.respond(errorCode)
+        val user = AuthenticatedUser.createIdPortenUser(idportenUser)
+        val result = service.hentSakstemaer(user)
+        if (result.hasErrors()) {
+            log.warn { "En eller flere kilder i kall til /sakstemnaer feilet: ${result.errors()}" }
+            secureLog.warn { "En eller flere kilder i kall til /sakstemner for ident ${idportenUser.ident} feilet: ${result.errors()}" }
         }
+        call.respond(result.determineHttpCode(), result.resultsSorted())
     }
 
     get("/dokument/{$journalpostIdParameterName}/{$dokumentIdParameterName}") {
-        try {
-            val journalpostId = call.extractJournalpostId()
-            val dokumentId = call.extractDokumentInfoId()
-            log.info("Skal hente dokumentet $dokumentId, fra journalposten $journalpostId")
-            val result = service.hentDokument(idportenUser, journalpostId, dokumentId)
-            call.respondBytes(bytes = result, contentType = ContentType.Application.Pdf, status = HttpStatusCode.OK)
-
-        } catch (exception: Exception) {
-            val errorCode = ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
-            call.respond(errorCode)
-        }
+        val journalpostId = call.extractJournalpostId()
+        val dokumentId = call.extractDokumentInfoId()
+        log.info("Skal hente dokumentet $dokumentId, fra journalposten $journalpostId")
+        val result = service.hentDokument(idportenUser, journalpostId, dokumentId)
+        call.respondBytes(bytes = result, contentType = ContentType.Application.Pdf, status = HttpStatusCode.OK)
     }
-
 }
 
 
@@ -87,9 +74,9 @@ private fun resolveSakstemakode(sakstemakode: String): Sakstemakode =
 
 
 private fun ApplicationCall.extractJournalpostId(): String = parameters[journalpostIdParameterName]
-        ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$journalpostIdParameterName' er spesifisert.")
+    ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$journalpostIdParameterName' er spesifisert.")
 
 
 private fun ApplicationCall.extractDokumentInfoId(): String = parameters[dokumentIdParameterName]
-        ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$dokumentIdParameterName' er spesifisert.")
+    ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$dokumentIdParameterName' er spesifisert.")
 
