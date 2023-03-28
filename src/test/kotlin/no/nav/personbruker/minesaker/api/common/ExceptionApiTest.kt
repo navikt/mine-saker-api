@@ -7,10 +7,7 @@ import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.mockk.clearMocks
 import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.confirmVerified
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
 import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.common.exception.DocumentNotFoundException
 import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
@@ -26,19 +23,11 @@ import no.nav.personbruker.minesaker.api.sak.SakstemaResult
 import no.nav.tms.token.support.authentication.installer.mock.installMockedAuthenticators
 import no.nav.tms.token.support.idporten.sidecar.mock.SecurityLevel
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.slf4j.Logger
 
 internal class ExceptionApiTest {
 
-    private val log = mockk<Logger>(relaxed = true)
     private val testfnr = "1234"
-
-    @BeforeEach
-    fun clearMock() {
-        clearMocks(log)
-    }
 
     @Test
     fun `journalposter med queryparameter`() = testApplication {
@@ -198,24 +187,12 @@ internal class ExceptionApiTest {
         }
 
         clearMocks(safconsumerMockk)
-        coEvery { safconsumerMockk.hentDokument(any(),any(),any()) } throws DocumentNotFoundException("")
+        coEvery { safconsumerMockk.hentDokument(any(), any(), any()) } throws DocumentNotFoundException("")
 
         client.get("/mine-saker-api/dokument/gghh11/hfajskk").apply {
             status shouldBe HttpStatusCode.NotFound
         }
 
-    }
-
-    @Test
-    fun `Skal haandtere DocumentNotFoundException`() {
-        val exception = DocumentNotFoundException("Simulert feil")
-        val errorCode = runBlocking {
-            ExceptionResponseHandler.logExceptionAndDecideErrorResponseCode(log, exception)
-        }
-
-        errorCode shouldBe HttpStatusCode.NotFound
-        coVerify(exactly = 1) { log.warn(any<String>(), any()) }
-        confirmVerified(log)
     }
 
     fun createSakService(
