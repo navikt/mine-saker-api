@@ -9,10 +9,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
-import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.sak.Kildetype
 import no.nav.personbruker.minesaker.api.sak.SakstemaResult
-import org.slf4j.LoggerFactory
 import java.net.URL
 import java.util.*
 
@@ -27,21 +25,21 @@ class DigiSosConsumer(
 
     suspend fun hentSakstemaer(accessToken: String): SakstemaResult {
         return try {
-            unwrapDigisosResponse(hent(accessToken))
+            hent(accessToken).let { response ->
+                if (!response.status.isSuccess()) {
+                    throw CommunicationException("Klarte ikke hente data fra digisos. Http-status [${response.status}]")
+                }
+                val responseElements: List<DigiSosResponse> = response.body()
+                return SakstemaResult(responseElements.toInternal())
+            }
+
         } catch (e: Exception) {
-            log.warn("Klarte ikke å hente data fra DigiSos, returnerer et resultat med info om at det feilet mot DigiSos: $e", e)
+            log.warn(
+                "Klarte ikke å hente data fra DigiSos, returnerer et resultat med info om at det feilet mot DigiSos: $e",
+                e
+            )
             SakstemaResult(errors = listOf(Kildetype.DIGISOS))
         }
-    }
-
-    private suspend fun unwrapDigisosResponse(response: HttpResponse): SakstemaResult {
-        if (!response.status.isSuccess()) {
-            throw CommunicationException("Klarte ikke hente data fra digisos. Http-status [${response.status}]")
-        }
-
-        val responseElements: List<DigiSosResponse> = response.body()
-
-        return SakstemaResult(responseElements.toInternal())
     }
 
     private suspend fun hent(accessToken: String): HttpResponse = withContext(Dispatchers.IO) {

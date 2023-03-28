@@ -48,7 +48,6 @@ fun Route.sakApi(
     get("/dokument/{$journalpostIdParameterName}/{$dokumentIdParameterName}") {
         val journalpostId = call.journalpostId()
         val dokumentId = call.dokumentInfoId()
-        log.info("Skal hente dokumentet $dokumentId, fra journalposten $journalpostId")
         val result = service.hentDokument(idportenUser, journalpostId, dokumentId)
         call.respondBytes(bytes = result, contentType = ContentType.Application.Pdf, status = HttpStatusCode.OK)
     }

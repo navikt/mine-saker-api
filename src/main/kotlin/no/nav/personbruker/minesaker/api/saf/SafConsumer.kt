@@ -130,32 +130,27 @@ class SafConsumer(
         if (!response.status.isSuccess()) {
             throw CommunicationException("Fikk http-status [${response.status}] fra SAF.")
         }
+        val graphqlResponse = parseBody<T>(response)
 
-        val graphQLResponse = parseBody<T>(response)
-
-        logIfContainsDataAndErrors(graphQLResponse)
-
-        return graphQLResponse.extractData()
+        return graphqlResponse.data
+            ?: throw GraphQLResultException(
+                "Ingen data i resultatet fra SAF.",
+                graphqlResponse.errors,
+                graphqlResponse.extensions
+            )
     }
 
-    private suspend inline fun <reified T> parseBody(response: HttpResponse): GraphQLResponse<T> {
-        return try {
-            response.body()
-        } catch (e: Exception) {
-            throw CommunicationException("Klarte ikke tolke respons fra SAD", e)
-        }
-    }
-
-    private inline fun <reified T> GraphQLResponse<T>.extractData(): T {
-        return data ?: throw GraphQLResultException("Ingen data i resultatet fra SAF.", errors, extensions)
-    }
-
-    private fun logIfContainsDataAndErrors(response: GraphQLResponse<*>) {
-        if (response.containsData() && response.containsErrors()) {
-            val msg = "Resultatet inneholdt data og feil, dataene returneres til bruker. " +
-                    "Feilene var errors: ${response.errors}, extensions: ${response.extensions}"
-            log.warn(msg)
-        }
+    private suspend inline fun <reified T> parseBody(response: HttpResponse): GraphQLResponse<T> = try {
+        response.body<GraphQLResponse<T>>()
+            .also {
+                if (it.containsData() && it.containsErrors()) {
+                    val msg = "Resultatet inneholdt data og feil, dataene returneres til bruker. " +
+                            "Feilene var errors: ${it.errors}, extensions: ${it.extensions}"
+                    log.warn(msg)
+                }
+            }
+    } catch (e: Exception) {
+        throw CommunicationException("Klarte ikke tolke respons fra SAD", e)
     }
 
     private fun GraphQLResponse<*>.containsData() = data != null
