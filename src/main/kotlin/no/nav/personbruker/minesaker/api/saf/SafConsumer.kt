@@ -39,7 +39,7 @@ class SafConsumer(
     suspend fun hentSakstemaer(request: SakstemaerRequest, accessToken: String): SakstemaResult =
         try {
             val result: HentSakstemaer.Result = unwrapGraphQLResponse(sendQuery(request, accessToken))
-            SakstemaResult(result.toInternal(innsynsUrlResolver))
+            result.toInternal(innsynsUrlResolver)
         } catch (e: Exception) {
             log.warn("Klarte ikke å hente data fra SAF.", e)
             SakstemaResult(errors = listOf(Kildetype.SAF))
