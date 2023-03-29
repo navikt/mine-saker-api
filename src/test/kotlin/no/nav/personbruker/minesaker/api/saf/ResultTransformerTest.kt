@@ -2,14 +2,15 @@ package no.nav.personbruker.minesaker.api.saf
 
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.types.shouldBeInstanceOf
+import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.personbruker.minesaker.api.common.exception.TransformationException
 import no.nav.personbruker.minesaker.api.config.InnsynsUrlResolver
-
-import no.nav.personbruker.minesaker.api.saf.journalposter.HentJournalpostResultObjectMother
-import no.nav.personbruker.minesaker.api.saf.sakstemaer.HentSakstemaResultObjectMother
+import no.nav.personbruker.minesaker.api.saf.journalposter.JournalpostTestData.listOfSakstemaer
+import no.nav.personbruker.minesaker.api.saf.journalposter.JournalpostTestData.sakstemaWithUtgaaendeDokument
+import no.nav.personbruker.minesaker.api.saf.journalposter.transformers.GraphQLDokumentoversikt
+import no.nav.personbruker.minesaker.api.saf.sakstemaer.HentSakstemaResultTestData
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
-import java.net.URL
 
 internal class ResultTransformerTest {
 
@@ -18,7 +19,7 @@ internal class ResultTransformerTest {
 
     @Test
     fun `Skal transformere et SAF-resultat for aa hente inn sakstemaer`() {
-        val external = HentSakstemaResultObjectMother.giveMeHentSakstemaResult()
+        val external = HentSakstemaResultTestData.result()
 
         val internal = external.toInternal(dummyResolver)
 
@@ -27,7 +28,8 @@ internal class ResultTransformerTest {
 
     @Test
     fun `Skal transformere et SAF-resultat for aa hente inn journalposter`() {
-        val external = HentJournalpostResultObjectMother.giveMeHentJournalposterResult()
+        val temaer = listOfSakstemaer()
+        val external = HentJournalposter.Result(GraphQLDokumentoversikt(temaer))
 
         val internal = external.toInternal(dummyInnloggetBruker)
 
@@ -36,7 +38,7 @@ internal class ResultTransformerTest {
 
     @Test
     fun `Alle feil som skjer skal kastes videre ved henting av sakstemaer`() {
-        val eksternalMedValideringsfeil = HentSakstemaResultObjectMother.giveMeHentSakstemaResultMedUfullstendigeData()
+        val eksternalMedValideringsfeil = HentSakstemaResultTestData.medUfullstendigeData()
 
         runCatching {
             eksternalMedValideringsfeil.toInternal(dummyResolver)
@@ -50,7 +52,10 @@ internal class ResultTransformerTest {
 
     @Test
     fun `Alle feil som skjer skal kastes videre ved henting av journalposter`() {
-        val eksternalMedValideringsfeil = HentJournalpostResultObjectMother.giveMeHentJournalposterResultMedUfullstendigeData()
+        val sakstemaUtenKodeSatt = sakstemaWithUtgaaendeDokument(kode = "UGYLDIG_VERDI")
+
+        val eksternalMedValideringsfeil =
+            HentJournalposter.Result(GraphQLDokumentoversikt(listOf(sakstemaUtenKodeSatt)))
 
         runCatching {
             eksternalMedValideringsfeil.toInternal(dummyInnloggetBruker)

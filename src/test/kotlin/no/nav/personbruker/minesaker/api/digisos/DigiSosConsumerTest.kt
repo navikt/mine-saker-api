@@ -24,6 +24,7 @@ import no.nav.personbruker.minesaker.api.sak.Kildetype
 import org.junit.jupiter.api.Test
 
 import java.net.URL
+import java.time.LocalDateTime
 
 internal class DigiSosConsumerTest {
 
@@ -38,7 +39,7 @@ internal class DigiSosConsumerTest {
 
     @Test
     fun `Skal kunne hente sakstemaer`() {
-        val externalResponse = DigiSosResponseObjectMother.giveMeResponseAsList()
+        val externalResponse = listOf(responseSisteEndretEnUkeSiden())
         val responseAsJson = objectMapper.writeValueAsString(externalResponse)
         val mockHttpClient = createMockHttpClient {
             respond(
@@ -95,3 +96,9 @@ internal class DigiSosConsumerTest {
     }
 
 }
+
+private fun responseSisteEndretEnUkeSiden() = DigiSosResponse(
+    "Økonomisk sosialhjelp",
+    "KOM",
+    LocalDateTime.now().minusWeeks(1)
+)

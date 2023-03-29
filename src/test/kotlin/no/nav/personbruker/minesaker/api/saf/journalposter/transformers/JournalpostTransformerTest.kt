@@ -6,7 +6,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import no.nav.personbruker.minesaker.api.common.exception.TransformationException
 
-import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.JournalpostObjectMother
+import no.nav.personbruker.minesaker.api.saf.journalposter.JournalpostTestData
 import org.junit.jupiter.api.Test
 
 internal class JournalpostTransformerTest {
@@ -15,7 +15,7 @@ internal class JournalpostTransformerTest {
 
     @Test
     fun `Skal transformere til intern type`() {
-        val external = JournalpostObjectMother.giveMeOneInngaaendeDokument()
+        val external = JournalpostTestData.inngaaendeDokument()
 
         val internal = external.toInternal(dummyIdent)
 
@@ -32,7 +32,7 @@ internal class JournalpostTransformerTest {
 
     @Test
     fun `Skal takle at tittel ikke er tilgjengelig i SAF, return dummy tittel til sluttbruker`() {
-        val external = JournalpostObjectMother.giveMeOneInngaaendeDokument(tittel = null)
+        val external = JournalpostTestData.inngaaendeDokument(tittel = null)
 
         val result = external.toInternal(dummyIdent)
 
@@ -41,7 +41,7 @@ internal class JournalpostTransformerTest {
 
     @Test
     fun `Skal kaste feil hvis dokumentlisten er null`() {
-        val external = JournalpostObjectMother.giveMeOneInngaaendeDokument(dokumenter = null)
+        val external = JournalpostTestData.inngaaendeDokument(dokumenter = null)
 
         val result = runCatching {
             external.toInternal(dummyIdent)

@@ -9,7 +9,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import no.nav.personbruker.minesaker.api.config.InnsynsUrlResolver
 import org.junit.jupiter.api.Test
-import java.net.URL
+import java.time.LocalDateTime
 
 internal class DigiSosResponseTest {
 
@@ -33,7 +33,7 @@ internal class DigiSosResponseTest {
 
     @Test
     fun `Skal kunne konvertere til intern type`() {
-        val externalDto = DigiSosResponseObjectMother.giveMeResponseSisteEndretEnUkeSiden()
+        val externalDto = responseSisteEndretEnUkeSiden()
 
         val internal = externalDto.toInternal(dummyResolver)
 
@@ -51,3 +51,9 @@ internal class DigiSosResponseTest {
     }
 
 }
+
+private fun responseSisteEndretEnUkeSiden() = DigiSosResponse(
+    "Økonomisk sosialhjelp",
+    "KOM",
+    LocalDateTime.now().minusWeeks(1)
+)

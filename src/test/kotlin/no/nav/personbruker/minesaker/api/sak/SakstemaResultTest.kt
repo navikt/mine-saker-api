@@ -12,30 +12,29 @@ internal class SakstemaResultTest {
 
     @Test
     fun `Skal returnere http-kode ok hvis alle kilder svarer`() {
-        val result = SakstemaResultObjectMother.createSafResults()
+        val result = SakstemaResultTestData.safResults()
 
         result.determineHttpCode() shouldBe HttpStatusCode.OK
     }
 
     @Test
     fun `Skal returnere http-kode partial result hvis en kilde ikke svarer`() {
-        val result = SakstemaResultObjectMother.createResultWithOneError()
+        val result = SakstemaResultTestData.createDigiSosError()
 
         result.determineHttpCode() shouldBe HttpStatusCode.OK
     }
 
     @Test
     fun `Skal returnere http-kode service unavailable hvis ingen kilder svarer`() {
-        val result = SakstemaResultObjectMother.createResultWithTwoErrors()
-
+        val result = SakstemaResult(emptyList(), listOf(Kildetype.SAF, Kildetype.DIGISOS))
         result.determineHttpCode() shouldBe HttpStatusCode.ServiceUnavailable
     }
 
     @Test
     fun `Skal returnere resultatene sortert etter siste endret`() {
-        val nyeste = ForenkletSakstemaObjectMother.giveMeDagpengerResult(ZonedDateTime.now().minusDays(5))
-        val midterste = ForenkletSakstemaObjectMother.giveMePensjonResult(ZonedDateTime.now().minusDays(60))
-        val eldste = ForenkletSakstemaObjectMother.giveMeOkonomiskSosialhjelpResult(ZonedDateTime.now().minusDays(100))
+        val nyeste = ForenkletSakstemaTestData.dagpengerResult(ZonedDateTime.now().minusDays(5))
+        val midterste = ForenkletSakstemaTestData.pensjonResult(ZonedDateTime.now().minusDays(60))
+        val eldste = ForenkletSakstemaTestData.okonomiskSosialhjelpResult(ZonedDateTime.now().minusDays(100))
         val unsortedResults = listOf(
             eldste,
             nyeste,
@@ -53,9 +52,9 @@ internal class SakstemaResultTest {
 
     @Test
     fun `Skal returnere de to siste endrede sakene, og dato for siste endring for dagpenger`() {
-        val nyeste = ForenkletSakstemaObjectMother.giveMeOkonomiskSosialhjelpResult(ZonedDateTime.now().minusDays(5))
-        val midterste = ForenkletSakstemaObjectMother.giveMePensjonResult(ZonedDateTime.now().minusDays(60))
-        val forGammelDagpengeSak = ForenkletSakstemaObjectMother.giveMeDagpengerResult(ZonedDateTime.now().minusDays(100))
+        val nyeste = ForenkletSakstemaTestData.okonomiskSosialhjelpResult(ZonedDateTime.now().minusDays(5))
+        val midterste = ForenkletSakstemaTestData.pensjonResult(ZonedDateTime.now().minusDays(60))
+        val forGammelDagpengeSak = ForenkletSakstemaTestData.dagpengerResult(ZonedDateTime.now().minusDays(100))
         val unsortedResults = listOf(
             forGammelDagpengeSak,
             nyeste,
@@ -74,8 +73,8 @@ internal class SakstemaResultTest {
 
     @Test
     fun `Skal returnere de to siste endrede sakene, og dato for siste endring for dagpenger selv om dagpenger er en av de to siste`() {
-        val nyeste = ForenkletSakstemaObjectMother.giveMeOkonomiskSosialhjelpResult(ZonedDateTime.now().minusDays(5))
-        val dagpenger = ForenkletSakstemaObjectMother.giveMeDagpengerResult(ZonedDateTime.now().minusDays(100))
+        val nyeste = ForenkletSakstemaTestData.okonomiskSosialhjelpResult(ZonedDateTime.now().minusDays(5))
+        val dagpenger = ForenkletSakstemaTestData.dagpengerResult(ZonedDateTime.now().minusDays(100))
         val unsortedResults = listOf(
             dagpenger,
             nyeste
@@ -92,8 +91,8 @@ internal class SakstemaResultTest {
 
     @Test
     fun `Skal returnere de to siste endrede sakene, og tom dato for dagpenger (hvis bruker ikke har hatt dagpenger)`() {
-        val nyeste = ForenkletSakstemaObjectMother.giveMeOkonomiskSosialhjelpResult(ZonedDateTime.now().minusDays(5))
-        val midterste = ForenkletSakstemaObjectMother.giveMePensjonResult(ZonedDateTime.now().minusDays(60))
+        val nyeste = ForenkletSakstemaTestData.okonomiskSosialhjelpResult(ZonedDateTime.now().minusDays(5))
+        val midterste = ForenkletSakstemaTestData.pensjonResult(ZonedDateTime.now().minusDays(60))
         val unsortedResults = listOf(
             nyeste,
             midterste
@@ -110,7 +109,7 @@ internal class SakstemaResultTest {
 
     @Test
     fun `Skal returnere et sakstema, hvis det ikke finnes flere`() {
-        val enesteSakstema = ForenkletSakstemaObjectMother.giveMeDagpengerResult(ZonedDateTime.now().minusDays(5))
+        val enesteSakstema = ForenkletSakstemaTestData.dagpengerResult(ZonedDateTime.now().minusDays(5))
         val results = listOf(enesteSakstema)
 
         val sakstemaResult = SakstemaResult(results)
