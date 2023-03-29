@@ -14,7 +14,7 @@ import java.net.URL
 internal class ResultTransformerTest {
 
     private val dummyInnloggetBruker = "123"
-    private val dummyResolver = InnsynsUrlResolver(mapOf(), URL("http://dummy.innsyn.no"))
+    private val dummyResolver = InnsynsUrlResolver(mapOf(), "http://dummy.innsyn.no")
 
     @Test
     fun `Skal transformere et SAF-resultat for aa hente inn sakstemaer`() {

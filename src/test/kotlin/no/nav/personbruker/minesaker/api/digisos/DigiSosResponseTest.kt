@@ -28,7 +28,7 @@ internal class DigiSosResponseTest {
         registerModule(JavaTimeModule())
         disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
     }
-    private val dummyResolver = InnsynsUrlResolver(mapOf(), URL("http://dummy.innsyn.no"))
+    private val dummyResolver = InnsynsUrlResolver(mapOf(), "http://dummy.innsyn.no")
 
 
     @Test

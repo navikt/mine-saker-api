@@ -34,7 +34,7 @@ internal class DigiSosConsumerTest {
     }
     private val digiSosDummyEndpoint = URL("https://www.dummy.no")
     private val dummyToken = "<access_token>"
-    private val dummyResolver = InnsynsUrlResolver(mapOf(), URL("http://dummy.innsyn.no"))
+    private val dummyResolver = InnsynsUrlResolver(mapOf(), "http://dummy.innsyn.no")
 
     @Test
     fun `Skal kunne hente sakstemaer`() {

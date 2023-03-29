@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 import java.net.URL
 
 internal class HentSakstemaerTransformerTest {
-    private val dummyResolver = InnsynsUrlResolver(mapOf(), URL("http://dummy.innsyn.no"))
+    private val dummyResolver = InnsynsUrlResolver(mapOf(), "http://dummy.innsyn.no")
 
     @Test
     fun `Skal kunne transformere fra ekstern til intern modell`() {

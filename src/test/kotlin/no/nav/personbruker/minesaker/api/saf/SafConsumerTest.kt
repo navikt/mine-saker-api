@@ -36,7 +36,7 @@ internal class SafConsumerTest {
     private val safDummyEndpoint = URL("https://www.dummy.no")
     private val dummyToken = "<access_token>"
     private val dummyIdent = "123"
-    private val dummyUrlResolver = InnsynsUrlResolver(mapOf(), URL("http://dummy.innsyn.no"))
+    private val dummyUrlResolver = InnsynsUrlResolver(mapOf(), "http://dummy.innsyn.no")
 
     @Test
     fun `Skal kunne hente sakstemaer`() {

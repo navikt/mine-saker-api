@@ -7,5 +7,5 @@ data class ForenkletSakstema(
     val navn: String,
     val kode: Sakstemakode,
     val sistEndret: ZonedDateTime?,
-    val detaljvisningUrl : URL
+    val detaljvisningUrl : String
 )

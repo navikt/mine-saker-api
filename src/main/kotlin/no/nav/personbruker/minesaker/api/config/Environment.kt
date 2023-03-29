@@ -16,13 +16,13 @@ data class Environment(
     val digiSosClientId: String = getEnvVar("DIGISOS_CLIENT_ID"),
     val clusterName: String = getEnvVar("NAIS_CLUSTER_NAME"),
     val postLogoutUrl: String = getEnvVar("POST_LOGOUT_URL"),
-    val defaultInnsynLenke: URL = URL(getEnvVar("DEFAULT_INNSYN_LENKE")),
-    val innsynsLenker: Map<Sakstemakode, URL> = mapOf(
-        Sakstemakode.DAG to URL(getEnvVar("DAGPENGER_INNSYN")),
-        Sakstemakode.HJE to URL(getEnvVar("HJELPEMIDLER_INNSYN")),
-        Sakstemakode.KOM to URL(getEnvVar("SOSIALHJELP_INNSYN")),
-        Sakstemakode.AAP to URL(getEnvVar("AAP_INNSYN")),
-        Sakstemakode.SYK to URL(getEnvVar("SYKEFRAVÆR_INNSYN")),
-        Sakstemakode.SYM to URL(getEnvVar("SYKEFRAVÆR_INNSYN"))
+    val defaultInnsynLenke: String = getEnvVar("DEFAULT_INNSYN_LENKE"),
+    val innsynsLenker: Map<Sakstemakode, String> = mapOf(
+        Sakstemakode.DAG to getEnvVar("DAGPENGER_INNSYN"),
+        Sakstemakode.HJE to getEnvVar("HJELPEMIDLER_INNSYN"),
+        Sakstemakode.KOM to getEnvVar("SOSIALHJELP_INNSYN"),
+        Sakstemakode.AAP to getEnvVar("AAP_INNSYN"),
+        Sakstemakode.SYK to getEnvVar("SYKEFRAVÆR_INNSYN"),
+        Sakstemakode.SYM to getEnvVar("SYKEFRAVÆR_INNSYN")
     )
 )

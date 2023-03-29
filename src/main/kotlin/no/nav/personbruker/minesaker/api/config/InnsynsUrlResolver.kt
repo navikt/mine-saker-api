@@ -1,14 +1,13 @@
 package no.nav.personbruker.minesaker.api.config
 
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
-import java.net.URL
 
 class InnsynsUrlResolver(
-    private val temaspesifikkeLenker: Map<Sakstemakode, URL>,
-    private val generellLenke: URL
+    private val temaspesifikkeLenker: Map<Sakstemakode, String>,
+    private val generellLenke: String
 ) {
-    fun urlFor(kode: Sakstemakode): URL {
-        return temaspesifikkeLenker.getOrDefault(kode, URL("$generellLenke$kode"))
-    }
+    fun urlFor(kode: Sakstemakode): String =
+        temaspesifikkeLenker.getOrDefault(kode, "$generellLenke$kode")
+
 }
 
