@@ -22,7 +22,7 @@ data class Environment(
         Sakstemakode.HJE to getEnvVar("HJELPEMIDLER_INNSYN"),
         Sakstemakode.KOM to getEnvVar("SOSIALHJELP_INNSYN"),
         Sakstemakode.AAP to getEnvVar("AAP_INNSYN"),
-        Sakstemakode.SYK to getEnvVar("SYKEFRAVÆR_INNSYN"),
-        Sakstemakode.SYM to getEnvVar("SYKEFRAVÆR_INNSYN")
+        Sakstemakode.SYK to getEnvVar("SYKEFRAVAER_INNSYN"),
+        Sakstemakode.SYM to getEnvVar("SYKEFRAVAER_INNSYN")
     )
 )

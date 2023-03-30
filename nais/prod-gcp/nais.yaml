@@ -64,7 +64,7 @@ spec:
       value: https://www.nav.no/sosialhjelp/innsyn
     - name: AAP_INNSYN
       value: https://www.nav.no/aap/mine-aap
-    - name: SYKEFRAVÆR_INNSYN
+    - name: SYKEFRAVAER_INNSYN
       value: https://www.nav.no/syk/sykefravaer
     - name: DEFAULT_INNSYN_LENKE
       value: https://person.nav.no/mine-saker/tema/1

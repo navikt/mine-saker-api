@@ -64,7 +64,7 @@ spec:
       value: https://www-q0.dev.nav.no/sosialhjelp/innsyn
     - name: AAP_INNSYN
       value: https://aap-innsyn.dev.nav.no/aap/mine-aap
-    - name: SYKEFRAVÆR_INNSYN
+    - name: SYKEFRAVAER_INNSYN
       value: https://www-gcp.dev.nav.no/syk/sykefravaer
     - name: DEFAULT_INNSYN_LENKE
       value: https://person.dev.nav.no/mine-saker/tema/
