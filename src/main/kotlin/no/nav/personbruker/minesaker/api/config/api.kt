@@ -59,6 +59,7 @@ fun Application.mineSakerApi(
                     cause.sensitiveMessage?.let {
                         secureLog.error { it }
                     }
+                    secureLog.warn { cause.stackTrace }
                     call.respond(HttpStatusCode.ServiceUnavailable)
                 }
                 is GraphQLResultException -> {
@@ -68,21 +69,24 @@ fun Application.mineSakerApi(
                             cause.errors?.joinToString("\n") { it.message }
                         }"
                     }
+                    secureLog.warn { cause.stackTrace }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
                 is DocumentNotFoundException -> {
                     log.warn { cause.message }
                     cause.sensitiveMessage?.let {
-                        secureLog.warn { it }
+                        secureLog.warn { "$it" }
                     }
                     call.respond(HttpStatusCode.NotFound)
                 }
                 is TransformationException -> {
                     log.warn { cause.message }
+                    secureLog.warn { cause.stackTrace }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
                 else -> {
                     secureLog.error { "Kall til ${call.request.uri} feiler: ${cause.message}" }
+                    secureLog.warn { cause.stackTrace }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
             }
