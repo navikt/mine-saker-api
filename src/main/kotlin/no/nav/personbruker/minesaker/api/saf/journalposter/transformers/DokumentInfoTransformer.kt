@@ -1,7 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import mu.KotlinLogging
-import no.nav.personbruker.minesaker.api.common.exception.TransformationException
+import no.nav.personbruker.minesaker.api.exception.TransformationException
 import no.nav.personbruker.minesaker.api.domain.Dokumentinfo
 import no.nav.personbruker.minesaker.api.domain.Dokumenttype
 

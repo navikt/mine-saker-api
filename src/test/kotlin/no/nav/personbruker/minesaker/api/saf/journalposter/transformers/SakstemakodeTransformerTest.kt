@@ -2,7 +2,7 @@ package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
-import no.nav.personbruker.minesaker.api.common.exception.TransformationException
+import no.nav.personbruker.minesaker.api.exception.TransformationException
 import org.junit.jupiter.api.Test
 
 internal class SakstemakodeTransformerTest {

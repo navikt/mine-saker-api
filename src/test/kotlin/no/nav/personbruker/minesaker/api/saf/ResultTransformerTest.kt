@@ -3,7 +3,7 @@ package no.nav.personbruker.minesaker.api.saf
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.types.shouldBeInstanceOf
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
-import no.nav.personbruker.minesaker.api.common.exception.TransformationException
+import no.nav.personbruker.minesaker.api.exception.TransformationException
 import no.nav.personbruker.minesaker.api.config.InnsynsUrlResolver
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalpostTestData.listOfSakstemaer
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalpostTestData.sakstemaWithUtgaaendeDokument

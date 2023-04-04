@@ -15,11 +15,11 @@ import io.ktor.server.routing.*
 import io.ktor.util.pipeline.*
 import io.prometheus.client.hotspot.DefaultExports
 import mu.KotlinLogging
-import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
-import no.nav.personbruker.minesaker.api.common.exception.DocumentNotFoundException
-import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
-import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
-import no.nav.personbruker.minesaker.api.common.exception.TransformationException
+import no.nav.personbruker.minesaker.api.exception.CommunicationException
+import no.nav.personbruker.minesaker.api.exception.DocumentNotFoundException
+import no.nav.personbruker.minesaker.api.exception.GraphQLResultException
+import no.nav.personbruker.minesaker.api.exception.InvalidRequestException
+import no.nav.personbruker.minesaker.api.exception.TransformationException
 import no.nav.personbruker.minesaker.api.health.healthApi
 import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.personbruker.minesaker.api.sak.dittNavSakApi

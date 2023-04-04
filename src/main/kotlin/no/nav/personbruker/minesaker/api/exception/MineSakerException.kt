@@ -1,4 +1,4 @@
-package no.nav.personbruker.minesaker.api.common.exception
+package no.nav.personbruker.minesaker.api.exception
 
 import com.expediagroup.graphql.client.types.GraphQLClientError
 
@@ -20,7 +20,6 @@ open class MineSakerException(message: String, cause: Throwable?, val sensitiveM
             false -> super.toString()
         }
     }
-
 }
 
 class CommunicationException(message: String, cause: Throwable? = null, sensitiveMessage: String? = null) :
@@ -33,8 +32,8 @@ class InvalidRequestException(message: String, cause: Throwable? = null, sensiti
 
 class GraphQLResultException(
     message: String,
-    internal val errors: List<GraphQLClientError>?,
-    internal val extensions: Map<String, Any?>?
+    val errors: List<GraphQLClientError>?,
+    val extensions: Map<String, Any?>?
 ) : MineSakerException(message) {
     override fun toString(): String = "${super.toString()}, errors=$errors, extensions=$extensions)"
 }

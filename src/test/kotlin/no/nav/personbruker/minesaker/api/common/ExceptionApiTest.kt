@@ -8,9 +8,9 @@ import io.ktor.server.testing.*
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
-import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
-import no.nav.personbruker.minesaker.api.common.exception.DocumentNotFoundException
-import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
+import no.nav.personbruker.minesaker.api.exception.CommunicationException
+import no.nav.personbruker.minesaker.api.exception.DocumentNotFoundException
+import no.nav.personbruker.minesaker.api.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.config.mineSakerApi
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
 import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings

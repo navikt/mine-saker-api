@@ -12,9 +12,9 @@ import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
-import no.nav.personbruker.minesaker.api.common.exception.CommunicationException
-import no.nav.personbruker.minesaker.api.common.exception.DocumentNotFoundException
-import no.nav.personbruker.minesaker.api.common.exception.GraphQLResultException
+import no.nav.personbruker.minesaker.api.exception.CommunicationException
+import no.nav.personbruker.minesaker.api.exception.DocumentNotFoundException
+import no.nav.personbruker.minesaker.api.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.config.InnsynsUrlResolver
 import no.nav.personbruker.minesaker.api.domain.Sakstema
 import no.nav.personbruker.minesaker.api.saf.common.GraphQLResponse
@@ -142,7 +142,7 @@ class SafConsumer(
                 }
             }
     } catch (e: Exception) {
-        throw CommunicationException("Klarte ikke tolke respons fra SAD", e)
+        throw CommunicationException("Klarte ikke tolke respons fra SAF", e)
     }
 
     private fun GraphQLResponse<*>.containsData() = data != null

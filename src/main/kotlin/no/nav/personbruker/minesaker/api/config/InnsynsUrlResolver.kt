@@ -7,7 +7,7 @@ class InnsynsUrlResolver(
     private val generellLenke: String
 ) {
     fun urlFor(kode: Sakstemakode): String =
-        temaspesifikkeLenker.getOrDefault(kode, "$generellLenke$kode")
+        temaspesifikkeLenker.getOrDefault(kode, "$generellLenke/$kode")
 
 }
 

@@ -1,4 +1,4 @@
-package no.nav.personbruker.minesaker.api.common.exception
+package no.nav.personbruker.minesaker.api.exception
 
 class TransformationException(
     message: String,
