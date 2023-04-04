@@ -16,13 +16,15 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import kotlinx.coroutines.runBlocking
-import no.nav.personbruker.minesaker.api.config.enableMineSakerJsonConfig
+import no.nav.personbruker.minesaker.api.config.InnsynsUrlResolver
+import no.nav.personbruker.minesaker.api.config.jsonConfig
 
 import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
 import no.nav.personbruker.minesaker.api.sak.Kildetype
 import org.junit.jupiter.api.Test
 
 import java.net.URL
+import java.time.LocalDateTime
 
 internal class DigiSosConsumerTest {
 
@@ -33,11 +35,11 @@ internal class DigiSosConsumerTest {
     }
     private val digiSosDummyEndpoint = URL("https://www.dummy.no")
     private val dummyToken = "<access_token>"
-    private val dummyIdent = "123"
+    private val dummyResolver = InnsynsUrlResolver(mapOf(), "http://dummy.innsyn.no")
 
     @Test
     fun `Skal kunne hente sakstemaer`() {
-        val externalResponse = DigiSosResponseObjectMother.giveMeResponseAsList()
+        val externalResponse = listOf(responseSisteEndretEnUkeSiden())
         val responseAsJson = objectMapper.writeValueAsString(externalResponse)
         val mockHttpClient = createMockHttpClient {
             respond(
@@ -45,7 +47,7 @@ internal class DigiSosConsumerTest {
                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             )
         }
-        val consumer = DigiSosConsumer(mockHttpClient, digiSosEndpoint = digiSosDummyEndpoint)
+        val consumer = DigiSosConsumer(mockHttpClient, digiSosEndpoint = digiSosDummyEndpoint,dummyResolver)
 
         val internalSakstema = runBlocking {
             consumer.hentSakstemaer(dummyToken)
@@ -67,7 +69,7 @@ internal class DigiSosConsumerTest {
                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             )
         }
-        val consumer = DigiSosConsumer(mockHttpClient, digiSosEndpoint = digiSosDummyEndpoint)
+        val consumer = DigiSosConsumer(mockHttpClient, digiSosEndpoint = digiSosDummyEndpoint, dummyResolver)
 
         val sakstemarespons = runBlocking {
             consumer.hentSakstemaer(dummyToken)
@@ -87,10 +89,16 @@ internal class DigiSosConsumerTest {
             }
             install(ContentNegotiation) {
                 jackson {
-                    enableMineSakerJsonConfig()
+                    jsonConfig()
                 }
             }
         }
     }
 
 }
+
+private fun responseSisteEndretEnUkeSiden() = DigiSosResponse(
+    "Økonomisk sosialhjelp",
+    "KOM",
+    LocalDateTime.now().minusWeeks(1)
+)

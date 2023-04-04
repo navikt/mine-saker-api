@@ -12,14 +12,10 @@ import io.ktor.serialization.jackson.*
 
 object HttpClientBuilder {
 
-    fun build(): HttpClient {
-        return config()
-    }
-
-    fun config() = HttpClient(Apache) {
+    fun build(): HttpClient = HttpClient(Apache) {
         install(ContentNegotiation) {
             jackson {
-                enableMineSakerJsonConfig()
+                jsonConfig()
             }
         }
         install(HttpTimeout)
@@ -27,7 +23,7 @@ object HttpClientBuilder {
 
 }
 
-fun ObjectMapper.enableMineSakerJsonConfig(): ObjectMapper {
+fun ObjectMapper.jsonConfig(): ObjectMapper {
     registerKotlinModule()
     registerModule(JavaTimeModule())
     disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)

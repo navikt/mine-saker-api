@@ -1,7 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
 import io.kotest.matchers.shouldBe
-import no.nav.personbruker.minesaker.api.common.exception.TransformationException
+import no.nav.personbruker.minesaker.api.exception.TransformationException
 import no.nav.personbruker.minesaker.api.domain.Journalposttype
 import org.junit.jupiter.api.Test
 

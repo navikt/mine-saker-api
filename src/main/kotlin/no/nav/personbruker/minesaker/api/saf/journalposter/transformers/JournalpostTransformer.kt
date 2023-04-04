@@ -1,6 +1,6 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
-import no.nav.personbruker.minesaker.api.common.exception.TransformationException
+import no.nav.personbruker.minesaker.api.exception.TransformationException
 import no.nav.personbruker.minesaker.api.domain.Journalpost
 
 fun GraphQLJournalpost.toInternal(innloggetBruker: String) = Journalpost(

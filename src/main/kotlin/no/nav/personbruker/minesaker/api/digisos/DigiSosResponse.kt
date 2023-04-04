@@ -1,6 +1,6 @@
 package no.nav.personbruker.minesaker.api.digisos
 
-import no.nav.personbruker.minesaker.api.config.innsynsUrlResolverSingleton
+import no.nav.personbruker.minesaker.api.config.InnsynsUrlResolver
 import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import java.time.LocalDateTime
@@ -13,19 +13,19 @@ data class DigiSosResponse(
     val sistEndret : LocalDateTime
 )
 
-fun DigiSosResponse.toInternal(): ForenkletSakstema {
+fun DigiSosResponse.toInternal(innsynsUrlResolver:InnsynsUrlResolver): ForenkletSakstema {
     val sakstemakode = Sakstemakode.valueOf(kode)
     return ForenkletSakstema(
         navn,
         sakstemakode,
         sistEndret.toZonedDateTimeUTC(),
-        innsynsUrlResolverSingleton.urlFor(sakstemakode)
+        innsynsUrlResolver.urlFor(sakstemakode)
     )
 }
 
-fun List<DigiSosResponse>.toInternal() : List<ForenkletSakstema> {
+fun List<DigiSosResponse>.toInternal(innsynsUrlResolver:InnsynsUrlResolver) : List<ForenkletSakstema> {
     return map { result ->
-        result.toInternal()
+        result.toInternal(innsynsUrlResolver)
     }
 }
 

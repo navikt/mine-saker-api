@@ -18,7 +18,7 @@ internal class JournalpostTest {
 
     @Test
     fun `Skal indikere at Journalposter uten dokumenter ikke har vedlegg`() {
-        val journalpostUtenDokumenter = JournalpostObjectMother.giveMeJournalpostUtenDokumenter()
+        val journalpostUtenDokumenter = DomainTestData.journalpostUtenDokumenter()
 
         journalpostUtenDokumenter.harVedlegg shouldBe false
 
@@ -28,7 +28,10 @@ internal class JournalpostTest {
 
     @Test
     fun `Skal indikere at Journalposter med kun et dokument ikke har vedlegg`() {
-        val journalpostUtenVedlegg = JournalpostObjectMother.giveMeJournalpostUtenVedlegg()
+        val journalpostUtenVedlegg = DomainTestData.journalpostUtenDokumenter(
+            tittel = "Uten vedlegg",
+            dokumenter = listOf(DomainTestData.hoveddokument())
+        )
 
         journalpostUtenVedlegg.harVedlegg shouldBe false
         val asJson = objectMapper.writeValueAsString(journalpostUtenVedlegg)
@@ -37,7 +40,16 @@ internal class JournalpostTest {
 
     @Test
     fun `Skal indikere at Journalposter med flere dokumenter har vedlegg`() {
-        val journalpostMedVedlegg = JournalpostObjectMother.giveMeJournalpostMedVedlegg()
+        val journalpostMedVedlegg = DomainTestData.journalpostUtenDokumenter(
+            tittel = "Med vedlegg",
+            dokumenter = listOf(
+                DomainTestData.hoveddokument(),
+                DomainTestData.hoveddokument(
+                    tittel = "Vedlegg1",
+                    type = Dokumenttype.VEDLEGG
+                )
+            )
+        )
 
         journalpostMedVedlegg.harVedlegg shouldBe true
         val asJson = objectMapper.writeValueAsString(journalpostMedVedlegg)

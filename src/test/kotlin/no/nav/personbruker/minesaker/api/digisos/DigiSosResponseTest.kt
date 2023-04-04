@@ -7,7 +7,9 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import no.nav.personbruker.minesaker.api.config.InnsynsUrlResolver
 import org.junit.jupiter.api.Test
+import java.time.LocalDateTime
 
 internal class DigiSosResponseTest {
 
@@ -26,12 +28,14 @@ internal class DigiSosResponseTest {
         registerModule(JavaTimeModule())
         disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
     }
+    private val dummyResolver = InnsynsUrlResolver(mapOf(), "http://dummy.innsyn.no")
+
 
     @Test
     fun `Skal kunne konvertere til intern type`() {
-        val externalDto = DigiSosResponseObjectMother.giveMeResponseSisteEndretEnUkeSiden()
+        val externalDto = responseSisteEndretEnUkeSiden()
 
-        val internal = externalDto.toInternal()
+        val internal = externalDto.toInternal(dummyResolver)
 
         internal.shouldNotBeNull()
         internal.navn shouldBe externalDto.navn
@@ -47,3 +51,9 @@ internal class DigiSosResponseTest {
     }
 
 }
+
+private fun responseSisteEndretEnUkeSiden() = DigiSosResponse(
+    "Økonomisk sosialhjelp",
+    "KOM",
+    LocalDateTime.now().minusWeeks(1)
+)

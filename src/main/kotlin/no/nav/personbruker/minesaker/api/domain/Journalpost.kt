@@ -12,3 +12,9 @@ data class Journalpost(
     val dokumenter: List<Dokumentinfo> = emptyList(),
     val harVedlegg: Boolean = dokumenter.size > 1
 )
+
+enum class Journalposttype {
+    INNGAAENDE,
+    UTGAAENDE,
+    NOTAT
+}

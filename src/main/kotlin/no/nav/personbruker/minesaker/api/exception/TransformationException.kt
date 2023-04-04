@@ -1,10 +1,10 @@
-package no.nav.personbruker.minesaker.api.common.exception
+package no.nav.personbruker.minesaker.api.exception
 
 class TransformationException(
     message: String,
     val type: ErrorType,
     cause: Throwable?
-) : AbstractMineSakerException(message, cause) {
+) : MineSakerException(message, cause) {
 
     constructor(message: String, type: ErrorType) : this(message, type, null)
 

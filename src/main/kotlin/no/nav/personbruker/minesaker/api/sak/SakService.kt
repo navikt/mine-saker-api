@@ -3,10 +3,12 @@ package no.nav.personbruker.minesaker.api.sak
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import no.nav.personbruker.minesaker.api.common.exception.InvalidRequestException
+import mu.KotlinLogging
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
 import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings
-import no.nav.personbruker.minesaker.api.domain.*
+import no.nav.personbruker.minesaker.api.domain.AuthenticatedUser
+import no.nav.personbruker.minesaker.api.domain.Sakstema
+import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.saf.SafTokendings
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
@@ -20,6 +22,8 @@ class SakService(
     private val digiSosTokendings: DigiSosTokendings
 ) {
 
+    private val log = KotlinLogging.logger { }
+
     suspend fun hentSakstemaer(user: AuthenticatedUser): SakstemaResult = withContext(Dispatchers.IO) {
         val sakstemaerFraSaf = async {
             hentSakstemaerFraSaf(user)
@@ -32,8 +36,7 @@ class SakService(
 
     suspend fun hentSakstemaerFraSaf(user: AuthenticatedUser): SakstemaResult {
         val exchangedToken = safTokendings.exchangeToken(user)
-        val sakstemaerRequest = SakstemaerRequest.create(user.ident)
-        return safConsumer.hentSakstemaer(sakstemaerRequest, exchangedToken)
+        return safConsumer.hentSakstemaer(SakstemaerRequest.create(user.ident), exchangedToken)
     }
 
     suspend fun hentSakstemaerFraDigiSos(user: AuthenticatedUser): SakstemaResult {
@@ -52,9 +55,7 @@ class SakService(
         journapostId: String,
         dokumentinfoId: String
     ): ByteArray {
-        if(dokumentinfoId == "-") {
-            throw InvalidRequestException("Det ble forsøkt hentet et dokument som bruker ikke har tilgang til")
-        }
+        log.info("Henter dokument $dokumentinfoId fra journalposten $journapostId")
         val exchangedToken = safTokendings.exchangeToken(user)
         return safConsumer.hentDokument(journapostId, dokumentinfoId, exchangedToken)
     }

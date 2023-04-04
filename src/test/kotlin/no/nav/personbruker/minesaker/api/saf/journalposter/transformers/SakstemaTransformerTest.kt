@@ -1,9 +1,8 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
-
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
-import no.nav.personbruker.minesaker.api.saf.journalposter.objectmothers.SakstemaObjectMother
+import no.nav.personbruker.minesaker.api.saf.journalposter.JournalpostTestData.sakstemaWithInngaaendeDokument
 import org.junit.jupiter.api.Test
 
 internal class SakstemaTransformerTest {
@@ -12,7 +11,7 @@ internal class SakstemaTransformerTest {
 
     @Test
     fun `Skal kunne transformere fra ekstern til intern modell - Hent konkret sakstema`() {
-        val external = SakstemaObjectMother.giveMeSakstemaWithInngaaendeDokument()
+        val external = sakstemaWithInngaaendeDokument()
 
         val internal = external.toInternal(dummyIdent)
 

@@ -4,26 +4,26 @@ import com.auth0.jwt.JWT
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
-import no.nav.tms.token.support.tokenx.validation.user.TokenXUser
+import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 import java.security.Key
 import java.time.ZonedDateTime
 import java.util.*
 
-object TokenXUserObjectMother {
+object IdportenTestUser {
 
     private val key: Key = Keys.secretKeyFor(SignatureAlgorithm.HS256)
 
-    fun createTokenXUser(): TokenXUser {
+    fun createIdportenUser(): IdportenUser {
         val ident = "12345"
-        return createTokenXUser(ident)
+        return createIdportenUser(ident)
     }
 
-    fun createTokenXUser(ident: String): TokenXUser {
+    fun createIdportenUser(ident: String): IdportenUser {
         val innloggingsnivaa = 4
-        return createTokenXUser(ident, innloggingsnivaa)
+        return createIdportenUser(ident, innloggingsnivaa)
     }
 
-    fun createTokenXUser(ident: String, innloggingsnivaa: Int): TokenXUser {
+    fun createIdportenUser(ident: String, innloggingsnivaa: Int): IdportenUser {
         val inTwoMinutes = ZonedDateTime.now().plusMinutes(2)
         return createIdportenUserWithValidTokenUntil(ident, innloggingsnivaa, inTwoMinutes)
     }
@@ -32,7 +32,7 @@ object TokenXUserObjectMother {
             ident: String,
             innloggingsnivaa: Int,
             tokensUtlopstidspunkt: ZonedDateTime
-    ): TokenXUser {
+    ): IdportenUser {
         val jws = Jwts.builder()
                 .setSubject(ident)
                 .addClaims(mutableMapOf(Pair("acr", "Level$innloggingsnivaa")) as Map<String, Any>?)
@@ -44,7 +44,6 @@ object TokenXUserObjectMother {
 
         val expirationTime = token.expiresAt.toInstant()
 
-        return TokenXUser(ident, innloggingsnivaa, expirationTime, token)
+        return IdportenUser(ident, innloggingsnivaa, expirationTime, token)
     }
-
 }
