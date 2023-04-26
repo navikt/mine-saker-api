@@ -7,6 +7,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
+
 data class DigiSosResponse(
     val navn : String,
     val kode : String,

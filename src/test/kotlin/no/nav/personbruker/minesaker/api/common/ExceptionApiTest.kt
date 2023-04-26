@@ -54,6 +54,7 @@ internal class ExceptionApiTest {
                         }
                     }
                 },
+                sakerUrl = "http://minesaker.dev"
             )
         }
 
@@ -96,6 +97,7 @@ internal class ExceptionApiTest {
                         }
                     }
                 },
+                sakerUrl = "http://minesaker.dev"
             )
         }
 
@@ -136,6 +138,7 @@ internal class ExceptionApiTest {
                         }
                     }
                 },
+                sakerUrl = "http://minesaker.dev"
             )
         }
 
@@ -177,6 +180,7 @@ internal class ExceptionApiTest {
                         }
                     }
                 },
+                sakerUrl = "http://minesaker.dev"
             )
         }
         client.get("/mine-saker-api/dokument/gghh11/hfajskk").apply {
@@ -207,7 +211,7 @@ internal class ExceptionApiTest {
         },
         digiSosConsumer = digiSosConsumer,
         digiSosTokendings = mockk<DigiSosTokendings>().also {
-            coEvery { it.exchangeToken(any()) } returns "<dummytoken>"
+            coEvery { it.exchangeToken(any<AuthenticatedUser>()) } returns "<dummytoken>"
         }
     )
 

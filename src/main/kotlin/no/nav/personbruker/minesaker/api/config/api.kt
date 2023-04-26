@@ -37,6 +37,7 @@ fun Application.mineSakerApi(
     corsAllowedOrigins: String,
     corsAllowedSchemes: String,
     rootPath: String,
+    sakerUrl: String,
     authConfig: Application.() -> Unit,
 
     ) {
@@ -112,7 +113,7 @@ fun Application.mineSakerApi(
             healthApi()
 
             authenticate {
-                sakApi(sakService)
+                sakApi(sakService, sakerUrl)
             }
 
             authenticate(TokenXAuthenticator.name) {

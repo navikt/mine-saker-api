@@ -76,3 +76,5 @@ spec:
       value: https://safselvbetjening.prod-fss-pub.nais.io
     - name: SAF_CLIENT_ID
       value: prod-fss:teamdokumenthandtering:safselvbetjening
+    - name: MINE_SAKER_URL
+      value: https://person.nav.no/mine-saker

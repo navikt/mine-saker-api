@@ -15,6 +15,7 @@ data class Environment(
     val digiSosEndpoint: URL = URL(getEnvVar("DIGISOS_API_URL")),
     val digiSosClientId: String = getEnvVar("DIGISOS_CLIENT_ID"),
     val clusterName: String = getEnvVar("NAIS_CLUSTER_NAME"),
+    val sakerUrl: String = getEnvVar("MINE_SAKER_URL"),
     val defaultInnsynLenke: String = getEnvVar("DEFAULT_INNSYN_LENKE"),
     val innsynsLenker: Map<Sakstemakode, String> = mapOf(
         Sakstemakode.DAG to getEnvVar("DAGPENGER_INNSYN"),

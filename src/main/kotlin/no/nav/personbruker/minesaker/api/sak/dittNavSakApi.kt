@@ -21,5 +21,4 @@ fun Route.dittNavSakApi(
         }
         call.respond(result.determineHttpCode(), result.recentlyModifiedSakstemaResults())
     }
-
 }

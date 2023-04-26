@@ -13,6 +13,13 @@ data class SistEndredeSakstemaer(
     val dagpengerSistEndret: ZonedDateTime?
 )
 
+
+//midlertidige mapper-klasse slik att dittnav-api fortsetter å fungere
+data class InternalSakstemaResponse(
+    val sakerURL: String,
+    val sakstemaer: List<ForenkletSakstema>,
+    val dagpengerSistEndret: ZonedDateTime?)
+
 data class ForenkletSakstema(
     val navn: String,
     val kode: Sakstemakode,
