@@ -26,7 +26,6 @@ class DigiSosConsumer(
 
     private val log = KotlinLogging.logger {}
     private val callIdHeaderName = "Nav-Callid"
-    private val objectmapper = ObjectMapper().jsonConfig()
 
     suspend fun hentSakstemaer(accessToken: String): SakstemaResult {
         return try {
