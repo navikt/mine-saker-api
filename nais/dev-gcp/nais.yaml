@@ -77,4 +77,4 @@ spec:
     - name: SAF_CLIENT_ID
       value: dev-fss:teamdokumenthandtering:safselvbetjening-q1
     - name: MINE_SAKER_URL
-      value: https://person.dev.nav.no/mine-saker
+      value: https://www.intern.dev.nav.no/mine-saker/
