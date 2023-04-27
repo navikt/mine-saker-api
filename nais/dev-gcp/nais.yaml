@@ -46,6 +46,7 @@ spec:
           cluster: "dev-fss"
   ingresses:
     - "https://person.dev.nav.no/mine-saker-api"
+    - "https://intern.dev.nav.no/mine-saker-api"
   resources:
     limits:
       cpu: "3"
