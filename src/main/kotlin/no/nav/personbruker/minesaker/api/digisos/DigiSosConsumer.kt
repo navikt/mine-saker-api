@@ -1,5 +1,7 @@
 package no.nav.personbruker.minesaker.api.digisos
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -10,6 +12,7 @@ import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import no.nav.personbruker.minesaker.api.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.config.InnsynsUrlResolver
+import no.nav.personbruker.minesaker.api.config.jsonConfig
 import no.nav.personbruker.minesaker.api.sak.Kildetype
 import no.nav.personbruker.minesaker.api.sak.SakstemaResult
 import java.net.URL
@@ -22,7 +25,6 @@ class DigiSosConsumer(
 ) {
 
     private val log = KotlinLogging.logger {}
-
     private val callIdHeaderName = "Nav-Callid"
 
     suspend fun hentSakstemaer(accessToken: String): SakstemaResult {

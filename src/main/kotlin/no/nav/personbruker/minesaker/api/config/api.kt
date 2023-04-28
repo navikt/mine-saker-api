@@ -37,8 +37,8 @@ fun Application.mineSakerApi(
     corsAllowedOrigins: String,
     corsAllowedSchemes: String,
     rootPath: String,
-    authConfig: Application.() -> Unit,
-
+    sakerUrl: String,
+    authConfig: Application.() -> Unit
     ) {
     DefaultExports.initialize()
     val log = KotlinLogging.logger { }
@@ -112,7 +112,7 @@ fun Application.mineSakerApi(
             healthApi()
 
             authenticate {
-                sakApi(sakService)
+                sakApi(sakService, sakerUrl)
             }
 
             authenticate(TokenXAuthenticator.name) {

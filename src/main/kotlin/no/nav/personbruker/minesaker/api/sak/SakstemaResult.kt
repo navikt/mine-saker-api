@@ -2,18 +2,23 @@ package no.nav.personbruker.minesaker.api.sak
 
 import io.ktor.http.*
 import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
+import no.nav.personbruker.minesaker.api.domain.InternalSakstemaResponse
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.domain.SistEndredeSakstemaer
+import java.time.ZonedDateTime
 
 data class SakstemaResult(
     private val results: List<ForenkletSakstema>,
-    private val errors: List<Kildetype> = emptyList()
+    private val errors: List<Kildetype> = emptyList(),
 ) {
 
     constructor(errors: List<Kildetype>) : this(emptyList(), errors)
 
     operator fun plus(result: SakstemaResult): SakstemaResult =
-        SakstemaResult(this.results + result.results, this.errors + result.errors)
+        SakstemaResult(
+            results = this.results + result.results,
+            errors = this.errors + result.errors,
+        )
 
     fun resultsSorted() = mutableListOf<ForenkletSakstema>().apply {
         addAll(results)
@@ -28,7 +33,17 @@ data class SakstemaResult(
         )
     }
 
-    private fun sistEndret(sortedResults : List<ForenkletSakstema>): List<ForenkletSakstema> {
+    fun recentlyModified(sakerUrl: String): InternalSakstemaResponse {
+        val sortedResults = resultsSorted()
+        return InternalSakstemaResponse(
+            sakstemaer = sistEndret(sortedResults),
+            dagpengerSistEndret = hentSistEndretForDagpenger(sortedResults),
+            sakerURL = sakerUrl
+        )
+    }
+
+
+    private fun sistEndret(sortedResults: List<ForenkletSakstema>): List<ForenkletSakstema> {
         return if (moreThanTwoResults()) {
             sortedResults.subList(0, 2)
         } else {
@@ -56,3 +71,5 @@ data class SakstemaResult(
 }
 
 enum class Kildetype { SAF, DIGISOS }
+
+

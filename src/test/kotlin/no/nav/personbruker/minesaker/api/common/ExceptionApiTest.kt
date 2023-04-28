@@ -4,6 +4,7 @@ import io.kotest.matchers.shouldBe
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.server.application.Application
 import io.ktor.server.testing.*
 import io.mockk.clearMocks
 import io.mockk.coEvery
@@ -15,6 +16,8 @@ import no.nav.personbruker.minesaker.api.config.mineSakerApi
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
 import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings
 import no.nav.personbruker.minesaker.api.domain.AuthenticatedUser
+import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
+import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.saf.SafTokendings
 import no.nav.personbruker.minesaker.api.sak.Kildetype
@@ -43,17 +46,8 @@ internal class ExceptionApiTest {
                 corsAllowedOrigins = "*",
                 corsAllowedSchemes = "*",
                 rootPath = "mine-saker-api",
-                authConfig = {
-                    installMockedAuthenticators {
-                        installIdPortenAuthMock {
-                            alwaysAuthenticated = true
-                            setAsDefault = true
-                            staticSecurityLevel = SecurityLevel.LEVEL_4
-                            staticUserPid = testfnr
-
-                        }
-                    }
-                },
+                authConfig = { defaultAuthConfig() },
+                sakerUrl = "http://minesaker.dev"
             )
         }
 
@@ -85,17 +79,8 @@ internal class ExceptionApiTest {
                 corsAllowedOrigins = "*",
                 corsAllowedSchemes = "*",
                 rootPath = "mine-saker-api",
-                authConfig = {
-                    installMockedAuthenticators {
-                        installIdPortenAuthMock {
-                            alwaysAuthenticated = true
-                            setAsDefault = true
-                            staticSecurityLevel = SecurityLevel.LEVEL_4
-                            staticUserPid = testfnr
-
-                        }
-                    }
-                },
+                authConfig = { defaultAuthConfig() },
+                sakerUrl = "http://minesaker.dev"
             )
         }
 
@@ -115,7 +100,12 @@ internal class ExceptionApiTest {
             coEvery { it.hentSakstemaer(any(), any()) } returns SakstemaResult(errors = listOf(Kildetype.SAF))
         }
         val digiSosConsumerMockk = mockk<DigiSosConsumer>().also {
-            coEvery { it.hentSakstemaer(any()) } returns SakstemaResult(results = listOf(mockk()))
+            coEvery { it.hentSakstemaer(any()) } returns SakstemaResult(results = listOf(ForenkletSakstema(
+                navn = "Navnese",
+                kode = Sakstemakode.AAP,
+                sistEndret = null,
+                detaljvisningUrl = "https://detaljer.test"
+            )))
         }
         application {
             val sakserviceMock = createSakService(safConsumer = safConsumerMock, digiSosConsumer = digiSosConsumerMockk)
@@ -125,25 +115,16 @@ internal class ExceptionApiTest {
                 corsAllowedOrigins = "*",
                 corsAllowedSchemes = "*",
                 rootPath = "mine-saker-api",
-                authConfig = {
-                    installMockedAuthenticators {
-                        installIdPortenAuthMock {
-                            alwaysAuthenticated = true
-                            setAsDefault = true
-                            staticSecurityLevel = SecurityLevel.LEVEL_4
-                            staticUserPid = testfnr
-
-                        }
-                    }
-                },
+                authConfig = { defaultAuthConfig() },
+                sakerUrl = "http://minesaker.dev"
             )
         }
 
         client.get("/mine-saker-api/sakstemaer").apply {
             status shouldBe HttpStatusCode.OK
         }
-        clearMocks(digiSosConsumerMockk)
         coEvery { digiSosConsumerMockk.hentSakstemaer(any()) } returns SakstemaResult(errors = listOf(Kildetype.DIGISOS))
+
         client.get("/mine-saker-api/sakstemaer").apply {
             status shouldBe HttpStatusCode.ServiceUnavailable
         }
@@ -166,17 +147,8 @@ internal class ExceptionApiTest {
                 corsAllowedOrigins = "*",
                 corsAllowedSchemes = "*",
                 rootPath = "mine-saker-api",
-                authConfig = {
-                    installMockedAuthenticators {
-                        installIdPortenAuthMock {
-                            alwaysAuthenticated = true
-                            setAsDefault = true
-                            staticSecurityLevel = SecurityLevel.LEVEL_4
-                            staticUserPid = testfnr
-
-                        }
-                    }
-                },
+                authConfig = {defaultAuthConfig() },
+                sakerUrl = "http://minesaker.dev"
             )
         }
         client.get("/mine-saker-api/dokument/gghh11/hfajskk").apply {
@@ -207,8 +179,19 @@ internal class ExceptionApiTest {
         },
         digiSosConsumer = digiSosConsumer,
         digiSosTokendings = mockk<DigiSosTokendings>().also {
-            coEvery { it.exchangeToken(any()) } returns "<dummytoken>"
+            coEvery { it.exchangeToken(any<AuthenticatedUser>()) } returns "<dummytoken>"
         }
     )
 
+    private fun Application.defaultAuthConfig() =
+        installMockedAuthenticators {
+            installIdPortenAuthMock {
+                alwaysAuthenticated = true
+                setAsDefault = true
+                staticSecurityLevel = SecurityLevel.LEVEL_4
+                staticUserPid = testfnr
+
+            }
+            installTokenXAuthMock { }
+        }
 }

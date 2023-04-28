@@ -8,6 +8,7 @@ import io.ktor.server.routing.*
 import mu.KotlinLogging
 import no.nav.personbruker.minesaker.api.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.config.idportenUser
+import no.nav.personbruker.minesaker.api.config.tokenXUser
 import no.nav.personbruker.minesaker.api.domain.AuthenticatedUser
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 
@@ -16,7 +17,8 @@ const val dokumentIdParameterName = "dokumentId"
 const val journalpostIdParameterName = "journalpostId"
 
 fun Route.sakApi(
-    service: SakService
+    service: SakService,
+    sakerUrl: String
 ) {
 
     val log = KotlinLogging.logger { }
@@ -51,6 +53,16 @@ fun Route.sakApi(
         val result = service.hentDokument(idportenUser, journalpostId, dokumentId)
         call.respondBytes(bytes = result, contentType = ContentType.Application.Pdf, status = HttpStatusCode.OK)
     }
+
+    get("/siste"){
+        val result = service
+            .hentSakstemaer(AuthenticatedUser.createIdPortenUser(idportenUser))
+        if (result.hasErrors()) {
+            log.warn("En eller flere kilder feilet: ${result.errors()}")
+        }
+        call.respond(result.determineHttpCode(), result.recentlyModified(sakerUrl))
+    }
+
 }
 
 
@@ -86,4 +98,3 @@ private fun ApplicationCall.dokumentInfoId(): String = parameters[dokumentIdPara
         else it
     }
     ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$dokumentIdParameterName' er spesifisert.")
-

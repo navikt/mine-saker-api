@@ -25,12 +25,13 @@ fun main() {
 
     embeddedServer(Netty, port = environment.port) {
         mineSakerApi(
-            sakService,
-            httpClient,
-            environment.corsAllowedOrigins,
-            environment.corsAllowedSchemes,
-            environment.rootPath,
-            authConfig(environment.rootPath),
+            sakService = sakService,
+            sakerUrl = environment.sakerUrl,
+            httpClient = httpClient,
+            corsAllowedOrigins = environment.corsAllowedOrigins,
+            corsAllowedSchemes = environment.corsAllowedSchemes,
+            rootPath = environment.rootPath,
+            authConfig = authConfig(environment.rootPath),
         )
     }.start(wait = true)
 }
