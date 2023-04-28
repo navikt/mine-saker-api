@@ -152,6 +152,7 @@ private fun ApplicationTestBuilder.mockApi(
                 staticUserPid = "testfnr"
 
             }
+            installTokenXAuthMock {  }
         }
     },
     sakerUrl: String = "http://minesaker.dev"

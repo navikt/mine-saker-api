@@ -38,8 +38,7 @@ fun Application.mineSakerApi(
     corsAllowedSchemes: String,
     rootPath: String,
     sakerUrl: String,
-    authConfig: Application.() -> Unit,
-
+    authConfig: Application.() -> Unit
     ) {
     DefaultExports.initialize()
     val log = KotlinLogging.logger { }
