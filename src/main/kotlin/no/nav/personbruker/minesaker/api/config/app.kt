@@ -26,6 +26,7 @@ fun main() {
     embeddedServer(Netty, port = environment.port) {
         mineSakerApi(
             sakService = sakService,
+            safTokendings = safTokendings,
             sakerUrl = environment.sakerUrl,
             httpClient = httpClient,
             corsAllowedOrigins = environment.corsAllowedOrigins,

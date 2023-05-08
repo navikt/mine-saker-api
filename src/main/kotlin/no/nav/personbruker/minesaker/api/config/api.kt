@@ -21,6 +21,7 @@ import no.nav.personbruker.minesaker.api.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.exception.TransformationException
 import no.nav.personbruker.minesaker.api.health.healthApi
+import no.nav.personbruker.minesaker.api.saf.SafTokendings
 import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.personbruker.minesaker.api.sak.dittNavSakApi
 import no.nav.personbruker.minesaker.api.sak.sakApi
@@ -33,6 +34,7 @@ import no.nav.tms.token.support.tokenx.validation.user.TokenXUserFactory
 
 fun Application.mineSakerApi(
     sakService: SakService,
+    safTokendings: SafTokendings,
     httpClient: HttpClient,
     corsAllowedOrigins: String,
     corsAllowedSchemes: String,
@@ -113,6 +115,7 @@ fun Application.mineSakerApi(
 
             authenticate {
                 sakApi(sakService, sakerUrl)
+                debugApi(safTokendings)
             }
 
             authenticate(TokenXAuthenticator.name) {
