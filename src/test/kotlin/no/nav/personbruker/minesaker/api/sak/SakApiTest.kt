@@ -24,14 +24,13 @@ import no.nav.personbruker.minesaker.api.config.jsonConfig
 import no.nav.personbruker.minesaker.api.config.mineSakerApi
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
 import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings
-import no.nav.personbruker.minesaker.api.domain.AuthenticatedUser
 import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.saf.SafTokendings
 import no.nav.personbruker.minesaker.api.sak.ForventetSakstemaInnhold.Companion.toDigisosResponse
-import no.nav.tms.token.support.authentication.installer.mock.installMockedAuthenticators
 import no.nav.tms.token.support.idporten.sidecar.mock.SecurityLevel
+import no.nav.tms.token.support.idporten.sidecar.mock.installIdPortenAuthMock
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 import org.junit.jupiter.api.Test
 import java.net.URL
@@ -45,12 +44,10 @@ class SakApiTest {
     private val testBaseUrl = "https://digisos.test.host"
 
     private val safTokendings = mockk<SafTokendings>().also {
-        coEvery { it.exchangeToken(any<IdportenUser>()) } returns "<idportentoken>"
-        coEvery { it.exchangeToken(any<AuthenticatedUser>()) } returns "<loginservicetoken>"
+        coEvery { it.exchangeToken(any()) } returns "<idportentoken>"
     }
     private val digsosTokendings = mockk<DigiSosTokendings>().also {
-        coEvery { it.exchangeToken(any<IdportenUser>()) } returns "<idportentoken>"
-        coEvery { it.exchangeToken(any<AuthenticatedUser>()) } returns "<loginservicetoken>"
+        coEvery { it.exchangeToken(any()) } returns "<idportentoken>"
 
     }
 
@@ -144,7 +141,6 @@ private fun ApplicationTestBuilder.mockApi(
     corsAllowedSchemes: String = "*",
     rootPath: String = "mine-saker-api",
     authConfig: Application.() -> Unit = {
-        installMockedAuthenticators {
             installIdPortenAuthMock {
                 alwaysAuthenticated = true
                 setAsDefault = true
@@ -152,8 +148,6 @@ private fun ApplicationTestBuilder.mockApi(
                 staticUserPid = "testfnr"
 
             }
-            installTokenXAuthMock {  }
-        }
     },
     sakerUrl: String = "http://minesaker.dev"
 ) = application {

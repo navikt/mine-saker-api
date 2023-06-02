@@ -13,11 +13,9 @@ import io.mockk.mockk
 import io.mockk.slot
 import kotlinx.coroutines.runBlocking
 import no.nav.personbruker.minesaker.api.common.IdportenTestUser
-import no.nav.personbruker.minesaker.api.common.TokenXTestUser
 import no.nav.personbruker.minesaker.api.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
 import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings
-import no.nav.personbruker.minesaker.api.domain.AuthenticatedUser
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.saf.SafTokendings
@@ -30,21 +28,19 @@ import org.junit.jupiter.api.Test
 internal class SakServiceTest {
 
     private val dummyIdportenUser = IdportenTestUser.createIdportenUser()
-    private val dummyTokenXUser = AuthenticatedUser.createTokenXUser(
-        TokenXTestUser.createTokenXUser("12345")
-    )
+
 
     private val safDummyToken = "saf<access_token>"
-    private val digiSosDummyToken = "digiSos<access_token>"
-
-    private val safTokendings = mockk<SafTokendings>()
-    private val digiSosTokendings = mockk<DigiSosTokendings>()
+    private val safTokendings = mockk<SafTokendings>().also {
+        coEvery { it.exchangeToken(any()) } returns "hfakj"
+    }
+    private val digiSosTokendings = mockk<DigiSosTokendings>().also {
+        coEvery { it.exchangeToken(any()) } returns "kslslsdk"
+    }
 
     @BeforeEach
     fun setup() {
         coEvery { safTokendings.exchangeToken(dummyIdportenUser) } returns safDummyToken
-        coEvery { safTokendings.exchangeToken(dummyTokenXUser) } returns safDummyToken
-        coEvery { digiSosTokendings.exchangeToken(dummyTokenXUser) } returns digiSosDummyToken
     }
 
     @AfterEach
@@ -64,7 +60,7 @@ internal class SakServiceTest {
         coEvery { digiSosConsumer.hentSakstemaer(any()) } returns SakstemaResultTestData.createDigiSosResults()
 
         runBlocking {
-            service.hentSakstemaer(dummyTokenXUser)
+            service.hentSakstemaer(dummyIdportenUser)
         }
 
         coVerify(exactly = 1) { safConsumer.hentSakstemaer(capture(parameterSendtVidere), any()) }
@@ -86,7 +82,7 @@ internal class SakServiceTest {
         coEvery { digiSosConsumer.hentSakstemaer(any()) } returns SakstemaResultTestData.createDigiSosError()
 
         val result = runBlocking {
-            service.hentSakstemaer(dummyTokenXUser)
+            service.hentSakstemaer(dummyIdportenUser)
         }
 
         result.hasErrors() shouldBe true

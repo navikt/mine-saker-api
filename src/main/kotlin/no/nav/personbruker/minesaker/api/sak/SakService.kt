@@ -6,7 +6,6 @@ import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
 import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings
-import no.nav.personbruker.minesaker.api.domain.AuthenticatedUser
 import no.nav.personbruker.minesaker.api.domain.Sakstema
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
@@ -24,7 +23,7 @@ class SakService(
 
     private val log = KotlinLogging.logger { }
 
-    suspend fun hentSakstemaer(user: AuthenticatedUser): SakstemaResult = withContext(Dispatchers.IO) {
+    suspend fun hentSakstemaer(user: IdportenUser): SakstemaResult = withContext(Dispatchers.IO) {
         val sakstemaerFraSaf = async {
             hentSakstemaerFraSaf(user)
         }
@@ -34,12 +33,12 @@ class SakService(
         sakstemaerFraSaf.await() + sakstemaerFraDigiSos.await()
     }
 
-    suspend fun hentSakstemaerFraSaf(user: AuthenticatedUser): SakstemaResult {
+    suspend fun hentSakstemaerFraSaf(user: IdportenUser): SakstemaResult {
         val exchangedToken = safTokendings.exchangeToken(user)
         return safConsumer.hentSakstemaer(SakstemaerRequest.create(user.ident), exchangedToken)
     }
 
-    suspend fun hentSakstemaerFraDigiSos(user: AuthenticatedUser): SakstemaResult {
+    suspend fun hentSakstemaerFraDigiSos(user: IdportenUser): SakstemaResult {
         val exchangedToken = digiSosTokendings.exchangeToken(user)
         return digiSosConsumer.hentSakstemaer(exchangedToken)
     }
