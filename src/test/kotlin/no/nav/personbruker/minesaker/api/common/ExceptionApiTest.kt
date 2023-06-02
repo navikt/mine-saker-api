@@ -14,17 +14,15 @@ import no.nav.personbruker.minesaker.api.exception.DocumentNotFoundException
 import no.nav.personbruker.minesaker.api.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.config.mineSakerApi
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
-import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings
 import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
-import no.nav.personbruker.minesaker.api.saf.SafTokendings
+import no.nav.personbruker.minesaker.api.config.TokendingsExchange
 import no.nav.personbruker.minesaker.api.sak.Kildetype
 import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.personbruker.minesaker.api.sak.SakstemaResult
 import no.nav.tms.token.support.idporten.sidecar.mock.SecurityLevel
 import no.nav.tms.token.support.idporten.sidecar.mock.installIdPortenAuthMock
-import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 import org.junit.jupiter.api.Test
 
 internal class ExceptionApiTest {
@@ -175,14 +173,12 @@ internal class ExceptionApiTest {
         digiSosConsumer: DigiSosConsumer = mockk()
     ) = SakService(
         safConsumer = safConsumer,
-        safTokendings = mockk<SafTokendings>().also {
-            coEvery { it.exchangeToken(any()) } returns "<dummytoken>"
+        tokendingsExchange = mockk<TokendingsExchange>().also {
+            coEvery { it.safToken(any()) } returns "<dummytoken>"
+            coEvery { it.digisosToken(any()) } returns "<dummytoken>"
 
         },
-        digiSosConsumer = digiSosConsumer,
-        digiSosTokendings = mockk<DigiSosTokendings>().also {
-            coEvery { it.exchangeToken(any()) } returns "<dummytoken>"
-        }
+        digiSosConsumer = digiSosConsumer
     )
 
     private fun Application.defaultAuthConfig() =

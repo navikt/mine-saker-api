@@ -23,15 +23,13 @@ import io.mockk.mockk
 import no.nav.personbruker.minesaker.api.config.jsonConfig
 import no.nav.personbruker.minesaker.api.config.mineSakerApi
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
-import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings
 import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
-import no.nav.personbruker.minesaker.api.saf.SafTokendings
+import no.nav.personbruker.minesaker.api.config.TokendingsExchange
 import no.nav.personbruker.minesaker.api.sak.ForventetSakstemaInnhold.Companion.toDigisosResponse
 import no.nav.tms.token.support.idporten.sidecar.mock.SecurityLevel
 import no.nav.tms.token.support.idporten.sidecar.mock.installIdPortenAuthMock
-import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 import org.junit.jupiter.api.Test
 import java.net.URL
 import java.time.LocalDateTime
@@ -43,14 +41,10 @@ class SakApiTest {
     private val objectMapper = ObjectMapper()
     private val testBaseUrl = "https://digisos.test.host"
 
-    private val safTokendings = mockk<SafTokendings>().also {
-        coEvery { it.exchangeToken(any()) } returns "<idportentoken>"
+    private val tokendingsExchange = mockk<TokendingsExchange>().also {
+        coEvery { it.safToken(any()) } returns "<saftoken>"
+        coEvery { it.digisosToken(any()) } returns "<digisostoken>"
     }
-    private val digsosTokendings = mockk<DigiSosTokendings>().also {
-        coEvery { it.exchangeToken(any()) } returns "<idportentoken>"
-
-    }
-
     private val safConsumer = mockk<SafConsumer>().also {
         coEvery { it.hentSakstemaer(any(), any()) } returns SakstemaResult(
             results = listOf(
@@ -80,9 +74,8 @@ class SakApiTest {
         mockApi(
             sakService = SakService(
                 safConsumer = safConsumer,
-                safTokendings = safTokendings,
-                digiSosConsumer = digisosConsumer,
-                digiSosTokendings = digsosTokendings
+                tokendingsExchange = tokendingsExchange,
+                digiSosConsumer = digisosConsumer
             ),
             httpClient = appClient,
             sakerUrl = "http://mine.saker.dev"

@@ -5,7 +5,6 @@ import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.types.shouldBeInstanceOf
-import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
@@ -15,44 +14,27 @@ import kotlinx.coroutines.runBlocking
 import no.nav.personbruker.minesaker.api.common.IdportenTestUser
 import no.nav.personbruker.minesaker.api.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
-import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
-import no.nav.personbruker.minesaker.api.saf.SafTokendings
+import no.nav.personbruker.minesaker.api.config.TokendingsExchange
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class SakServiceTest {
 
     private val dummyIdportenUser = IdportenTestUser.createIdportenUser()
-
-
     private val safDummyToken = "saf<access_token>"
-    private val safTokendings = mockk<SafTokendings>().also {
-        coEvery { it.exchangeToken(any()) } returns "hfakj"
-    }
-    private val digiSosTokendings = mockk<DigiSosTokendings>().also {
-        coEvery { it.exchangeToken(any()) } returns "kslslsdk"
-    }
-
-    @BeforeEach
-    fun setup() {
-        coEvery { safTokendings.exchangeToken(dummyIdportenUser) } returns safDummyToken
-    }
-
-    @AfterEach
-    fun cleanup() {
-        clearMocks(safTokendings, digiSosTokendings)
+    private val tokendingsExchange = mockk<TokendingsExchange>().also {
+        coEvery { it.safToken(any()) } returns safDummyToken
+        coEvery { it.digisosToken(any()) } returns "digisos <access-token>"
     }
 
     @Test
     fun `Skal hente alle sakstemaer for en konkret bruker`() {
         val safConsumer = mockk<SafConsumer>()
         val digiSosConsumer = mockk<DigiSosConsumer>()
-        val service = SakService(safConsumer, safTokendings, digiSosConsumer, digiSosTokendings)
+        val service = SakService(safConsumer, tokendingsExchange, digiSosConsumer)
 
         val parameterSendtVidere = slot<SakstemaerRequest>()
 
@@ -76,7 +58,7 @@ internal class SakServiceTest {
     fun `Hvis en kilde feiler, returner data fra kilden som svarte og send med info om kilden som feilet`() {
         val safConsumer = mockk<SafConsumer>()
         val digiSosConsumer = mockk<DigiSosConsumer>()
-        val service = SakService(safConsumer, safTokendings, digiSosConsumer, digiSosTokendings)
+        val service = SakService(safConsumer, tokendingsExchange, digiSosConsumer)
 
         coEvery { safConsumer.hentSakstemaer(any(), any()) } returns SakstemaResultTestData.safResults()
         coEvery { digiSosConsumer.hentSakstemaer(any()) } returns SakstemaResultTestData.createDigiSosError()
@@ -96,7 +78,7 @@ internal class SakServiceTest {
 
         val safConsumer = mockk<SafConsumer>(relaxed = true)
         val digiSosConsumer = mockk<DigiSosConsumer>()
-        val service = SakService(safConsumer, safTokendings, digiSosConsumer, digiSosTokendings)
+        val service = SakService(safConsumer, tokendingsExchange, digiSosConsumer)
 
         val parameterSendtVidere = slot<JournalposterRequest>()
 
@@ -124,7 +106,7 @@ internal class SakServiceTest {
 
         val safConsumer = mockk<SafConsumer>(relaxed = true)
         val digiSosConsumer = mockk<DigiSosConsumer>()
-        val service = SakService(safConsumer, safTokendings, digiSosConsumer, digiSosTokendings)
+        val service = SakService(safConsumer, tokendingsExchange, digiSosConsumer)
 
         coEvery {
             safConsumer.hentJournalposter(dummyIdportenUser.ident, any(), any())
