@@ -1,18 +1,24 @@
 package no.nav.personbruker.minesaker.api.config
 
-import io.ktor.client.*
-import io.ktor.http.*
-import io.ktor.serialization.jackson.*
-import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.plugins.cors.routing.*
-import io.ktor.server.plugins.defaultheaders.*
-import io.ktor.server.plugins.statuspages.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import io.ktor.util.pipeline.*
+import io.ktor.client.HttpClient
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.jackson.jackson
+import io.ktor.server.application.Application
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.ApplicationStopping
+import io.ktor.server.application.call
+import io.ktor.server.application.install
+import io.ktor.server.auth.authenticate
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.plugins.defaultheaders.DefaultHeaders
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.request.uri
+import io.ktor.server.response.respond
+import io.ktor.server.routing.route
+import io.ktor.server.routing.routing
+import io.ktor.util.pipeline.PipelineContext
 import io.prometheus.client.hotspot.DefaultExports
 import mu.KotlinLogging
 import no.nav.personbruker.minesaker.api.exception.CommunicationException
@@ -22,13 +28,10 @@ import no.nav.personbruker.minesaker.api.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.exception.TransformationException
 import no.nav.personbruker.minesaker.api.health.healthApi
 import no.nav.personbruker.minesaker.api.sak.SakService
-import no.nav.personbruker.minesaker.api.sak.dittNavSakApi
 import no.nav.personbruker.minesaker.api.sak.sakApi
-import no.nav.tms.token.support.authentication.installer.installAuthenticators
 import no.nav.tms.token.support.idporten.sidecar.LoginLevel
+import no.nav.tms.token.support.idporten.sidecar.installIdPortenAuth
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUserFactory
-import no.nav.tms.token.support.tokenx.validation.TokenXAuthenticator
-import no.nav.tms.token.support.tokenx.validation.user.TokenXUserFactory
 
 
 fun Application.mineSakerApi(
@@ -39,7 +42,7 @@ fun Application.mineSakerApi(
     rootPath: String,
     sakerUrl: String,
     authConfig: Application.() -> Unit
-    ) {
+) {
     DefaultExports.initialize()
     val log = KotlinLogging.logger { }
     val secureLog = KotlinLogging.logger("secureLogs")
@@ -54,6 +57,7 @@ fun Application.mineSakerApi(
                         secureLog.error { it }
                     }
                 }
+
                 is CommunicationException -> {
                     log.error { cause.message }
                     cause.sensitiveMessage?.let {
@@ -62,6 +66,7 @@ fun Application.mineSakerApi(
                     secureLog.warn { cause.stackTrace }
                     call.respond(HttpStatusCode.ServiceUnavailable)
                 }
+
                 is GraphQLResultException -> {
                     log.warn { cause.message }
                     secureLog.warn {
@@ -72,6 +77,7 @@ fun Application.mineSakerApi(
                     secureLog.warn { cause.stackTrace }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
+
                 is DocumentNotFoundException -> {
                     log.warn { cause.message }
                     cause.sensitiveMessage?.let {
@@ -79,11 +85,13 @@ fun Application.mineSakerApi(
                     }
                     call.respond(HttpStatusCode.NotFound)
                 }
+
                 is TransformationException -> {
                     log.warn { cause.message }
                     secureLog.warn { cause.stackTrace }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
+
                 else -> {
                     secureLog.error { "Kall til ${call.request.uri} feiler: ${cause.message}" }
                     secureLog.warn { cause.stackTrace }
@@ -114,10 +122,6 @@ fun Application.mineSakerApi(
             authenticate {
                 sakApi(sakService, sakerUrl)
             }
-
-            authenticate(TokenXAuthenticator.name) {
-                dittNavSakApi(sakService)
-            }
         }
     }
 
@@ -125,16 +129,11 @@ fun Application.mineSakerApi(
 }
 
 fun authConfig(contextPath: String): Application.() -> Unit = {
-    installAuthenticators {
-        installIdPortenAuth {
-            setAsDefault = true
-            loginLevel = LoginLevel.LEVEL_4
-            inheritProjectRootPath = false
-            rootPath = contextPath
-        }
-        installTokenXAuth {
-            setAsDefault = false
-        }
+    installIdPortenAuth {
+        setAsDefault = true
+        loginLevel = LoginLevel.LEVEL_4
+        inheritProjectRootPath = false
+        rootPath = contextPath
     }
 }
 
@@ -143,8 +142,4 @@ private fun Application.configureShutdownHook(httpClient: HttpClient) {
         httpClient.close()
     }
 }
-
 val PipelineContext<*, ApplicationCall>.idportenUser get() = IdportenUserFactory.createIdportenUser(call)
-
-val PipelineContext<*, ApplicationCall>.tokenXUser
-    get() = TokenXUserFactory.createTokenXUser(call)

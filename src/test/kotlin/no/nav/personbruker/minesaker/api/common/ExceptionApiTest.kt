@@ -14,18 +14,15 @@ import no.nav.personbruker.minesaker.api.exception.DocumentNotFoundException
 import no.nav.personbruker.minesaker.api.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.config.mineSakerApi
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
-import no.nav.personbruker.minesaker.api.digisos.DigiSosTokendings
-import no.nav.personbruker.minesaker.api.domain.AuthenticatedUser
 import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
-import no.nav.personbruker.minesaker.api.saf.SafTokendings
+import no.nav.personbruker.minesaker.api.config.TokendingsExchange
 import no.nav.personbruker.minesaker.api.sak.Kildetype
 import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.personbruker.minesaker.api.sak.SakstemaResult
-import no.nav.tms.token.support.authentication.installer.mock.installMockedAuthenticators
 import no.nav.tms.token.support.idporten.sidecar.mock.SecurityLevel
-import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
+import no.nav.tms.token.support.idporten.sidecar.mock.installIdPortenAuthMock
 import org.junit.jupiter.api.Test
 
 internal class ExceptionApiTest {
@@ -100,12 +97,16 @@ internal class ExceptionApiTest {
             coEvery { it.hentSakstemaer(any(), any()) } returns SakstemaResult(errors = listOf(Kildetype.SAF))
         }
         val digiSosConsumerMockk = mockk<DigiSosConsumer>().also {
-            coEvery { it.hentSakstemaer(any()) } returns SakstemaResult(results = listOf(ForenkletSakstema(
-                navn = "Navnese",
-                kode = Sakstemakode.AAP,
-                sistEndret = null,
-                detaljvisningUrl = "https://detaljer.test"
-            )))
+            coEvery { it.hentSakstemaer(any()) } returns SakstemaResult(
+                results = listOf(
+                    ForenkletSakstema(
+                        navn = "Navnese",
+                        kode = Sakstemakode.AAP,
+                        sistEndret = null,
+                        detaljvisningUrl = "https://detaljer.test"
+                    )
+                )
+            )
         }
         application {
             val sakserviceMock = createSakService(safConsumer = safConsumerMock, digiSosConsumer = digiSosConsumerMockk)
@@ -147,7 +148,7 @@ internal class ExceptionApiTest {
                 corsAllowedOrigins = "*",
                 corsAllowedSchemes = "*",
                 rootPath = "mine-saker-api",
-                authConfig = {defaultAuthConfig() },
+                authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev"
             )
         }
@@ -172,26 +173,21 @@ internal class ExceptionApiTest {
         digiSosConsumer: DigiSosConsumer = mockk()
     ) = SakService(
         safConsumer = safConsumer,
-        safTokendings = mockk<SafTokendings>().also {
-            coEvery { it.exchangeToken(any<IdportenUser>()) } returns "<dummytoken>"
-            coEvery { it.exchangeToken(any<AuthenticatedUser>()) } returns "<dummytoken>"
+        tokendingsExchange = mockk<TokendingsExchange>().also {
+            coEvery { it.safToken(any()) } returns "<dummytoken>"
+            coEvery { it.digisosToken(any()) } returns "<dummytoken>"
 
         },
-        digiSosConsumer = digiSosConsumer,
-        digiSosTokendings = mockk<DigiSosTokendings>().also {
-            coEvery { it.exchangeToken(any<AuthenticatedUser>()) } returns "<dummytoken>"
-        }
+        digiSosConsumer = digiSosConsumer
     )
 
     private fun Application.defaultAuthConfig() =
-        installMockedAuthenticators {
-            installIdPortenAuthMock {
-                alwaysAuthenticated = true
-                setAsDefault = true
-                staticSecurityLevel = SecurityLevel.LEVEL_4
-                staticUserPid = testfnr
+        installIdPortenAuthMock {
+            alwaysAuthenticated = true
+            setAsDefault = true
+            staticSecurityLevel = SecurityLevel.LEVEL_4
+            staticUserPid = testfnr
 
-            }
-            installTokenXAuthMock { }
         }
+
 }

@@ -8,8 +8,6 @@ import io.ktor.server.routing.*
 import mu.KotlinLogging
 import no.nav.personbruker.minesaker.api.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.config.idportenUser
-import no.nav.personbruker.minesaker.api.config.tokenXUser
-import no.nav.personbruker.minesaker.api.domain.AuthenticatedUser
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 
 const val sakstemakode = "sakstemakode"
@@ -38,8 +36,7 @@ fun Route.sakApi(
     }
 
     get("/sakstemaer") {
-        val user = AuthenticatedUser.createIdPortenUser(idportenUser)
-        val result = service.hentSakstemaer(user)
+        val result = service.hentSakstemaer(idportenUser)
         if (result.hasErrors()) {
             log.warn { "En eller flere kilder i kall til /sakstemnaer feilet: ${result.errors()}" }
             secureLog.warn { "En eller flere kilder i kall til /sakstemner for ident ${idportenUser.ident} feilet: ${result.errors()}" }
@@ -56,7 +53,7 @@ fun Route.sakApi(
 
     get("/siste"){
         val result = service
-            .hentSakstemaer(AuthenticatedUser.createIdPortenUser(idportenUser))
+            .hentSakstemaer(idportenUser)
         if (result.hasErrors()) {
             log.warn("En eller flere kilder feilet: ${result.errors()}")
         }

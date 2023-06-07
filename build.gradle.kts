@@ -51,13 +51,10 @@ dependencies {
     implementation(Prometheus.logback)
     implementation(KtorTokenSupport201.idportenSidecar)
     implementation(KtorTokenSupport201.tokendingsExchange)
-    implementation(KtorTokenSupport201.authenticationInstaller)
-    implementation(KtorTokenSupport201.tokenXValidation)
 
     testImplementation(Junit.api)
     testImplementation(Ktor2.Test.clientMock)
     testImplementation(Ktor2.Test.serverTestHost)
-    testImplementation(TmsKtorTokenSupport.authenticationInstallerMock)
     testImplementation(TmsKtorTokenSupport.idportenSidecarMock)
     testImplementation(Kotest.runnerJunit5)
     testImplementation(Kotest.assertionsCore)
