@@ -18,5 +18,6 @@ data class Environment(
     val sakerUrl: String = getEnvVar("MINE_SAKER_URL"),
     val defaultInnsynLenke: String = getEnvVar("DEFAULT_INNSYN_LENKE"),
     val innsynsLenker: Map<Sakstemakode, String> = mapOf(
+        Sakstemakode.KOM to getEnvVar("SOSIALHJELP_INNSYN")
     )
 )
