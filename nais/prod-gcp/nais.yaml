@@ -29,6 +29,7 @@ spec:
       - "https://www.nav.no"
     sidecar:
       enabled: true
+      level: Level3
   tokenx:
     enabled: true
   accessPolicy:

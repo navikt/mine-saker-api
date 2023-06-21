@@ -131,7 +131,7 @@ fun Application.mineSakerApi(
 fun authConfig(contextPath: String): Application.() -> Unit = {
     installIdPortenAuth {
         setAsDefault = true
-        loginLevel = LoginLevel.LEVEL_4
+        loginLevel = LoginLevel.LEVEL_3
         inheritProjectRootPath = false
         rootPath = contextPath
     }
