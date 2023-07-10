@@ -9,6 +9,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.personbruker.minesaker.api.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.config.idportenUser
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktInterception
 
 const val sakstemakode = "sakstemakode"
 const val dokumentIdParameterName = "dokumentId"
@@ -24,19 +25,22 @@ fun Route.sakApi(
 
 
     get("/journalposter") {
+        val representert = call.representert
         val sakstema = call.sakstemaFromQueryParameters()
-        val result = service.hentJournalposterForSakstema(idportenUser, sakstema)
+        val result = service.hentJournalposterForSakstema(idportenUser, representert, sakstema)
         call.respond(HttpStatusCode.OK, result)
     }
 
     get("/journalposter/{$sakstemakode}") {
+        val representert = call.representert
         val sakstema = call.sakstemakodeFromParameters()
-        val result = service.hentJournalposterForSakstema(idportenUser, sakstema)
+        val result = service.hentJournalposterForSakstema(idportenUser, representert, sakstema)
         call.respond(HttpStatusCode.OK, result)
     }
 
     get("/sakstemaer") {
-        val result = service.hentSakstemaer(idportenUser)
+        val representert = call.representert
+        val result = service.hentSakstemaer(idportenUser, representert)
         if (result.hasErrors()) {
             log.warn { "En eller flere kilder i kall til /sakstemnaer feilet: ${result.errors()}" }
             secureLog.warn { "En eller flere kilder i kall til /sakstemner for ident ${idportenUser.ident} feilet: ${result.errors()}" }
@@ -53,7 +57,7 @@ fun Route.sakApi(
 
     get("/siste"){
         val result = service
-            .hentSakstemaer(idportenUser)
+            .hentSakstemaer(idportenUser, null)
         if (result.hasErrors()) {
             log.warn { "En eller flere kilder feilet: ${result.errors()}" }
         }
@@ -62,6 +66,8 @@ fun Route.sakApi(
 
 }
 
+private val ApplicationCall.representert get() =
+    attributes.getOrNull(FullmaktInterception.FullmaktAttribute)?.representert
 
 private fun ApplicationCall.sakstemaFromQueryParameters() =
     request.queryParameters["sakstemakode"]

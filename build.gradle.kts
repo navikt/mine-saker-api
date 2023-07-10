@@ -44,6 +44,8 @@ dependencies {
     implementation(Ktor.Server.htmlDsl)
     implementation(Ktor.Server.netty)
     implementation(Ktor.Server.statusPages)
+    implementation(Nimbusds.joseJwt)
+    implementation(Nimbusds.oauth2OidcSdk)
     implementation(Prometheus.common)
     implementation(Prometheus.hotspot)
     implementation(Prometheus.logback)
