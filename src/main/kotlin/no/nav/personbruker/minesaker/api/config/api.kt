@@ -41,7 +41,7 @@ fun Application.mineSakerApi(
     corsAllowedSchemes: String,
     sakerUrl: String,
     fullmaktService: FullmaktService,
-    fullmektigJwtService: FullmektigJwtService,
+    fullmaktJwtService: FullmaktJwtService,
     fullmaktInterception: FullmaktInterception,
     authConfig: Application.() -> Unit
 ) {
@@ -65,7 +65,7 @@ fun Application.mineSakerApi(
                     cause.sensitiveMessage?.let {
                         secureLog.error { it }
                     }
-                    secureLog.warn { cause.stackTrace }
+                    secureLog.warn { cause }
                     call.respond(HttpStatusCode.ServiceUnavailable)
                 }
 
@@ -76,7 +76,7 @@ fun Application.mineSakerApi(
                             cause.errors?.joinToString("\n") { it.message }
                         }"
                     }
-                    secureLog.warn { cause.stackTrace }
+                    secureLog.warn { cause }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
 
@@ -90,21 +90,20 @@ fun Application.mineSakerApi(
 
                 is TransformationException -> {
                     log.warn { cause.message }
-                    secureLog.warn("$cause")
+                    secureLog.warn { "$cause" }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
 
                 is UgyldigFullmaktException -> {
                     log.warn { cause.message }
-                    secureLog.warn("Bruker ${cause.fullmektig} er ikke representant for ${cause.giver}")
+                    secureLog.warn { "Bruker ${cause.fullmektig} er ikke representant for ${cause.giver}" }
 
                     call.response.cookies.expireFullmakt()
                     call.respond(HttpStatusCode.Forbidden)
                 }
 
                 else -> {
-                    secureLog.error { "Kall til ${call.request.uri} feiler: ${cause.message}" }
-                    secureLog.warn { cause.stackTrace }
+                    secureLog.error(cause) { "Kall til ${call.request.uri} feiler: ${cause.message}" }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
             }
@@ -137,10 +136,9 @@ fun Application.mineSakerApi(
     routing {
         healthApi()
 
-            authenticate {
-                sakApi(sakService, sakerUrl)
-                fullmaktApi(fullmaktService, fullmektigJwtService)
-            }
+        authenticate {
+            sakApi(sakService, sakerUrl)
+            fullmaktApi(fullmaktService, fullmaktJwtService)
         }
     }
 

@@ -7,13 +7,28 @@ class FullmaktService(private val fullmaktConsumer: FullmaktConsumer) {
         return fullmaktConsumer.getFullmaktForhold(user)
     }
 
-    suspend fun validateFullmaktsForhold(user: IdportenUser, giverIdent: String) {
+    suspend fun validateFullmaktsForhold(user: IdportenUser, giverIdent: String): ValidForhold {
         val alleForhold = fullmaktConsumer.getFullmaktForhold(user)
 
-        alleForhold.fullmaktsGivere.find { it.ident == giverIdent }
+        val foundForhold = alleForhold.fullmaktsGivere.find { it.ident == giverIdent }
             ?: throw UgyldigFullmaktException("Manglende forhold", giver = giverIdent, fullmektig = user.ident)
 
+        return ValidForhold(
+            fullmektigIdent = alleForhold.ident,
+            representertIdent = foundForhold.ident,
+            representertNavn = foundForhold.navn
+        )
     }
+
+    suspend fun token(user: IdportenUser) = fullmaktConsumer.token(user)
+}
+
+data class ValidForhold(
+    val fullmektigIdent: String,
+    val representertIdent: String,
+    val representertNavn: String,
+) {
+    val fullmektigNavn = "N/A"
 }
 
 class UgyldigFullmaktException(

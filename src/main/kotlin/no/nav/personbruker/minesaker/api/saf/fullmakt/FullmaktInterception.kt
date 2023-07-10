@@ -1,39 +1,44 @@
 package no.nav.personbruker.minesaker.api.saf.fullmakt
 
+import com.nimbusds.jwt.JWT
+import com.nimbusds.jwt.SignedJWT
+import io.github.oshai.kotlinlogging.KotlinLogging
+import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.application.hooks.*
 import io.ktor.server.auth.*
+import io.ktor.server.request.*
 import io.ktor.util.*
-import mu.KotlinLogging
-import no.nav.tms.token.support.idporten.sidecar.authentication.IdPortenTokenPrincipal
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktJwtService.Companion.representertIdent
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktJwtService.Companion.representertNavn
 
-class FullmaktInterception(val fullmektigJwtService: FullmektigJwtService) {
+class FullmaktInterception(private val fullmaktJwtService: FullmaktJwtService) {
     companion object {
-        private const val FullmaktInterceptor = "fullmakt-interceptor"
         val FullmaktAttribute = AttributeKey<Fullmakt>("fullmakt_attribute")
     }
 
     private val log = KotlinLogging.logger {}
 
-    val interceptor = createApplicationPlugin(name = FullmaktInterceptor) {
+    val interceptor = createApplicationPlugin(name = "fullmakt-interceptor") {
         requireNotNull(application.pluginOrNull(Authentication)) { "Fullmaktinterceptor must be installed after Authentication" }
 
-        on(CallSetup) { call ->
+        onCall { call ->
             val fullmektigToken = call.request.cookies[FullmaktCookie]
-            if (fullmektigToken != null) {
+            val accessToken = call.request.authHeader()
+            if (fullmektigToken != null && accessToken != null) {
                 try {
-                    val ident = call.userIdent
+                    val ident = accessToken.userIdent
 
-                    val jwt = fullmektigJwtService.verify(fullmektigToken, ident)
-                    val representert = jwt.getClaim(FullmektigJwtService.RepresentertClaim).asString()
+                    val jwt = fullmaktJwtService.verify(fullmektigToken, ident)
 
                     val fullmakt = Fullmakt(
-                        fullmektig = ident,
-                        representert = representert
+                        fullmektigIdent = ident,
+                        representertIdent = jwt.representertIdent,
+                        representertNavn = jwt.representertNavn,
                     )
 
                     call.attributes.put(FullmaktAttribute, fullmakt)
                 } catch (e: Exception) {
+                    log.warn(e) { "Fullmektig-feil" }
                     call.response.cookies.expireFullmakt()
                 }
             }
@@ -41,9 +46,19 @@ class FullmaktInterception(val fullmektigJwtService: FullmektigJwtService) {
     }
 }
 
-private val ApplicationCall.userIdent get() = principal<IdPortenTokenPrincipal>()?.accessToken?.getClaim("pid")?.asString()!!
+private val JWT.userIdent get() = jwtClaimsSet.getClaim("pid")!! as String
+
+private val authRegex = "Bearer (.+)".toRegex()
+
+private fun ApplicationRequest.authHeader(): JWT? {
+    return headers[HttpHeaders.Authorization]
+        ?.let{ authRegex.matchEntire(it)?.destructured }
+        ?.let { (token) -> token }
+        ?.let { SignedJWT.parse(it) }
+}
 
 data class Fullmakt(
-    val fullmektig: String,
-    val representert: String
+    val fullmektigIdent: String,
+    val representertIdent: String,
+    val representertNavn: String
 ): Principal

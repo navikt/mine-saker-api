@@ -19,6 +19,9 @@ import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.config.TokendingsExchange
 import no.nav.personbruker.minesaker.api.saf.DokumentResponse
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktInterception
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktService
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktJwtService
 import no.nav.personbruker.minesaker.api.sak.Kildetype
 import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.personbruker.minesaker.api.sak.SakstemaResult
@@ -38,13 +41,21 @@ internal class ExceptionApiTest {
                     it.hentJournalposter(any(), any(), any())
                 } throws CommunicationException("Fikk http-status [500] fra SAF.")
             })
+
+            val fullmaktService = mockk<FullmaktService>()
+            val fullmaktJwtService = mockk<FullmaktJwtService>()
+            val fullmaktInterception = FullmaktInterception(fullmaktJwtService)
+
             mineSakerApi(
                 sakService = sakserviceMock,
                 httpClient = mockk(),
                 corsAllowedOrigins = "*",
                 corsAllowedSchemes = "*",
                 authConfig = { defaultAuthConfig() },
-                sakerUrl = "http://minesaker.dev"
+                sakerUrl = "http://minesaker.dev",
+                fullmaktService = fullmaktService,
+                fullmaktJwtService = fullmaktJwtService,
+                fullmaktInterception = fullmaktInterception
             )
         }
 
@@ -70,13 +81,21 @@ internal class ExceptionApiTest {
                     it.hentJournalposter(any(), any(), any())
                 } throws GraphQLResultException("Ingen data i resultatet fra SAF.", listOf(), mapOf())
             })
+
+            val fullmaktService = mockk<FullmaktService>()
+            val fullmaktJwtService = mockk<FullmaktJwtService>()
+            val fullmaktInterception = FullmaktInterception(fullmaktJwtService)
+
             mineSakerApi(
                 sakService = sakserviceMock,
                 httpClient = mockk(),
                 corsAllowedOrigins = "*",
                 corsAllowedSchemes = "*",
                 authConfig = { defaultAuthConfig() },
-                sakerUrl = "http://minesaker.dev"
+                sakerUrl = "http://minesaker.dev",
+                fullmaktService = fullmaktService,
+                fullmaktJwtService = fullmaktJwtService,
+                fullmaktInterception = fullmaktInterception
             )
         }
 
@@ -95,6 +114,11 @@ internal class ExceptionApiTest {
         val safConsumerMock = mockk<SafConsumer>().also {
             coEvery { it.hentSakstemaer(any(), any()) } returns SakstemaResult(errors = listOf(Kildetype.SAF))
         }
+
+        val fullmaktService = mockk<FullmaktService>()
+        val fullmaktJwtService = mockk<FullmaktJwtService>()
+        val fullmaktInterception = FullmaktInterception(fullmaktJwtService)
+
         val digiSosConsumerMockk = mockk<DigiSosConsumer>().also {
             coEvery { it.hentSakstemaer(any()) } returns SakstemaResult(
                 results = listOf(
@@ -115,7 +139,10 @@ internal class ExceptionApiTest {
                 corsAllowedOrigins = "*",
                 corsAllowedSchemes = "*",
                 authConfig = { defaultAuthConfig() },
-                sakerUrl = "http://minesaker.dev"
+                sakerUrl = "http://minesaker.dev",
+                fullmaktService = fullmaktService,
+                fullmaktJwtService = fullmaktJwtService,
+                fullmaktInterception = fullmaktInterception
             )
         }
 
@@ -138,6 +165,10 @@ internal class ExceptionApiTest {
             } returns DokumentResponse(ByteArray(10), ContentType.Application.Pdf)
         }
 
+        val fullmaktService = mockk<FullmaktService>()
+        val fullmaktJwtService = mockk<FullmaktJwtService>()
+        val fullmaktInterception = FullmaktInterception(fullmaktJwtService)
+
         application {
             val sakserviceMock = createSakService(safConsumer = safconsumerMockk)
 
@@ -147,7 +178,10 @@ internal class ExceptionApiTest {
                 corsAllowedOrigins = "*",
                 corsAllowedSchemes = "*",
                 authConfig = { defaultAuthConfig() },
-                sakerUrl = "http://minesaker.dev"
+                sakerUrl = "http://minesaker.dev",
+                fullmaktService = fullmaktService,
+                fullmaktJwtService = fullmaktJwtService,
+                fullmaktInterception = fullmaktInterception
             )
         }
         client.get("/dokument/gghh11/hfajskk").apply {

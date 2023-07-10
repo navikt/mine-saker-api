@@ -7,7 +7,7 @@ import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktConsumer
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktInterception
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktService
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmektigJwtService
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktJwtService
 import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.tms.token.support.tokendings.exchange.TokendingsServiceBuilder
 
@@ -25,9 +25,9 @@ fun main() {
         pdlFullmaktClientId = environment.pdlFullmaktClientId
     )
 
-    val fullmaktConsumer = FullmaktConsumer(httpClient, tokendingsExchange)
+    val fullmaktConsumer = FullmaktConsumer(httpClient, tokendingsExchange, environment.pdlFullmaktUrl)
     val fullmaktService = FullmaktService(fullmaktConsumer)
-    val fullmektigJwtService = FullmektigJwtService(environment.fullmaktJwtIssuer, environment.fullmaktPrivateJwk)
+    val fullmektigJwtService = FullmaktJwtService(environment.fullmaktJwtIssuer, environment.fullmaktPrivateJwk)
     val fullmaktInterception = FullmaktInterception(fullmektigJwtService)
 
     val safConsumer = SafConsumer(httpClient, environment.safEndpoint, innsynsUrlResolver)
@@ -49,7 +49,7 @@ fun main() {
                     authConfig = authConfig(),
                     fullmaktService = fullmaktService,
                     fullmaktInterception = fullmaktInterception,
-                    fullmektigJwtService = fullmektigJwtService
+                    fullmaktJwtService = fullmektigJwtService
                 )
             }
             connector {

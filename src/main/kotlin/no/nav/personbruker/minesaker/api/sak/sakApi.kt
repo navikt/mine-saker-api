@@ -67,7 +67,7 @@ fun Route.sakApi(
 }
 
 private val ApplicationCall.representert get() =
-    attributes.getOrNull(FullmaktInterception.FullmaktAttribute)?.representert
+    attributes.getOrNull(FullmaktInterception.FullmaktAttribute)?.representertIdent
 
 private fun ApplicationCall.sakstemaFromQueryParameters() =
     request.queryParameters["sakstemakode"]

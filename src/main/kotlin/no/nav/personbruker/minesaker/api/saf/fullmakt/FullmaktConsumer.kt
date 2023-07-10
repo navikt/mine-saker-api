@@ -1,34 +1,32 @@
 package no.nav.personbruker.minesaker.api.saf.fullmakt
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import mu.KotlinLogging
 import no.nav.personbruker.minesaker.api.config.TokendingsExchange
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
-import java.net.URL
 
 class FullmaktConsumer(
     private val httpClient: HttpClient,
     private val tokendingsExchange: TokendingsExchange,
-    private val pdlFullmaktUrl: String = "http://pdl-fullmakt-api.repr"
+    private val pdlFullmaktUrl: String
 ) {
     private val log = KotlinLogging.logger {}
 
     suspend fun getFullmaktForhold(user: IdportenUser): FullmaktForhold {
         return getFullmaktDetails(tokendingsExchange.pdlFullmaktToken(user))
-            .let(FullmaktForhold::fromFullmaktDetails)
+            .let { FullmaktForhold.fromFullmaktDetails(user.ident, it) }
     }
 
     private suspend fun getFullmaktDetails(accessToken: String): List<FullmaktDetails> =
         withContext(Dispatchers.IO) {
             httpClient.get {
-                url("$pdlFullmaktUrl/fullmektig")
+                url("$pdlFullmaktUrl/api/fullmektig/tema")
                 method = HttpMethod.Get
                 header(HttpHeaders.Authorization, "Bearer $accessToken")
                 accept(ContentType.Application.Json)
@@ -39,4 +37,6 @@ class FullmaktConsumer(
                 }
             }
         }.body()
+
+    suspend fun token(user: IdportenUser): String = tokendingsExchange.pdlFullmaktToken(user)
 }
