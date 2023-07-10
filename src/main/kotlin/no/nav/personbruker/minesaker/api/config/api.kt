@@ -27,6 +27,7 @@ import no.nav.personbruker.minesaker.api.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.exception.TransformationException
 import no.nav.personbruker.minesaker.api.health.healthApi
+import no.nav.personbruker.minesaker.api.saf.fullmakt.*
 import no.nav.personbruker.minesaker.api.sak.*
 import no.nav.tms.token.support.idporten.sidecar.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.installIdPortenAuth
@@ -39,6 +40,9 @@ fun Application.mineSakerApi(
     corsAllowedOrigins: String,
     corsAllowedSchemes: String,
     sakerUrl: String,
+    fullmaktService: FullmaktService,
+    fullmektigJwtService: FullmektigJwtService,
+    fullmaktInterception: FullmaktInterception,
     authConfig: Application.() -> Unit
 ) {
     DefaultExports.initialize()
@@ -86,8 +90,16 @@ fun Application.mineSakerApi(
 
                 is TransformationException -> {
                     log.warn { cause.message }
-                    secureLog.warn { cause.stackTrace }
+                    secureLog.warn("$cause")
                     call.respond(HttpStatusCode.InternalServerError)
+                }
+
+                is UgyldigFullmaktException -> {
+                    log.warn { cause.message }
+                    secureLog.warn("Bruker ${cause.fullmektig} er ikke representant for ${cause.giver}")
+
+                    call.response.cookies.expireFullmakt()
+                    call.respond(HttpStatusCode.Forbidden)
                 }
 
                 else -> {
@@ -106,6 +118,7 @@ fun Application.mineSakerApi(
     }
 
     authConfig()
+    install(fullmaktInterception.interceptor)
 
     install(ContentNegotiation) {
         jackson {
@@ -124,8 +137,10 @@ fun Application.mineSakerApi(
     routing {
         healthApi()
 
-        authenticate {
-            sakApi(sakService, sakerUrl)
+            authenticate {
+                sakApi(sakService, sakerUrl)
+                fullmaktApi(fullmaktService, fullmektigJwtService)
+            }
         }
     }
 

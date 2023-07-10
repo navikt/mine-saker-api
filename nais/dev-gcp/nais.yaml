@@ -6,6 +6,8 @@ metadata:
   labels:
     team: min-side
 spec:
+  envFrom:
+    - secret: mine-saker-api-jwk
   image: {{version}}
   port: 8080
   liveness:
@@ -44,6 +46,8 @@ spec:
         - application: "safselvbetjening-q1"
           namespace: "teamdokumenthandtering"
           cluster: "dev-fss"
+        - application: "pdl-fullmakt-api"
+          namespace: "repr"
   ingresses:
     - "https://person.dev.nav.no/mine-saker-api"
     - "https://www.intern.dev.nav.no/mine-saker-api"
@@ -79,3 +83,7 @@ spec:
       value: dev-fss:teamdokumenthandtering:safselvbetjening-q1
     - name: MINE_SAKER_URL
       value: https://www.intern.dev.nav.no/mine-saker/
+    - name: PDL_FULLMAKT_CLIENT_ID
+      value: "dev-gcp:repr:pdl-fullmakt-api"
+    - name: FULLMAKT_JWT_ISSUER
+      value: "mine-saker-api-dev"
