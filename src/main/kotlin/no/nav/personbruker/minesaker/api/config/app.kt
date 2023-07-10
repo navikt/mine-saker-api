@@ -25,7 +25,7 @@ fun main() {
         pdlFullmaktClientId = environment.pdlFullmaktClientId
     )
 
-    val fullmaktConsumer = FullmaktConsumer(httpClient, tokendingsExchange)
+    val fullmaktConsumer = FullmaktConsumer(httpClient, tokendingsExchange, environment.pdlFullmaktUrl)
     val fullmaktService = FullmaktService(fullmaktConsumer)
     val fullmektigJwtService = FullmektigJwtService(environment.fullmaktJwtIssuer, environment.fullmaktPrivateJwk)
     val fullmaktInterception = FullmaktInterception(fullmektigJwtService)

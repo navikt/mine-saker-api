@@ -16,7 +16,7 @@ import java.net.URL
 class FullmaktConsumer(
     private val httpClient: HttpClient,
     private val tokendingsExchange: TokendingsExchange,
-    private val pdlFullmaktUrl: String = "http://pdl-fullmakt-api.repr"
+    private val pdlFullmaktUrl: String
 ) {
     private val log = KotlinLogging.logger {}
 
@@ -28,7 +28,7 @@ class FullmaktConsumer(
     private suspend fun getFullmaktDetails(accessToken: String): List<FullmaktDetails> =
         withContext(Dispatchers.IO) {
             httpClient.get {
-                url("$pdlFullmaktUrl/fullmektig")
+                url("$pdlFullmaktUrl/api/fullmektig")
                 method = HttpMethod.Get
                 header(HttpHeaders.Authorization, "Bearer $accessToken")
                 accept(ContentType.Application.Json)
@@ -39,4 +39,6 @@ class FullmaktConsumer(
                 }
             }
         }.body()
+
+    suspend fun token(user: IdportenUser): String = tokendingsExchange.pdlFullmaktToken(user)
 }

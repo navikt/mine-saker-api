@@ -34,6 +34,7 @@ class FullmaktInterception(val fullmektigJwtService: FullmektigJwtService) {
 
                     call.attributes.put(FullmaktAttribute, fullmakt)
                 } catch (e: Exception) {
+                    log.warn("Fullmektig-feil", e)
                     call.response.cookies.expireFullmakt()
                 }
             }

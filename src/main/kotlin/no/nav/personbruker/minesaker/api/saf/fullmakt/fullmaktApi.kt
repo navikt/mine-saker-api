@@ -15,18 +15,27 @@ fun Route.fullmaktApi(fullmaktService: FullmaktService, jwtService: FullmektigJw
     post("/fullmakt/representert") {
         val representert = call.represertIdent()
 
-        fullmaktService.validateFullmaktsForhold(idportenUser, representert)
+        if (representert == idportenUser.ident) {
+            call.response.cookies.expireFullmakt()
+            call.respond(HttpStatusCode.OK)
+        } else {
+            fullmaktService.validateFullmaktsForhold(idportenUser, representert)
 
-        val fullmektigToken = jwtService.generateJwtString(fullmektig = idportenUser.ident, representert = representert)
+            val fullmektigToken = jwtService.generateJwtString(fullmektig = idportenUser.ident, representert = representert)
 
-        call.response.cookies.append(
-            FullmaktCookie,
-            fullmektigToken,
-            maxAge = 3600L,
-            httpOnly = true,
-            path = "/mine-saker-api"
-        )
-        call.respond(HttpStatusCode.OK)
+            call.response.cookies.append(
+                FullmaktCookie,
+                fullmektigToken,
+                maxAge = 3600L,
+                httpOnly = true,
+                path = "/mine-saker-api"
+            )
+            call.respond(HttpStatusCode.OK)
+        }
+    }
+
+    get("/fullmakt/token") {
+        call.respond(fullmaktService.token(idportenUser))
     }
 }
 

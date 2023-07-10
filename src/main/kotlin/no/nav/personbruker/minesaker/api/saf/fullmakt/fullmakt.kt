@@ -1,24 +1,12 @@
 package no.nav.personbruker.minesaker.api.saf.fullmakt
 
-import java.time.Instant
 import java.time.LocalDate
 
 data class FullmaktDetails(
-    val fullmaktId: Long,
-    val registrert: Instant,
-    val registrertAv: String,
-    val endret: Instant,
-    val ednretAv: String,
-    val opphoert: Boolean,
     val fullmaktsgiver: String,
     val fullmektig: String,
-    val omraade: String,
     val gyldigFraOgMed: LocalDate,
     val gyldigTilOgMed: LocalDate,
-    val fullmaktUuid: String,
-    val opplysningsId: String,
-    val endringsId: Long,
-    val status: String,
     val fullmaktsgiverNavn: String,
     val fullmektigsNavn: String
 )

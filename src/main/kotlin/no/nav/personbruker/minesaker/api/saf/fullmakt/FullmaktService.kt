@@ -14,6 +14,8 @@ class FullmaktService(private val fullmaktConsumer: FullmaktConsumer) {
             ?: throw UgyldigFullmaktException("Manglende forhold", giver = giverIdent, fullmektig = user.ident)
 
     }
+
+    suspend fun token(user: IdportenUser) = fullmaktConsumer.token(user)
 }
 
 class UgyldigFullmaktException(

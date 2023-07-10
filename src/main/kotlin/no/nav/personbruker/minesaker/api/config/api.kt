@@ -103,8 +103,7 @@ fun Application.mineSakerApi(
                 }
 
                 else -> {
-                    secureLog.error { "Kall til ${call.request.uri} feiler: ${cause.message}" }
-                    secureLog.warn { cause.stackTrace }
+                    secureLog.error("Kall til ${call.request.uri} feiler: ${cause.message}", cause)
                     call.respond(HttpStatusCode.InternalServerError)
                 }
             }
