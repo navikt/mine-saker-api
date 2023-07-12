@@ -9,7 +9,9 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.util.*
 import mu.KotlinLogging
-import no.nav.tms.token.support.idporten.sidecar.authentication.IdPortenTokenPrincipal
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmektigJwtService.Companion.fullmektigNavn
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmektigJwtService.Companion.representertIdent
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmektigJwtService.Companion.representertNavn
 
 class FullmaktInterception(val fullmektigJwtService: FullmektigJwtService) {
     companion object {
@@ -32,11 +34,12 @@ class FullmaktInterception(val fullmektigJwtService: FullmektigJwtService) {
                     log.info("Token: $fullmektigToken")
 
                     val jwt = fullmektigJwtService.verify(fullmektigToken, ident)
-                    val representert = jwt.getClaim(FullmektigJwtService.RepresentertClaim).asString()
 
                     val fullmakt = Fullmakt(
-                        fullmektig = ident,
-                        representert = representert
+                        fullmektigIdent = ident,
+                        fullmektigNavn = jwt.fullmektigNavn,
+                        representertIdent = jwt.representertIdent,
+                        representertNavn = jwt.representertNavn,
                     )
 
                     call.attributes.put(FullmaktAttribute, fullmakt)
@@ -61,6 +64,8 @@ private fun ApplicationRequest.authHeader(): JWT? {
 }
 
 data class Fullmakt(
-    val fullmektig: String,
-    val representert: String
+    val fullmektigIdent: String,
+    val fullmektigNavn: String,
+    val representertIdent: String,
+    val representertNavn: String
 ): Principal

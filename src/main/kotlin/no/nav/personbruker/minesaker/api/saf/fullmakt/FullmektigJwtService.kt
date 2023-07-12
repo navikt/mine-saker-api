@@ -21,14 +21,21 @@ class FullmektigJwtService(
     jwkString: String
 ) {
     companion object {
-        const val FullmektigClaim = "flm_id"
-        const val RepresentertClaim = "rep_id"
+        const val FullmektigIdentClaim = "flm_id"
+        const val FullmektigNavnClaim = "flm_nm"
+        const val RepresentertIdentClaim = "rep_id"
+        const val RepresentertNavnClaim = "rep_nm"
+
+        val DecodedJWT.fullmektigIdent get() = getClaim(FullmektigIdentClaim).asString()
+        val DecodedJWT.fullmektigNavn get() = getClaim(FullmektigNavnClaim).asString()
+        val DecodedJWT.representertIdent get() = getClaim(RepresentertIdentClaim).asString()
+        val DecodedJWT.representertNavn get() = getClaim(RepresentertNavnClaim).asString()
     }
 
     private val rsaKey = RSAKey.parse(jwkString)
     private val publicJwk = rsaKey.publicJwk()
 
-    fun generateJwtString(fullmektig: String, representert: String): String {
+    fun generateJwtString(validForhold: ValidForhold): String {
         val now = Date.from(Instant.now())
         return JWTClaimsSet.Builder()
             .issuer(issuer)
@@ -36,8 +43,10 @@ class FullmektigJwtService(
             .issueTime(now)
             .expirationTime(Date.from(Instant.now().plusSeconds(1800)))
             .jwtID(UUID.randomUUID().toString())
-            .claim(FullmektigClaim, fullmektig)
-            .claim(RepresentertClaim, representert)
+            .claim(FullmektigIdentClaim, validForhold.fullmektigIdent)
+            .claim(FullmektigNavnClaim, validForhold.fullmektigNavn)
+            .claim(RepresentertIdentClaim, validForhold.representertIdent)
+            .claim(RepresentertNavnClaim, validForhold.representertNavn)
             .build()
             .sign()
             .serialize()
@@ -52,7 +61,7 @@ class FullmektigJwtService(
         JWT.require(this.RSA256())
             .withAudience(issuer)
             .withIssuer(issuer)
-            .withClaim(FullmektigClaim, fullmektig)
+            .withClaim(FullmektigIdentClaim, fullmektig)
             .build()
 
     private fun Jwk.RSA256() = Algorithm.RSA256(publicKey as RSAPublicKey, null)

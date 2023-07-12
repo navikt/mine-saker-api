@@ -8,6 +8,16 @@ import io.ktor.server.request.receive
 import no.nav.personbruker.minesaker.api.config.idportenUser
 
 fun Route.fullmaktApi(fullmaktService: FullmaktService, jwtService: FullmektigJwtService) {
+    get("/fullmakt/info") {
+        val fullmaktSession = call.fullmaktAttribute
+
+        if (fullmaktSession == null) {
+            call.respond(FullmaktInfo(false))
+        } else {
+            call.respond(FullmaktInfo(true, fullmaktSession.representertNavn))
+        }
+    }
+
     get("/fullmakt/forhold") {
         call.respond(fullmaktService.getFullmaktForhold(idportenUser))
     }
@@ -19,9 +29,9 @@ fun Route.fullmaktApi(fullmaktService: FullmaktService, jwtService: FullmektigJw
             call.response.cookies.expireFullmakt()
             call.respond(HttpStatusCode.OK)
         } else {
-            fullmaktService.validateFullmaktsForhold(idportenUser, representert)
+            val validForhold = fullmaktService.validateFullmaktsForhold(idportenUser, representert)
 
-            val fullmektigToken = jwtService.generateJwtString(fullmektig = idportenUser.ident, representert = representert)
+            val fullmektigToken = jwtService.generateJwtString(validForhold)
 
             call.response.cookies.append(
                 FullmaktCookie,
@@ -39,6 +49,9 @@ fun Route.fullmaktApi(fullmaktService: FullmaktService, jwtService: FullmektigJw
     }
 }
 
+private val ApplicationCall.fullmaktAttribute get() =
+    attributes.getOrNull(FullmaktInterception.FullmaktAttribute)
+
 fun ResponseCookies.expireFullmakt() = append(
     FullmaktCookie,
     "",
@@ -53,4 +66,9 @@ private suspend fun ApplicationCall.represertIdent() = receive<Representert>().i
 
 private data class Representert(
     val ident: String
+)
+
+private data class FullmaktInfo(
+    val viserRepresentertesData: Boolean,
+    val representertNavn: String? = null
 )
