@@ -15,13 +15,12 @@ import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmektigJwtService.Compa
 
 class FullmaktInterception(val fullmektigJwtService: FullmektigJwtService) {
     companion object {
-        private const val FullmaktInterceptor = "fullmakt-interceptor"
         val FullmaktAttribute = AttributeKey<Fullmakt>("fullmakt_attribute")
     }
 
     private val log = KotlinLogging.logger {}
 
-    val interceptor = createApplicationPlugin(name = FullmaktInterceptor) {
+    val interceptor = createApplicationPlugin(name = "fullmakt-interceptor") {
         requireNotNull(application.pluginOrNull(Authentication)) { "Fullmaktinterceptor must be installed after Authentication" }
 
         onCall { call ->
