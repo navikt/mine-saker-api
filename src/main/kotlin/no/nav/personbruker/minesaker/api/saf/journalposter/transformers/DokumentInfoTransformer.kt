@@ -1,6 +1,6 @@
 package no.nav.personbruker.minesaker.api.saf.journalposter.transformers
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.personbruker.minesaker.api.exception.TransformationException
 import no.nav.personbruker.minesaker.api.domain.Dokumentinfo
 import no.nav.personbruker.minesaker.api.domain.Dokumenttype
@@ -20,7 +20,7 @@ fun List<GraphQLDokumentInfo?>.toInternal(): List<Dokumentinfo> {
 
             } else {
                 val msg = "Dokumentet med dokumentInfoId={} har ingen dokumenttype som kan vises for sluttbruker."
-                log.warn(msg, externalDokument.dokumentInfoId)
+                log.warn { "$msg, ${externalDokument.dokumentInfoId}" }
             }
         }
     return internals

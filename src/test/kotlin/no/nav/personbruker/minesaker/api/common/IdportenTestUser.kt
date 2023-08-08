@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
+import no.nav.tms.token.support.idporten.sidecar.LevelOfAssurance.HIGH
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 import java.security.Key
 import java.time.ZonedDateTime
@@ -19,23 +20,17 @@ object IdportenTestUser {
     }
 
     fun createIdportenUser(ident: String): IdportenUser {
-        val innloggingsnivaa = 4
-        return createIdportenUser(ident, innloggingsnivaa)
-    }
-
-    fun createIdportenUser(ident: String, innloggingsnivaa: Int): IdportenUser {
         val inTwoMinutes = ZonedDateTime.now().plusMinutes(2)
-        return createIdportenUserWithValidTokenUntil(ident, innloggingsnivaa, inTwoMinutes)
+        return createIdportenUserWithValidTokenUntil(ident, inTwoMinutes)
     }
 
-    fun createIdportenUserWithValidTokenUntil(
+    private fun createIdportenUserWithValidTokenUntil(
             ident: String,
-            innloggingsnivaa: Int,
             tokensUtlopstidspunkt: ZonedDateTime
     ): IdportenUser {
         val jws = Jwts.builder()
                 .setSubject(ident)
-                .addClaims(mutableMapOf(Pair("acr", "Level$innloggingsnivaa")) as Map<String, Any>?)
+                .addClaims(mutableMapOf(Pair("acr", "idporten-loa-high")) as Map<String, Any>?)
                 .setExpiration(Date.from(tokensUtlopstidspunkt.toInstant()))
                 .signWith(key).compact()
 
@@ -44,6 +39,6 @@ object IdportenTestUser {
 
         val expirationTime = token.expiresAt.toInstant()
 
-        return IdportenUser(ident, innloggingsnivaa, expirationTime, token)
+        return IdportenUser(ident, 4, HIGH, expirationTime, token)
     }
 }

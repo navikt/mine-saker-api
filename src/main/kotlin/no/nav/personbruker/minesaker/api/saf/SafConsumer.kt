@@ -9,7 +9,7 @@ import io.ktor.http.*
 import io.ktor.http.HttpHeaders.Authorization
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
 import no.nav.personbruker.minesaker.api.exception.CommunicationException
@@ -41,7 +41,7 @@ class SafConsumer(
             val result: HentSakstemaer.Result = unwrapGraphQLResponse(sendQuery(request, accessToken))
             result.toInternal(innsynsUrlResolver)
         } catch (e: Exception) {
-            log.warn("Klarte ikke å hente data fra SAF.", e)
+            log.warn(e) {"Klarte ikke å hente data fra SAF."}
             SakstemaResult(errors = listOf(Kildetype.SAF))
         }
 
@@ -69,9 +69,9 @@ class SafConsumer(
         accessToken: String
     ): HttpResponse = withContext(Dispatchers.IO) {
         val callId = UUID.randomUUID()
-        log.info("Sender POST-kall med correlationId=$callId")
+        log.info { "Sender POST-kall med correlationId=$callId" }
         val urlToFetch = "$safEndpoint/rest/hentdokument/$journapostId/$dokumentinfoId/ARKIV"
-        log.info("Skal hente data fra: $urlToFetch")
+        log.info { "Skal hente data fra: $urlToFetch" }
         httpClient.request {
             url(urlToFetch)
             method = HttpMethod.Get
@@ -101,7 +101,7 @@ class SafConsumer(
     private suspend fun sendQuery(request: GraphQLRequest, accessToken: String): HttpResponse =
         withContext(Dispatchers.IO) {
             val callId = UUID.randomUUID()
-            log.info("Sender graphql-spørring med correlationId=$callId")
+            log.info { "Sender graphql-spørring med correlationId=$callId" }
             httpClient.post {
                 url("$safEndpoint/graphql")
                 method = HttpMethod.Post
@@ -138,7 +138,7 @@ class SafConsumer(
                 if (it.containsData() && it.containsErrors()) {
                     val msg = "Resultatet inneholdt data og feil, dataene returneres til bruker. " +
                             "Feilene var errors: ${it.errors}, extensions: ${it.extensions}"
-                    log.warn(msg)
+                    log.warn { msg }
                 }
             }
     } catch (e: Exception) {

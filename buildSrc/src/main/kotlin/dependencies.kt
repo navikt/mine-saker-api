@@ -1,13 +1,15 @@
-import default.GraphQLDefaults
+import default.*
 
-object KtorTokenSupport201: default.TmsKtorTokenSupportDefaults {
-    override val version = "2.0.1"
-}
-
-object GraphQL6: GraphQLDefaults {
+object GraphQL: DependencyGroup {
+    override val groupId get() = "com.expediagroup"
     override val version = "6.3.5"
+
+    val pluginId get() = "com.expediagroup.graphql"
+
+    val kotlinClient get() = dependency("graphql-kotlin-client")
+    val kotlinKtorClient get() = dependency("graphql-kotlin-ktor-client")
 }
 
-object KtorClientLogging: default.Ktor2Defaults.ClientDefaults {
+object KtorClientLogging: KtorDefaults.ClientDefaults {
     val logging = dependency("ktor-client-logging")
 }

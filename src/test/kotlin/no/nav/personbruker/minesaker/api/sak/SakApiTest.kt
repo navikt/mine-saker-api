@@ -28,7 +28,7 @@ import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.config.TokendingsExchange
 import no.nav.personbruker.minesaker.api.sak.ForventetSakstemaInnhold.Companion.toDigisosResponse
-import no.nav.tms.token.support.idporten.sidecar.mock.SecurityLevel
+import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.installIdPortenAuthMock
 import org.junit.jupiter.api.Test
 import java.net.URL
@@ -137,7 +137,7 @@ private fun ApplicationTestBuilder.mockApi(
             installIdPortenAuthMock {
                 alwaysAuthenticated = true
                 setAsDefault = true
-                staticSecurityLevel = SecurityLevel.LEVEL_4
+                staticLevelOfAssurance = LevelOfAssurance.LEVEL_4
                 staticUserPid = "testfnr"
 
             }

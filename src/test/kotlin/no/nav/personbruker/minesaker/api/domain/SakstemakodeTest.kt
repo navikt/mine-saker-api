@@ -1,5 +1,6 @@
 package no.nav.personbruker.minesaker.api.domain
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -10,7 +11,7 @@ import org.slf4j.LoggerFactory
 
 internal class SakstemakodeTest {
 
-    private val log = LoggerFactory.getLogger(SakstemakodeTest::class.java)
+    private val log = KotlinLogging.logger { }
 
     @Test
     fun `Skal inneholde alle kjente temakoder fra SAF`() {
@@ -31,7 +32,7 @@ internal class SakstemakodeTest {
         }
 
         if (manglendeTemaer.isNotEmpty()) {
-            log.info("manglendeTemaer: $manglendeTemaer")
+            log.info { "manglendeTemaer: $manglendeTemaer" }
         }
         manglendeTemaer.shouldBeEmpty()
 

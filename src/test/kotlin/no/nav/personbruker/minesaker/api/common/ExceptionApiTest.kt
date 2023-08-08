@@ -21,7 +21,7 @@ import no.nav.personbruker.minesaker.api.config.TokendingsExchange
 import no.nav.personbruker.minesaker.api.sak.Kildetype
 import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.personbruker.minesaker.api.sak.SakstemaResult
-import no.nav.tms.token.support.idporten.sidecar.mock.SecurityLevel
+import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.installIdPortenAuthMock
 import org.junit.jupiter.api.Test
 
@@ -185,7 +185,7 @@ internal class ExceptionApiTest {
         installIdPortenAuthMock {
             alwaysAuthenticated = true
             setAsDefault = true
-            staticSecurityLevel = SecurityLevel.LEVEL_4
+            staticLevelOfAssurance = LevelOfAssurance.LEVEL_4
             staticUserPid = testfnr
 
         }
