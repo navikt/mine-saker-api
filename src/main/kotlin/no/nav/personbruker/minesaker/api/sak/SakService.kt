@@ -23,7 +23,7 @@ class SakService(
     private val log = KotlinLogging.logger { }
 
     suspend fun hentSakstemaer(user: IdportenUser, representert: String?): SakstemaResult = withContext(Dispatchers.IO) {
-        log.info("representert: ${representert?.subSequence(0..5)}")
+        log.info { "representert: ${representert?.subSequence(0..5)}" }
         if (representert != null) {
             hentSakstemaerForRepresentertFraSaf(user, representert)
         } else {
@@ -38,7 +38,7 @@ class SakService(
     }
 
     suspend fun hentJournalposterForSakstema(user: IdportenUser, representert: String?, sakstema: Sakstemakode): List<Sakstema> {
-        log.info("representert: ${representert?.subSequence(0..5)}")
+        log.info { "representert: ${representert?.subSequence(0..5)}" }
         return if (representert != null) {
             hentJournalposterForRepresentertForSakstema(user, representert, sakstema)
         } else {

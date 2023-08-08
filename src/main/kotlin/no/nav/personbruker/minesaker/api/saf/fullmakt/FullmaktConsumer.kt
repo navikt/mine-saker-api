@@ -1,17 +1,15 @@
 package no.nav.personbruker.minesaker.api.saf.fullmakt
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import mu.KotlinLogging
 import no.nav.personbruker.minesaker.api.config.TokendingsExchange
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
-import java.net.URL
 
 class FullmaktConsumer(
     private val httpClient: HttpClient,

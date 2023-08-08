@@ -2,13 +2,12 @@ package no.nav.personbruker.minesaker.api.saf.fullmakt
 
 import com.nimbusds.jwt.JWT
 import com.nimbusds.jwt.SignedJWT
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.application.hooks.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.util.*
-import mu.KotlinLogging
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmektigJwtService.Companion.fullmektigNavn
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmektigJwtService.Companion.representertIdent
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmektigJwtService.Companion.representertNavn
@@ -30,7 +29,7 @@ class FullmaktInterception(val fullmektigJwtService: FullmektigJwtService) {
                 try {
                     val ident = accessToken.userIdent
 
-                    log.info("Token: $fullmektigToken")
+                    log.info {"Token: $fullmektigToken" }
 
                     val jwt = fullmektigJwtService.verify(fullmektigToken, ident)
 
@@ -43,7 +42,7 @@ class FullmaktInterception(val fullmektigJwtService: FullmektigJwtService) {
 
                     call.attributes.put(FullmaktAttribute, fullmakt)
                 } catch (e: Exception) {
-                    log.warn("Fullmektig-feil", e)
+                    log.warn(e) { "Fullmektig-feil" }
                     call.response.cookies.expireFullmakt()
                 }
             }

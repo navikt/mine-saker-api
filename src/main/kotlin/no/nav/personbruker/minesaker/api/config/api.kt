@@ -90,20 +90,20 @@ fun Application.mineSakerApi(
 
                 is TransformationException -> {
                     log.warn { cause.message }
-                    secureLog.warn("$cause")
+                    secureLog.warn { "$cause" }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
 
                 is UgyldigFullmaktException -> {
                     log.warn { cause.message }
-                    secureLog.warn("Bruker ${cause.fullmektig} er ikke representant for ${cause.giver}")
+                    secureLog.warn { "Bruker ${cause.fullmektig} er ikke representant for ${cause.giver}" }
 
                     call.response.cookies.expireFullmakt()
                     call.respond(HttpStatusCode.Forbidden)
                 }
 
                 else -> {
-                    secureLog.error("Kall til ${call.request.uri} feiler: ${cause.message}", cause)
+                    secureLog.error(cause) { "Kall til ${call.request.uri} feiler: ${cause.message}" }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
             }
