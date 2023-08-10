@@ -42,21 +42,20 @@ internal class ExceptionApiTest {
                 httpClient = mockk(),
                 corsAllowedOrigins = "*",
                 corsAllowedSchemes = "*",
-                rootPath = "mine-saker-api",
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev"
             )
         }
 
-        client.get("/mine-saker-api/journalposter").apply {
+        client.get("/journalposter").apply {
             status shouldBe HttpStatusCode.BadRequest
             bodyAsText() shouldBe "Parameter sakstemakode mangler"
         }
-        client.get("/mine-saker-api/journalposter?sakstemakode=UGLYDIG").apply {
+        client.get("/journalposter?sakstemakode=UGLYDIG").apply {
             status shouldBe HttpStatusCode.BadRequest
             bodyAsText() shouldBe "Ugyldig verdi for sakstemakode"
         }
-        client.get("/mine-saker-api/journalposter?sakstemakode=AAP").apply {
+        client.get("/journalposter?sakstemakode=AAP").apply {
             status shouldBe HttpStatusCode.ServiceUnavailable
         }
 
@@ -75,17 +74,16 @@ internal class ExceptionApiTest {
                 httpClient = mockk(),
                 corsAllowedOrigins = "*",
                 corsAllowedSchemes = "*",
-                rootPath = "mine-saker-api",
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev"
             )
         }
 
-        client.get("/mine-saker-api/journalposter/UGLYDIG").apply {
+        client.get("/journalposter/UGLYDIG").apply {
             status shouldBe HttpStatusCode.BadRequest
             bodyAsText() shouldBe "Ugyldig verdi for sakstemakode"
         }
-        client.get("/mine-saker-api/journalposter/AAP").apply {
+        client.get("/journalposter/AAP").apply {
             status shouldBe HttpStatusCode.InternalServerError
         }
 
@@ -115,24 +113,24 @@ internal class ExceptionApiTest {
                 httpClient = mockk(),
                 corsAllowedOrigins = "*",
                 corsAllowedSchemes = "*",
-                rootPath = "mine-saker-api",
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev"
             )
         }
 
-        client.get("/mine-saker-api/sakstemaer").apply {
+        client.get("/sakstemaer").apply {
             status shouldBe HttpStatusCode.OK
         }
         coEvery { digiSosConsumerMockk.hentSakstemaer(any()) } returns SakstemaResult(errors = listOf(Kildetype.DIGISOS))
 
-        client.get("/mine-saker-api/sakstemaer").apply {
+        client.get("/sakstemaer").apply {
             status shouldBe HttpStatusCode.ServiceUnavailable
         }
     }
 
     @Test
     fun dokumenter() = testApplication {
+
         val safconsumerMockk = mockk<SafConsumer>().also {
             coEvery {
                 it.hentDokument(any(), any(), any())
@@ -147,22 +145,21 @@ internal class ExceptionApiTest {
                 httpClient = mockk(),
                 corsAllowedOrigins = "*",
                 corsAllowedSchemes = "*",
-                rootPath = "mine-saker-api",
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev"
             )
         }
-        client.get("/mine-saker-api/dokument/gghh11/hfajskk").apply {
+        client.get("/dokument/gghh11/hfajskk").apply {
             status shouldBe HttpStatusCode.OK
         }
-        client.get("/mine-saker-api/dokument/-/-").apply {
+        client.get("/dokument/-/-").apply {
             status shouldBe HttpStatusCode.BadRequest
         }
 
         clearMocks(safconsumerMockk)
         coEvery { safconsumerMockk.hentDokument(any(), any(), any()) } throws DocumentNotFoundException("")
 
-        client.get("/mine-saker-api/dokument/gghh11/hfajskk").apply {
+        client.get("/dokument/gghh11/hfajskk").apply {
             status shouldBe HttpStatusCode.NotFound
         }
 

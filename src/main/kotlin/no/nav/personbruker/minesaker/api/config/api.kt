@@ -16,7 +16,6 @@ import io.ktor.server.plugins.defaultheaders.DefaultHeaders
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.uri
 import io.ktor.server.response.respond
-import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import io.ktor.util.pipeline.PipelineContext
 import io.prometheus.client.hotspot.DefaultExports
@@ -31,7 +30,6 @@ import no.nav.personbruker.minesaker.api.health.healthApi
 import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.personbruker.minesaker.api.sak.sakApi
 import no.nav.tms.token.support.idporten.sidecar.LevelOfAssurance
-import no.nav.tms.token.support.idporten.sidecar.LoginLevel
 import no.nav.tms.token.support.idporten.sidecar.installIdPortenAuth
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUserFactory
 
@@ -41,7 +39,6 @@ fun Application.mineSakerApi(
     httpClient: HttpClient,
     corsAllowedOrigins: String,
     corsAllowedSchemes: String,
-    rootPath: String,
     sakerUrl: String,
     authConfig: Application.() -> Unit
 ) {
@@ -123,24 +120,20 @@ fun Application.mineSakerApi(
     }
 
     routing {
-        route("/${rootPath}") {
-            healthApi()
+        healthApi()
 
-            authenticate {
-                sakApi(sakService, sakerUrl)
-            }
+        authenticate {
+            sakApi(sakService, sakerUrl)
         }
     }
 
     configureShutdownHook(httpClient)
 }
 
-fun authConfig(contextPath: String): Application.() -> Unit = {
+fun authConfig(): Application.() -> Unit = {
     installIdPortenAuth {
         setAsDefault = true
         levelOfAssurance = LevelOfAssurance.HIGH
-        inheritProjectRootPath = false
-        rootPath = contextPath
     }
 }
 

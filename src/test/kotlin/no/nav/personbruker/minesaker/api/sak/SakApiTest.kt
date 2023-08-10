@@ -58,6 +58,7 @@ class SakApiTest {
 
     @Test
     fun `henter siste`() = testApplication {
+
         val appClient = createClient {
             install(ContentNegotiation) {
                 jackson {
@@ -87,7 +88,7 @@ class SakApiTest {
             content = listOf(aapSak, dagSak, hjeSak).toDigisosResponse()
         )
 
-        client.get("/mine-saker-api/siste").apply {
+        client.get("/siste").apply {
             status shouldBe HttpStatusCode.OK
             val response = objectMapper.readTree(bodyAsText())
             val sakstemaer = response["sakstemaer"].toList()
@@ -132,7 +133,6 @@ private fun ApplicationTestBuilder.mockApi(
     httpClient: HttpClient,
     corsAllowedOrigins: String = "*",
     corsAllowedSchemes: String = "*",
-    rootPath: String = "mine-saker-api",
     authConfig: Application.() -> Unit = {
             installIdPortenAuthMock {
                 alwaysAuthenticated = true
@@ -149,7 +149,6 @@ private fun ApplicationTestBuilder.mockApi(
         httpClient = httpClient,
         corsAllowedOrigins = corsAllowedOrigins,
         corsAllowedSchemes = corsAllowedSchemes,
-        rootPath = rootPath,
         authConfig = authConfig,
         sakerUrl = sakerUrl
     )
