@@ -24,16 +24,25 @@ fun main() {
     val digiSosConsumer = DigiSosConsumer(httpClient, environment.digiSosEndpoint, innsynsUrlResolver)
     val sakService = SakService(safConsumer, tokendingsExchange, digiSosConsumer)
 
-    embeddedServer(Netty, port = environment.port) {
-        mineSakerApi(
-            sakService = sakService,
-            sakerUrl = environment.sakerUrl,
-            httpClient = httpClient,
-            corsAllowedOrigins = environment.corsAllowedOrigins,
-            corsAllowedSchemes = environment.corsAllowedSchemes,
-            rootPath = environment.rootPath,
-            authConfig = authConfig(environment.rootPath),
-        )
-    }.start(wait = true)
+    embeddedServer(
+        factory = Netty,
+        environment = applicationEngineEnvironment {
+            rootPath = "mine-saker-api"
+
+            module {
+                mineSakerApi(
+                    sakService = sakService,
+                    sakerUrl = environment.sakerUrl,
+                    httpClient = httpClient,
+                    corsAllowedOrigins = environment.corsAllowedOrigins,
+                    corsAllowedSchemes = environment.corsAllowedSchemes,
+                    authConfig = authConfig(),
+                )
+            }
+            connector {
+                port = 8080
+            }
+        }
+    ).start(wait = true)
 }
 

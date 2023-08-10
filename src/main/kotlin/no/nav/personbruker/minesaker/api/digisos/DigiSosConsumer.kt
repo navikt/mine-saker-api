@@ -9,7 +9,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.personbruker.minesaker.api.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.config.InnsynsUrlResolver
 import no.nav.personbruker.minesaker.api.config.jsonConfig
@@ -38,17 +38,16 @@ class DigiSosConsumer(
             }
 
         } catch (e: Exception) {
-            log.warn(
-                "Klarte ikke å hente data fra DigiSos, returnerer et resultat med info om at det feilet mot DigiSos: $e",
-                e
-            )
+            log.warn(e) {
+                "Klarte ikke å hente data fra DigiSos, returnerer et resultat med info om at det feilet mot DigiSos: $e"
+            }
             SakstemaResult(errors = listOf(Kildetype.DIGISOS))
         }
     }
 
     private suspend fun hent(accessToken: String): HttpResponse = withContext(Dispatchers.IO) {
         val callId = UUID.randomUUID()
-        log.info("Gjør kall mot DígiSos med correlationId=$callId")
+        log.info { "Gjør kall mot DígiSos med correlationId=$callId" }
         httpClient.get {
             url("$digiSosEndpoint/minesaker/innsendte")
             method = HttpMethod.Get

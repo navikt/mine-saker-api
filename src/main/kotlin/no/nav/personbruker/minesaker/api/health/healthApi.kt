@@ -8,7 +8,7 @@ import io.ktor.server.routing.*
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 
-fun Route.healthApi(collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry) {
+fun Route.healthApi() {
 
     val pingJsonResponse = """{"ping": "pong"}"""
 
@@ -26,12 +26,5 @@ fun Route.healthApi(collectorRegistry: CollectorRegistry = CollectorRegistry.def
 
     get("/internal/selftest") {
         call.respond(HttpStatusCode.OK)
-    }
-
-    get("/metrics") {
-        val names = call.request.queryParameters.getAll("name")?.toSet() ?: emptySet()
-        call.respondTextWriter(ContentType.parse(TextFormat.CONTENT_TYPE_004), HttpStatusCode.OK) {
-            TextFormat.write004(this, collectorRegistry.filteredMetricFamilySamples(names))
-        }
     }
 }

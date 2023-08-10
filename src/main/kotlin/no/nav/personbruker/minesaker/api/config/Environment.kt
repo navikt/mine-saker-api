@@ -6,7 +6,6 @@ import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import java.net.URL
 
 data class Environment(
-    val rootPath: String = getEnvVar("ROOT_PATH", "mine-saker-api"),
     val port: Int = getEnvVarAsInt("PORT", 8080),
     val corsAllowedOrigins: String = getEnvVar("CORS_ALLOWED_ORIGINS"),
     val corsAllowedSchemes: String = getEnvVar("CORS_ALLOWED_SCHEMES", "https"),

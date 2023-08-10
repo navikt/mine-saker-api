@@ -3,7 +3,7 @@ package no.nav.personbruker.minesaker.api.sak
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
 import no.nav.personbruker.minesaker.api.domain.Sakstema
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
@@ -52,7 +52,7 @@ class SakService(
         journapostId: String,
         dokumentinfoId: String
     ): ByteArray {
-        log.info("Henter dokument $dokumentinfoId fra journalposten $journapostId")
+        log.info { "Henter dokument $dokumentinfoId fra journalposten $journapostId" }
         val exchangedToken = tokendingsExchange.safToken(user)
         return safConsumer.hentDokument(journapostId, dokumentinfoId, exchangedToken)
     }

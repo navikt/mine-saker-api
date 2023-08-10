@@ -28,7 +28,7 @@ import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.config.TokendingsExchange
 import no.nav.personbruker.minesaker.api.sak.ForventetSakstemaInnhold.Companion.toDigisosResponse
-import no.nav.tms.token.support.idporten.sidecar.mock.SecurityLevel
+import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.installIdPortenAuthMock
 import org.junit.jupiter.api.Test
 import java.net.URL
@@ -58,6 +58,7 @@ class SakApiTest {
 
     @Test
     fun `henter siste`() = testApplication {
+
         val appClient = createClient {
             install(ContentNegotiation) {
                 jackson {
@@ -87,7 +88,7 @@ class SakApiTest {
             content = listOf(aapSak, dagSak, hjeSak).toDigisosResponse()
         )
 
-        client.get("/mine-saker-api/siste").apply {
+        client.get("/siste").apply {
             status shouldBe HttpStatusCode.OK
             val response = objectMapper.readTree(bodyAsText())
             val sakstemaer = response["sakstemaer"].toList()
@@ -132,12 +133,11 @@ private fun ApplicationTestBuilder.mockApi(
     httpClient: HttpClient,
     corsAllowedOrigins: String = "*",
     corsAllowedSchemes: String = "*",
-    rootPath: String = "mine-saker-api",
     authConfig: Application.() -> Unit = {
             installIdPortenAuthMock {
                 alwaysAuthenticated = true
                 setAsDefault = true
-                staticSecurityLevel = SecurityLevel.LEVEL_4
+                staticLevelOfAssurance = LevelOfAssurance.LEVEL_4
                 staticUserPid = "testfnr"
 
             }
@@ -149,7 +149,6 @@ private fun ApplicationTestBuilder.mockApi(
         httpClient = httpClient,
         corsAllowedOrigins = corsAllowedOrigins,
         corsAllowedSchemes = corsAllowedSchemes,
-        rootPath = rootPath,
         authConfig = authConfig,
         sakerUrl = sakerUrl
     )

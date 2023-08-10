@@ -5,7 +5,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.personbruker.minesaker.api.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.config.idportenUser
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
@@ -55,7 +55,7 @@ fun Route.sakApi(
         val result = service
             .hentSakstemaer(idportenUser)
         if (result.hasErrors()) {
-            log.warn("En eller flere kilder feilet: ${result.errors()}")
+            log.warn { "En eller flere kilder feilet: ${result.errors()}" }
         }
         call.respond(result.determineHttpCode(), result.recentlyModified(sakerUrl))
     }

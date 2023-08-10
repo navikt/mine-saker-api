@@ -16,11 +16,11 @@ import io.ktor.server.plugins.defaultheaders.DefaultHeaders
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.uri
 import io.ktor.server.response.respond
-import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import io.ktor.util.pipeline.PipelineContext
 import io.prometheus.client.hotspot.DefaultExports
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
+import nav.no.tms.common.metrics.installTmsMicrometerMetrics
 import no.nav.personbruker.minesaker.api.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.exception.DocumentNotFoundException
 import no.nav.personbruker.minesaker.api.exception.GraphQLResultException
@@ -29,7 +29,7 @@ import no.nav.personbruker.minesaker.api.exception.TransformationException
 import no.nav.personbruker.minesaker.api.health.healthApi
 import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.personbruker.minesaker.api.sak.sakApi
-import no.nav.tms.token.support.idporten.sidecar.LoginLevel
+import no.nav.tms.token.support.idporten.sidecar.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.installIdPortenAuth
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUserFactory
 
@@ -39,7 +39,6 @@ fun Application.mineSakerApi(
     httpClient: HttpClient,
     corsAllowedOrigins: String,
     corsAllowedSchemes: String,
-    rootPath: String,
     sakerUrl: String,
     authConfig: Application.() -> Unit
 ) {
@@ -115,25 +114,26 @@ fun Application.mineSakerApi(
         }
     }
 
-    routing {
-        route("/${rootPath}") {
-            healthApi()
+    installTmsMicrometerMetrics {
+        this.setupMetricsRoute = true
+        this.installMicrometerPlugin = true
+    }
 
-            authenticate {
-                sakApi(sakService, sakerUrl)
-            }
+    routing {
+        healthApi()
+
+        authenticate {
+            sakApi(sakService, sakerUrl)
         }
     }
 
     configureShutdownHook(httpClient)
 }
 
-fun authConfig(contextPath: String): Application.() -> Unit = {
+fun authConfig(): Application.() -> Unit = {
     installIdPortenAuth {
         setAsDefault = true
-        loginLevel = LoginLevel.LEVEL_4
-        inheritProjectRootPath = false
-        rootPath = contextPath
+        levelOfAssurance = LevelOfAssurance.HIGH
     }
 }
 
