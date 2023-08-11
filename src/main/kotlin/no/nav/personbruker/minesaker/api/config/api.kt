@@ -136,10 +136,9 @@ fun Application.mineSakerApi(
     routing {
         healthApi()
 
-            authenticate {
-                sakApi(sakService, sakerUrl)
-                fullmaktApi(fullmaktService, fullmektigJwtService)
-            }
+        authenticate {
+            sakApi(sakService, sakerUrl)
+            fullmaktApi(fullmaktService, fullmektigJwtService)
         }
     }
 
