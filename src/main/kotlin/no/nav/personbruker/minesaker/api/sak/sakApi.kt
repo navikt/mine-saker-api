@@ -48,7 +48,7 @@ fun Route.sakApi(
         val journalpostId = call.journalpostId()
         val dokumentId = call.dokumentInfoId()
         val result = service.hentDokument(idportenUser, journalpostId, dokumentId)
-        call.respondBytes(bytes = result, contentType = ContentType.Application.Pdf, status = HttpStatusCode.OK)
+        call.respondBytes(bytes = result.body, contentType = result.contentType, status = HttpStatusCode.OK)
     }
 
     get("/siste"){

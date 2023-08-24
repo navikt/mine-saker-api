@@ -247,8 +247,8 @@ internal class SafConsumerTest {
             consumer.hentDokument("123", "456", dummyToken)
         }
 
-        dokumentAsByteArray.size shouldBe dummyBinaryDataResponse.size
-        dokumentAsByteArray shouldBe dummyBinaryDataResponse
+        dokumentAsByteArray.body.size shouldBe dummyBinaryDataResponse.size
+        dokumentAsByteArray.body shouldBe dummyBinaryDataResponse
     }
 
     @Test
@@ -287,6 +287,28 @@ internal class SafConsumerTest {
         result.isFailure shouldBe true
         val exception = result.exceptionOrNull()
         exception as CommunicationException
+    }
+
+    @Test
+    fun `Skal takle at dokument fra saf er av annen type enn pdf`() {
+        val dummyBinaryDataResponse = """{"dokument": "response"}""".toByteArray()
+        val mockHttpClient = createMockHttpClient {
+            respond(
+                dummyBinaryDataResponse,
+                headers = headers {
+                    append(HttpHeaders.ContentType, ContentType.Application.Json)
+                }
+            )
+        }
+        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint, dummyUrlResolver)
+
+        val dokumentAsByteArray = runBlocking {
+            consumer.hentDokument("123", "456", dummyToken)
+        }
+
+        dokumentAsByteArray.body.size shouldBe dummyBinaryDataResponse.size
+        dokumentAsByteArray.contentType shouldBe ContentType.Application.Json
+        dokumentAsByteArray.body shouldBe dummyBinaryDataResponse
     }
 
     private fun createMockHttpClient(respond: MockRequestHandleScope.() -> HttpResponseData): HttpClient {

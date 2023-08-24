@@ -58,7 +58,7 @@ class SafConsumer(
         journapostId: String,
         dokumentinfoId: String,
         accessToken: String
-    ): ByteArray {
+    ): DokumentResponse {
             val httpResponse = fetchDocument(journapostId, dokumentinfoId, accessToken)
             return unpackRawResponseBody(httpResponse)
     }
@@ -81,7 +81,7 @@ class SafConsumer(
         }
     }
 
-    private suspend fun unpackRawResponseBody(response: HttpResponse): ByteArray {
+    private suspend fun unpackRawResponseBody(response: HttpResponse): DokumentResponse {
         if (response.status == HttpStatusCode.NotFound) {
             throw DocumentNotFoundException(
                 "Fant ikke dokument hos SAF",
@@ -91,8 +91,11 @@ class SafConsumer(
             throw CommunicationException("Klarte ikke å hente dokument fra SAF. Http-status [${response.status}]")
         }
 
-        try {
-            return response.readBytes()
+        return try {
+            DokumentResponse(
+                response.readBytes(),
+                response.contentType() ?: ContentType.Application.Pdf
+            )
         } catch (e: Exception) {
             throw CommunicationException("Klarte ikke å lese dokument fra SAF.", e)
         }
@@ -149,3 +152,8 @@ class SafConsumer(
     private fun GraphQLResponse<*>.containsErrors() = errors?.isNotEmpty() == true
 
 }
+
+class DokumentResponse(
+    val body: ByteArray,
+    val contentType: ContentType
+)
