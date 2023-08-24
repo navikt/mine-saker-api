@@ -100,7 +100,7 @@ private fun dokument(
 
 
 private fun arkivertVariant() =
-    GraphQLDokumentvariant(GraphQLVariantformat.ARKIV, true, listOf("ok"))
+    GraphQLDokumentvariant(GraphQLVariantformat.ARKIV, true, listOf("ok"), "PDF")
 
 private fun sladdetVariant() =
-    GraphQLDokumentvariant(GraphQLVariantformat.SLADDET, true, listOf("Skannet_dokument"))
+    GraphQLDokumentvariant(GraphQLVariantformat.SLADDET, true, listOf("Skannet_dokument"), "PDF")

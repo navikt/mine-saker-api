@@ -23,8 +23,8 @@ object JournalpostTestData {
                 "Dummytittel med arkivert",
                 "dummyId001",
                 listOf(
-                    GraphQLDokumentvariant(GraphQLVariantformat.SLADDET, true, listOf("Skannet_dokument")),
-                    GraphQLDokumentvariant(GraphQLVariantformat.ARKIV, true, listOf("ok"))
+                    GraphQLDokumentvariant(GraphQLVariantformat.SLADDET, true, listOf("Skannet_dokument"), "PDF"),
+                    GraphQLDokumentvariant(GraphQLVariantformat.ARKIV, true, listOf("ok"), "PDF")
                 )
             )
         )

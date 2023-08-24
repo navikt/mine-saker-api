@@ -36,7 +36,8 @@ object DomainTestData {
         type,
         brukerHarTiltang,
         grunnerTilIkkeTilgang,
-        Dokumentvariant.SLADDET
+        Dokumentvariant.SLADDET,
+        "PDF"
     )
 
 }
