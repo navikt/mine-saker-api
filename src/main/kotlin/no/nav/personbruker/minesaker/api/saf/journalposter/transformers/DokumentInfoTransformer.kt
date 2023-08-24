@@ -61,7 +61,8 @@ fun GraphQLDokumentInfo.toInternal(
         dokumenttype,
         externalVariant.brukerHarTilgang,
         eventuelleGrunnerTilManglendeTilgang,
-        externalVariant.variantformat.toInternal()
+        externalVariant.variantformat.toInternal(),
+        externalVariant.filtype
     )
 }
 
