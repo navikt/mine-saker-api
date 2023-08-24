@@ -18,6 +18,7 @@ import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.config.TokendingsExchange
+import no.nav.personbruker.minesaker.api.saf.DokumentResponse
 import no.nav.personbruker.minesaker.api.sak.Kildetype
 import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.personbruker.minesaker.api.sak.SakstemaResult
@@ -134,7 +135,7 @@ internal class ExceptionApiTest {
         val safconsumerMockk = mockk<SafConsumer>().also {
             coEvery {
                 it.hentDokument(any(), any(), any())
-            } returns ByteArray(10)
+            } returns DokumentResponse(ByteArray(10), ContentType.Application.Pdf)
         }
 
         application {

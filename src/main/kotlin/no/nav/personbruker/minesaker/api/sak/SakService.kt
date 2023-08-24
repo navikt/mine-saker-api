@@ -9,6 +9,7 @@ import no.nav.personbruker.minesaker.api.domain.Sakstema
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.config.TokendingsExchange
+import no.nav.personbruker.minesaker.api.saf.DokumentResponse
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
@@ -51,7 +52,7 @@ class SakService(
         user: IdportenUser,
         journapostId: String,
         dokumentinfoId: String
-    ): ByteArray {
+    ): DokumentResponse {
         log.info { "Henter dokument $dokumentinfoId fra journalposten $journapostId" }
         val exchangedToken = tokendingsExchange.safToken(user)
         return safConsumer.hentDokument(journapostId, dokumentinfoId, exchangedToken)
