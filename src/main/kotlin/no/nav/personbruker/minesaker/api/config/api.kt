@@ -27,8 +27,7 @@ import no.nav.personbruker.minesaker.api.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.exception.TransformationException
 import no.nav.personbruker.minesaker.api.health.healthApi
-import no.nav.personbruker.minesaker.api.sak.SakService
-import no.nav.personbruker.minesaker.api.sak.sakApi
+import no.nav.personbruker.minesaker.api.sak.*
 import no.nav.tms.token.support.idporten.sidecar.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.installIdPortenAuth
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUserFactory
@@ -115,8 +114,11 @@ fun Application.mineSakerApi(
     }
 
     installTmsMicrometerMetrics {
-        this.setupMetricsRoute = true
-        this.installMicrometerPlugin = true
+        setupMetricsRoute = true
+        installMicrometerPlugin = true
+
+        maskPathParams("/mine-saker-api/journalposter/{sakstemakode}")
+        maskPathParams("/mine-saker-api/dokument/{journalpostId}/{dokumentId}")
     }
 
     routing {
