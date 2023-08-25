@@ -8,11 +8,11 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.util.*
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmektigJwtService.Companion.fullmektigNavn
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmektigJwtService.Companion.representertIdent
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmektigJwtService.Companion.representertNavn
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktJwtService.Companion.fullmektigNavn
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktJwtService.Companion.representertIdent
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktJwtService.Companion.representertNavn
 
-class FullmaktInterception(val fullmektigJwtService: FullmektigJwtService) {
+class FullmaktInterception(private val fullmaktJwtService: FullmaktJwtService) {
     companion object {
         val FullmaktAttribute = AttributeKey<Fullmakt>("fullmakt_attribute")
     }
@@ -31,7 +31,7 @@ class FullmaktInterception(val fullmektigJwtService: FullmektigJwtService) {
 
                     log.info {"Token: $fullmektigToken" }
 
-                    val jwt = fullmektigJwtService.verify(fullmektigToken, ident)
+                    val jwt = fullmaktJwtService.verify(fullmektigToken, ident)
 
                     val fullmakt = Fullmakt(
                         fullmektigIdent = ident,

@@ -7,7 +7,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.request.receive
 import no.nav.personbruker.minesaker.api.config.idportenUser
 
-fun Route.fullmaktApi(fullmaktService: FullmaktService, jwtService: FullmektigJwtService) {
+fun Route.fullmaktApi(fullmaktService: FullmaktService, jwtService: FullmaktJwtService) {
     get("/fullmakt/info") {
         val fullmaktSession = call.fullmaktAttribute
 

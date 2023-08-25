@@ -41,7 +41,7 @@ fun Application.mineSakerApi(
     corsAllowedSchemes: String,
     sakerUrl: String,
     fullmaktService: FullmaktService,
-    fullmektigJwtService: FullmektigJwtService,
+    fullmaktJwtService: FullmaktJwtService,
     fullmaktInterception: FullmaktInterception,
     authConfig: Application.() -> Unit
 ) {
@@ -138,7 +138,7 @@ fun Application.mineSakerApi(
 
         authenticate {
             sakApi(sakService, sakerUrl)
-            fullmaktApi(fullmaktService, fullmektigJwtService)
+            fullmaktApi(fullmaktService, fullmaktJwtService)
         }
     }
 

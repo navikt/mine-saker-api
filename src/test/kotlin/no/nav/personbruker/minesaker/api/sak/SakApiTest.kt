@@ -27,6 +27,9 @@ import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.config.TokendingsExchange
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktInterception
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktJwtService
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktService
 import no.nav.personbruker.minesaker.api.sak.ForventetSakstemaInnhold.Companion.toDigisosResponse
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.installIdPortenAuthMock
@@ -72,6 +75,10 @@ class SakApiTest {
             digiSosEndpoint = URL(testBaseUrl), innsynsUrlResolver = testInnsynsUrlResolver
         )
 
+        val fullmaktService = mockk<FullmaktService>()
+        val fullmaktJwtService = mockk<FullmaktJwtService>()
+        val fullmaktInterception = FullmaktInterception(fullmaktJwtService)
+
         mockApi(
             sakService = SakService(
                 safConsumer = safConsumer,
@@ -79,7 +86,10 @@ class SakApiTest {
                 digiSosConsumer = digisosConsumer
             ),
             httpClient = appClient,
-            sakerUrl = "http://mine.saker.dev"
+            sakerUrl = "http://mine.saker.dev",
+            fullmaktService = fullmaktService,
+            fullmaktJwtService = fullmaktJwtService,
+            fullmaktInterception = fullmaktInterception
         )
 
         setupExternalServices(
@@ -130,6 +140,9 @@ private fun JsonNode?.asLocalDateTime(): LocalDateTime? = this?.let {
 
 private fun ApplicationTestBuilder.mockApi(
     sakService: SakService,
+    fullmaktService: FullmaktService,
+    fullmaktJwtService: FullmaktJwtService,
+    fullmaktInterception: FullmaktInterception,
     httpClient: HttpClient,
     corsAllowedOrigins: String = "*",
     corsAllowedSchemes: String = "*",
@@ -144,13 +157,18 @@ private fun ApplicationTestBuilder.mockApi(
     },
     sakerUrl: String = "http://minesaker.dev"
 ) = application {
+
+
     mineSakerApi(
         sakService = sakService,
         httpClient = httpClient,
         corsAllowedOrigins = corsAllowedOrigins,
         corsAllowedSchemes = corsAllowedSchemes,
         authConfig = authConfig,
-        sakerUrl = sakerUrl
+        sakerUrl = sakerUrl,
+        fullmaktService = fullmaktService,
+        fullmaktJwtService = fullmaktJwtService,
+        fullmaktInterception = fullmaktInterception
     )
 }
 

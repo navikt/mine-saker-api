@@ -16,7 +16,7 @@ import java.security.interfaces.RSAPublicKey
 import java.time.Instant
 import java.util.*
 
-class FullmektigJwtService(
+class FullmaktJwtService(
     private val issuer: String,
     jwkString: String
 ) {
