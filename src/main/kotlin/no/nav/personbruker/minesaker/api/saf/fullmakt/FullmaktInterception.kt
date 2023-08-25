@@ -8,7 +8,6 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.util.*
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktJwtService.Companion.fullmektigNavn
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktJwtService.Companion.representertIdent
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktJwtService.Companion.representertNavn
 
@@ -33,7 +32,6 @@ class FullmaktInterception(private val fullmaktJwtService: FullmaktJwtService) {
 
                     val fullmakt = Fullmakt(
                         fullmektigIdent = ident,
-                        fullmektigNavn = jwt.fullmektigNavn,
                         representertIdent = jwt.representertIdent,
                         representertNavn = jwt.representertNavn,
                     )
@@ -61,7 +59,6 @@ private fun ApplicationRequest.authHeader(): JWT? {
 
 data class Fullmakt(
     val fullmektigIdent: String,
-    val fullmektigNavn: String,
     val representertIdent: String,
     val representertNavn: String
 ): Principal

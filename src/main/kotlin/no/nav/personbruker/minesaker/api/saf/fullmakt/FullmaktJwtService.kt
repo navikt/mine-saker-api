@@ -22,12 +22,9 @@ class FullmaktJwtService(
 ) {
     companion object {
         const val FullmektigIdentClaim = "flm_id"
-        const val FullmektigNavnClaim = "flm_nm"
         const val RepresentertIdentClaim = "rep_id"
         const val RepresentertNavnClaim = "rep_nm"
 
-        val DecodedJWT.fullmektigIdent get() = getClaim(FullmektigIdentClaim).asString()
-        val DecodedJWT.fullmektigNavn get() = getClaim(FullmektigNavnClaim).asString()
         val DecodedJWT.representertIdent get() = getClaim(RepresentertIdentClaim).asString()
         val DecodedJWT.representertNavn get() = getClaim(RepresentertNavnClaim).asString()
     }
