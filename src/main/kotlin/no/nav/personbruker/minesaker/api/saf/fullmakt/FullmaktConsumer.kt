@@ -20,13 +20,13 @@ class FullmaktConsumer(
 
     suspend fun getFullmaktForhold(user: IdportenUser): FullmaktForhold {
         return getFullmaktDetails(tokendingsExchange.pdlFullmaktToken(user))
-            .let(FullmaktForhold::fromFullmaktDetails)
+            .let { FullmaktForhold.fromFullmaktDetails(user.ident, it) }
     }
 
     private suspend fun getFullmaktDetails(accessToken: String): List<FullmaktDetails> =
         withContext(Dispatchers.IO) {
             httpClient.get {
-                url("$pdlFullmaktUrl/api/fullmektig")
+                url("$pdlFullmaktUrl/api/fullmektig/tema")
                 method = HttpMethod.Get
                 header(HttpHeaders.Authorization, "Bearer $accessToken")
                 accept(ContentType.Application.Json)

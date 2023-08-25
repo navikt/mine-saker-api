@@ -65,7 +65,7 @@ fun Application.mineSakerApi(
                     cause.sensitiveMessage?.let {
                         secureLog.error { it }
                     }
-                    secureLog.warn { cause.stackTrace }
+                    secureLog.warn { cause }
                     call.respond(HttpStatusCode.ServiceUnavailable)
                 }
 
@@ -76,7 +76,7 @@ fun Application.mineSakerApi(
                             cause.errors?.joinToString("\n") { it.message }
                         }"
                     }
-                    secureLog.warn { cause.stackTrace }
+                    secureLog.warn { cause }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
 

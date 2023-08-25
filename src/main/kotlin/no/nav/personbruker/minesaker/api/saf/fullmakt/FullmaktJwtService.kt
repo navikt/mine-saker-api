@@ -44,7 +44,6 @@ class FullmaktJwtService(
             .expirationTime(Date.from(Instant.now().plusSeconds(1800)))
             .jwtID(UUID.randomUUID().toString())
             .claim(FullmektigIdentClaim, validForhold.fullmektigIdent)
-            .claim(FullmektigNavnClaim, validForhold.fullmektigNavn)
             .claim(RepresentertIdentClaim, validForhold.representertIdent)
             .claim(RepresentertNavnClaim, validForhold.representertNavn)
             .build()

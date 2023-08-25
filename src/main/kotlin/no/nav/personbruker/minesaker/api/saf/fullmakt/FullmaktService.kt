@@ -15,7 +15,6 @@ class FullmaktService(private val fullmaktConsumer: FullmaktConsumer) {
 
         return ValidForhold(
             fullmektigIdent = alleForhold.ident,
-            fullmektigNavn = alleForhold.navn,
             representertIdent = foundForhold.ident,
             representertNavn = foundForhold.navn
         )
@@ -26,10 +25,11 @@ class FullmaktService(private val fullmaktConsumer: FullmaktConsumer) {
 
 data class ValidForhold(
     val fullmektigIdent: String,
-    val fullmektigNavn: String,
     val representertIdent: String,
-    val representertNavn: String
-)
+    val representertNavn: String,
+) {
+    val fullmektigNavn = "N/A"
+}
 
 class UgyldigFullmaktException(
     override val message: String,

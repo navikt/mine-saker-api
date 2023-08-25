@@ -29,8 +29,6 @@ class FullmaktInterception(private val fullmaktJwtService: FullmaktJwtService) {
                 try {
                     val ident = accessToken.userIdent
 
-                    log.info {"Token: $fullmektigToken" }
-
                     val jwt = fullmaktJwtService.verify(fullmektigToken, ident)
 
                     val fullmakt = Fullmakt(
