@@ -37,10 +37,6 @@ fun Route.fullmaktApi(fullmaktService: FullmaktService, redisService: FullmaktRe
             call.respond(HttpStatusCode.OK)
         }
     }
-
-    get("/fullmakt/token") {
-        call.respond(fullmaktService.token(idportenUser))
-    }
 }
 
 private val ApplicationCall.fullmaktAttribute get() =
