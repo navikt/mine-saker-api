@@ -12,8 +12,7 @@ class FullmaktRedisService(
 ) {
     private val oneHourInSeconds = 3600L
 
-    private val commands = RedisURI.create(host)
-        .let(RedisURI::builder)
+    private val commands = RedisURI.builder(RedisURI.create(host))
         .withAuthentication(username, password)
         .build()
         .let { RedisClient.create(it) }
