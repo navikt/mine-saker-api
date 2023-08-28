@@ -38,6 +38,26 @@ fun Route.sakApi(
         call.respond(HttpStatusCode.OK, result)
     }
 
+    get("/sakstema/${sakstemakode}/journalpost/{$journalpostIdParameterName}") {
+        val sakstemakode = call.sakstemakodeFromParameters()
+        val journalpostId = call.journalpostId()
+
+        val result = service.hentJournalposterForSakstema(idportenUser, null, sakstemakode)
+
+        val sakstema = result.find { it.kode == sakstemakode }
+
+        val journalpost = sakstema?.journalposter
+            ?.find { it.journalpostId == journalpostId }
+
+        if (journalpost != null) {
+            val response = sakstema.copy(journalposter = listOf(journalpost))
+
+            call.respond(response)
+        } else {
+            call.respond(HttpStatusCode.NotFound)
+        }
+    }
+
     get("/sakstemaer") {
         val representert = call.representert
         val result = service.hentSakstemaer(idportenUser, representert)

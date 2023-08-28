@@ -12,12 +12,13 @@ class FullmaktRedisService(
 ) {
     private val oneHourInSeconds = 3600L
 
-    private val commands = RedisURI.Builder.redis(host)
-            .withAuthentication(username, password)
-            .build()
-            .let { RedisClient.create(it) }
-            .connect()
-            .sync()
+    private val commands = RedisURI.create(host)
+        .let(RedisURI::builder)
+        .withAuthentication(username, password)
+        .build()
+        .let { RedisClient.create(it) }
+        .connect()
+        .sync()
 
     private val objectMapper = jacksonObjectMapper()
 
