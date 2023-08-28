@@ -49,6 +49,7 @@ dependencies {
     implementation(Prometheus.common)
     implementation(Prometheus.hotspot)
     implementation(Prometheus.logback)
+    implementation(Lettuce.core)
     implementation(TmsCommonLib.commonLib)
     implementation(TmsKtorTokenSupport.idportenSidecar)
     implementation(TmsKtorTokenSupport.tokendingsExchange)

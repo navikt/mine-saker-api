@@ -28,7 +28,7 @@ import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.config.TokendingsExchange
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktInterception
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktJwtService
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktRedisService
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktService
 import no.nav.personbruker.minesaker.api.sak.ForventetSakstemaInnhold.Companion.toDigisosResponse
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
@@ -76,7 +76,7 @@ class SakApiTest {
         )
 
         val fullmaktService = mockk<FullmaktService>()
-        val fullmaktJwtService = mockk<FullmaktJwtService>()
+        val fullmaktJwtService = mockk<FullmaktRedisService>()
         val fullmaktInterception = FullmaktInterception(fullmaktJwtService)
 
         mockApi(
@@ -88,7 +88,7 @@ class SakApiTest {
             httpClient = appClient,
             sakerUrl = "http://mine.saker.dev",
             fullmaktService = fullmaktService,
-            fullmaktJwtService = fullmaktJwtService,
+            fullmaktRedisService = fullmaktJwtService,
             fullmaktInterception = fullmaktInterception
         )
 
@@ -141,7 +141,7 @@ private fun JsonNode?.asLocalDateTime(): LocalDateTime? = this?.let {
 private fun ApplicationTestBuilder.mockApi(
     sakService: SakService,
     fullmaktService: FullmaktService,
-    fullmaktJwtService: FullmaktJwtService,
+    fullmaktRedisService: FullmaktRedisService,
     fullmaktInterception: FullmaktInterception,
     httpClient: HttpClient,
     corsAllowedOrigins: String = "*",
@@ -167,7 +167,7 @@ private fun ApplicationTestBuilder.mockApi(
         authConfig = authConfig,
         sakerUrl = sakerUrl,
         fullmaktService = fullmaktService,
-        fullmaktJwtService = fullmaktJwtService,
+        fullmaktRedisService = fullmaktRedisService,
         fullmaktInterception = fullmaktInterception
     )
 }

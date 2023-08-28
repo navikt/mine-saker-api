@@ -6,10 +6,11 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.request.receive
 import no.nav.personbruker.minesaker.api.config.idportenUser
+import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 
-fun Route.fullmaktApi(fullmaktService: FullmaktService, jwtService: FullmaktJwtService) {
+fun Route.fullmaktApi(fullmaktService: FullmaktService, redisService: FullmaktRedisService) {
     get("/fullmakt/info") {
-        val fullmaktSession = call.fullmaktAttribute
+        val fullmaktSession = call.fullmaktAttribute?.fullmakt
 
         if (fullmaktSession == null) {
             call.respond(FullmaktInfo(false))
@@ -26,41 +27,22 @@ fun Route.fullmaktApi(fullmaktService: FullmaktService, jwtService: FullmaktJwtS
         val representert = call.represertIdent()
 
         if (representert == idportenUser.ident) {
-            call.response.cookies.expireFullmakt()
+            redisService.clearForhold(idportenUser.subject)
             call.respond(HttpStatusCode.OK)
         } else {
             val validForhold = fullmaktService.validateFullmaktsForhold(idportenUser, representert)
 
-            val fullmektigToken = jwtService.generateJwtString(validForhold)
+            redisService.setForhold(idportenUser.subject, validForhold)
 
-            call.response.cookies.append(
-                FullmaktCookie,
-                fullmektigToken,
-                maxAge = 3600L,
-                httpOnly = true,
-                path = "/mine-saker-api"
-            )
             call.respond(HttpStatusCode.OK)
         }
-    }
-
-    get("/fullmakt/token") {
-        call.respond(fullmaktService.token(idportenUser))
     }
 }
 
 private val ApplicationCall.fullmaktAttribute get() =
     attributes.getOrNull(FullmaktInterception.FullmaktAttribute)
 
-fun ResponseCookies.expireFullmakt() = append(
-    FullmaktCookie,
-    "",
-    maxAge = 0L,
-    httpOnly = true,
-    path = "/mine-saker-api"
-)
-
-const val FullmaktCookie = "mine-saker-api.fullmakt"
+private val IdportenUser.subject get() = jwt.subject
 
 private suspend fun ApplicationCall.represertIdent() = receive<Representert>().ident
 

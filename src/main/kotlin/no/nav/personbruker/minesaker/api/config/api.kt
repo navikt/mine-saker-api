@@ -41,7 +41,7 @@ fun Application.mineSakerApi(
     corsAllowedSchemes: String,
     sakerUrl: String,
     fullmaktService: FullmaktService,
-    fullmaktJwtService: FullmaktJwtService,
+    fullmaktRedisService: FullmaktRedisService,
     fullmaktInterception: FullmaktInterception,
     authConfig: Application.() -> Unit
 ) {
@@ -98,7 +98,6 @@ fun Application.mineSakerApi(
                     log.warn { cause.message }
                     secureLog.warn { "Bruker ${cause.fullmektig} er ikke representant for ${cause.giver}" }
 
-                    call.response.cookies.expireFullmakt()
                     call.respond(HttpStatusCode.Forbidden)
                 }
 
@@ -131,6 +130,7 @@ fun Application.mineSakerApi(
 
         maskPathParams("/mine-saker-api/journalposter/{sakstemakode}")
         maskPathParams("/mine-saker-api/dokument/{journalpostId}/{dokumentId}")
+        maskPathParams("/mine-saker-api/sakstema/{sakstemakode}/journalpost/{journalpostId}")
     }
 
     routing {
@@ -138,7 +138,7 @@ fun Application.mineSakerApi(
 
         authenticate {
             sakApi(sakService, sakerUrl)
-            fullmaktApi(fullmaktService, fullmaktJwtService)
+            fullmaktApi(fullmaktService, fullmaktRedisService)
         }
     }
 
