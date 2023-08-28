@@ -14,17 +14,18 @@ object KtorClientLogging: KtorDefaults.ClientDefaults {
     val logging = dependency("ktor-client-logging")
 }
 
-object Caffeine: default.DependencyGroup {
-    override val version = "3.0.0"
-    override val groupId = "com.github.ben-manes.caffeine"
+object Lettuce: DependencyGroup {
+    override val groupId get() = "io.lettuce"
+    override val version get() = "6.2.6.RELEASE"
 
-    val caffeine = dependency("caffeine")
+    val core = dependency("lettuce-core")
 }
 
-object Nimbusds: default.DependencyGroup {
+object Nimbusds: DependencyGroup {
     override val version = "9.19"
     override val groupId = "com.nimbusds"
 
     val joseJwt = dependency("nimbus-jose-jwt")
     val oauth2OidcSdk =  dependency("oauth2-oidc-sdk")
 }
+

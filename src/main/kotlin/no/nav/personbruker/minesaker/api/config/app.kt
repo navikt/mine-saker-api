@@ -6,8 +6,8 @@ import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktConsumer
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktInterception
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktRedisService
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktService
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktJwtService
 import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.tms.token.support.tokendings.exchange.TokendingsServiceBuilder
 
@@ -27,8 +27,8 @@ fun main() {
 
     val fullmaktConsumer = FullmaktConsumer(httpClient, tokendingsExchange, environment.pdlFullmaktUrl)
     val fullmaktService = FullmaktService(fullmaktConsumer)
-    val fullmektigJwtService = FullmaktJwtService(environment.fullmaktJwtIssuer, environment.fullmaktPrivateJwk)
-    val fullmaktInterception = FullmaktInterception(fullmektigJwtService)
+    val fullmaktRedisService = FullmaktRedisService()
+    val fullmaktInterception = FullmaktInterception(fullmaktRedisService)
 
     val safConsumer = SafConsumer(httpClient, environment.safEndpoint, innsynsUrlResolver)
     val digiSosConsumer = DigiSosConsumer(httpClient, environment.digiSosEndpoint, innsynsUrlResolver)
@@ -49,7 +49,7 @@ fun main() {
                     authConfig = authConfig(),
                     fullmaktService = fullmaktService,
                     fullmaktInterception = fullmaktInterception,
-                    fullmaktJwtService = fullmektigJwtService
+                    fullmaktRedisService = fullmaktRedisService
                 )
             }
             connector {

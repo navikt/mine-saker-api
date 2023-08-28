@@ -16,6 +16,9 @@ spec:
   readiness:
     path: /mine-saker-api/internal/isReady
     initialDelay: 15
+  redis:
+    - instance: fullmakt
+      access: readwrite
   prometheus:
     enabled: true
     path: /mine-saker-api/metrics

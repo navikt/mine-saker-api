@@ -20,8 +20,8 @@ import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.config.TokendingsExchange
 import no.nav.personbruker.minesaker.api.saf.DokumentResponse
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktInterception
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktRedisService
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktService
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktJwtService
 import no.nav.personbruker.minesaker.api.sak.Kildetype
 import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.personbruker.minesaker.api.sak.SakstemaResult
@@ -43,8 +43,8 @@ internal class ExceptionApiTest {
             })
 
             val fullmaktService = mockk<FullmaktService>()
-            val fullmaktJwtService = mockk<FullmaktJwtService>()
-            val fullmaktInterception = FullmaktInterception(fullmaktJwtService)
+            val fullmaktRedisService = mockk<FullmaktRedisService>()
+            val fullmaktInterception = FullmaktInterception(fullmaktRedisService)
 
             mineSakerApi(
                 sakService = sakserviceMock,
@@ -54,7 +54,7 @@ internal class ExceptionApiTest {
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev",
                 fullmaktService = fullmaktService,
-                fullmaktJwtService = fullmaktJwtService,
+                fullmaktRedisService = fullmaktRedisService,
                 fullmaktInterception = fullmaktInterception
             )
         }
@@ -83,8 +83,8 @@ internal class ExceptionApiTest {
             })
 
             val fullmaktService = mockk<FullmaktService>()
-            val fullmaktJwtService = mockk<FullmaktJwtService>()
-            val fullmaktInterception = FullmaktInterception(fullmaktJwtService)
+            val fullmaktRedisService = mockk<FullmaktRedisService>()
+            val fullmaktInterception = FullmaktInterception(fullmaktRedisService)
 
             mineSakerApi(
                 sakService = sakserviceMock,
@@ -94,7 +94,7 @@ internal class ExceptionApiTest {
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev",
                 fullmaktService = fullmaktService,
-                fullmaktJwtService = fullmaktJwtService,
+                fullmaktRedisService = fullmaktRedisService,
                 fullmaktInterception = fullmaktInterception
             )
         }
@@ -116,8 +116,8 @@ internal class ExceptionApiTest {
         }
 
         val fullmaktService = mockk<FullmaktService>()
-        val fullmaktJwtService = mockk<FullmaktJwtService>()
-        val fullmaktInterception = FullmaktInterception(fullmaktJwtService)
+        val fullmaktRedisService = mockk<FullmaktRedisService>()
+        val fullmaktInterception = FullmaktInterception(fullmaktRedisService)
 
         val digiSosConsumerMockk = mockk<DigiSosConsumer>().also {
             coEvery { it.hentSakstemaer(any()) } returns SakstemaResult(
@@ -141,7 +141,7 @@ internal class ExceptionApiTest {
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev",
                 fullmaktService = fullmaktService,
-                fullmaktJwtService = fullmaktJwtService,
+                fullmaktRedisService = fullmaktRedisService,
                 fullmaktInterception = fullmaktInterception
             )
         }
@@ -166,8 +166,8 @@ internal class ExceptionApiTest {
         }
 
         val fullmaktService = mockk<FullmaktService>()
-        val fullmaktJwtService = mockk<FullmaktJwtService>()
-        val fullmaktInterception = FullmaktInterception(fullmaktJwtService)
+        val fullmaktRedisService = mockk<FullmaktRedisService>()
+        val fullmaktInterception = FullmaktInterception(fullmaktRedisService)
 
         application {
             val sakserviceMock = createSakService(safConsumer = safconsumerMockk)
@@ -180,7 +180,7 @@ internal class ExceptionApiTest {
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev",
                 fullmaktService = fullmaktService,
-                fullmaktJwtService = fullmaktJwtService,
+                fullmaktRedisService = fullmaktRedisService,
                 fullmaktInterception = fullmaktInterception
             )
         }

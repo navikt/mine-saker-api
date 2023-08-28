@@ -8,12 +8,10 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.util.*
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktJwtService.Companion.representertIdent
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktJwtService.Companion.representertNavn
 
-class FullmaktInterception(private val fullmaktJwtService: FullmaktJwtService) {
+class FullmaktInterception(private val redisService: FullmaktRedisService) {
     companion object {
-        val FullmaktAttribute = AttributeKey<Fullmakt>("fullmakt_attribute")
+        val FullmaktAttribute = AttributeKey<FullmaktWrapper>("fullmakt_attribute")
     }
 
     private val log = KotlinLogging.logger {}
@@ -22,31 +20,29 @@ class FullmaktInterception(private val fullmaktJwtService: FullmaktJwtService) {
         requireNotNull(application.pluginOrNull(Authentication)) { "Fullmaktinterceptor must be installed after Authentication" }
 
         onCall { call ->
-            val fullmektigToken = call.request.cookies[FullmaktCookie]
+
             val accessToken = call.request.authHeader()
-            if (fullmektigToken != null && accessToken != null) {
+
+            if (accessToken != null) {
+
+                val subject = accessToken.subjectClaim
+
                 try {
-                    val ident = accessToken.userIdent
+                    val wrapper = FullmaktWrapper {
+                        redisService.getForhold(subject)
+                    }
 
-                    val jwt = fullmaktJwtService.verify(fullmektigToken, ident)
-
-                    val fullmakt = Fullmakt(
-                        fullmektigIdent = ident,
-                        representertIdent = jwt.representertIdent,
-                        representertNavn = jwt.representertNavn,
-                    )
-
-                    call.attributes.put(FullmaktAttribute, fullmakt)
+                    call.attributes.put(FullmaktAttribute, wrapper)
                 } catch (e: Exception) {
                     log.warn(e) { "Fullmektig-feil" }
-                    call.response.cookies.expireFullmakt()
+                    redisService.clearForhold(subject)
                 }
             }
         }
     }
 }
 
-private val JWT.userIdent get() = jwtClaimsSet.getClaim("pid")!! as String
+private val JWT.subjectClaim get() = jwtClaimsSet.subject
 
 private val authRegex = "Bearer (.+)".toRegex()
 
@@ -55,6 +51,22 @@ private fun ApplicationRequest.authHeader(): JWT? {
         ?.let{ authRegex.matchEntire(it)?.destructured }
         ?.let { (token) -> token }
         ?.let { SignedJWT.parse(it) }
+}
+
+class FullmaktWrapper (
+    private val fullmaktProvider: () -> ValidForhold?
+) {
+    val fullmakt: Fullmakt? by lazy {
+        fullmaktProvider.invoke()
+            ?.let {
+                Fullmakt(
+                    fullmektigIdent = it.fullmektigIdent,
+                    representertIdent = it.representertIdent,
+                    representertNavn = it.representertNavn
+                )
+            }
+    }
+
 }
 
 data class Fullmakt(
