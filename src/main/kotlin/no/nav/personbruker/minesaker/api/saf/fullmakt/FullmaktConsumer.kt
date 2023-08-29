@@ -16,11 +16,12 @@ class FullmaktConsumer(
     private val tokendingsExchange: TokendingsExchange,
     private val pdlFullmaktUrl: String
 ) {
-    private val log = KotlinLogging.logger {}
-
-    suspend fun getFullmaktForhold(user: IdportenUser): FullmaktForhold {
+    suspend fun getFullmaktsGivere(user: IdportenUser): List<FullmaktsGiver> {
         return getFullmaktDetails(tokendingsExchange.pdlFullmaktToken(user))
-            .let { FullmaktForhold.fromFullmaktDetails(user.ident, it) }
+            .map { FullmaktsGiver(
+                ident = it.fullmaktsgiver,
+                navn = it.fullmaktsgiverNavn
+            ) }
     }
 
     private suspend fun getFullmaktDetails(accessToken: String): List<FullmaktDetails> =

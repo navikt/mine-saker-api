@@ -22,6 +22,8 @@ data class Environment(
     val pdlFullmaktUrl: String = getEnvVar("PDL_FULLMAKT_URL"),
     val pdlFullmaktClientId: String = getEnvVar("PDL_FULLMAKT_CLIENT_ID"),
     val fullmaktJwtIssuer: String = getEnvVar("FULLMAKT_JWT_ISSUER"),
-    val fullmaktPrivateJwk: String = getEnvVar("PRIVATE_JWK")
+    val fullmaktPrivateJwk: String = getEnvVar("PRIVATE_JWK"),
+    val pdlApiUrl: String = getEnvVar("PDL_API_URL"),
+    val pdlApiClientId: String = getEnvVar("PDL_API_CLIENT_ID"),
 )
 

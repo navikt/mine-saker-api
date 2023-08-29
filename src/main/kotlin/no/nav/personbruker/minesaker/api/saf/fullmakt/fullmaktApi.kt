@@ -15,7 +15,13 @@ fun Route.fullmaktApi(fullmaktService: FullmaktService, redisService: FullmaktRe
         if (fullmaktSession == null) {
             call.respond(FullmaktInfo(false))
         } else {
-            call.respond(FullmaktInfo(true, fullmaktSession.representertNavn))
+            call.respond(
+                FullmaktInfo(
+                    viserRepresentertesData = true,
+                    representertNavn = fullmaktSession.representertNavn,
+                    representertIdent = fullmaktSession.representertIdent
+                )
+            )
         }
     }
 
@@ -52,5 +58,6 @@ private data class Representert(
 
 private data class FullmaktInfo(
     val viserRepresentertesData: Boolean,
-    val representertNavn: String? = null
+    val representertNavn: String? = null,
+    val representertIdent: String? = null,
 )

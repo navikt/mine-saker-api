@@ -2,19 +2,30 @@ package no.nav.personbruker.minesaker.api.saf.fullmakt
 
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 
-class FullmaktService(private val fullmaktConsumer: FullmaktConsumer) {
+class FullmaktService(
+    private val fullmaktConsumer: FullmaktConsumer,
+    private val navnConsumer: NavnConsumer
+) {
     suspend fun getFullmaktForhold(user: IdportenUser): FullmaktForhold {
-        return fullmaktConsumer.getFullmaktForhold(user)
+        val fullmaktsGivere = fullmaktConsumer.getFullmaktsGivere(user)
+
+        val navn = navnConsumer.fetchNavn(user)
+
+        return FullmaktForhold(
+            navn = navn,
+            ident = user.ident,
+            fullmaktsGivere = fullmaktsGivere
+        )
     }
 
     suspend fun validateFullmaktsForhold(user: IdportenUser, giverIdent: String): ValidForhold {
-        val alleForhold = fullmaktConsumer.getFullmaktForhold(user)
+        val fullmaktsGivere = fullmaktConsumer.getFullmaktsGivere(user)
 
-        val foundForhold = alleForhold.fullmaktsGivere.find { it.ident == giverIdent }
+        val foundForhold = fullmaktsGivere.find { it.ident == giverIdent }
             ?: throw UgyldigFullmaktException("Manglende forhold", giver = giverIdent, fullmektig = user.ident)
 
         return ValidForhold(
-            fullmektigIdent = alleForhold.ident,
+            fullmektigIdent = user.ident,
             representertIdent = foundForhold.ident,
             representertNavn = foundForhold.navn
         )
@@ -27,9 +38,7 @@ data class ValidForhold(
     val fullmektigIdent: String,
     val representertIdent: String,
     val representertNavn: String,
-) {
-    val fullmektigNavn = "N/A"
-}
+)
 
 class UgyldigFullmaktException(
     override val message: String,

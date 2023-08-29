@@ -6,23 +6,10 @@ data class FullmaktDetails(
 )
 
 data class FullmaktForhold(
+    val navn: String,
     val ident: String,
     val fullmaktsGivere: List<FullmaktsGiver>
-) {
-    companion object {
-        fun fromFullmaktDetails(ident: String, details: List<FullmaktDetails>) = FullmaktForhold(
-            ident = ident,
-            fullmaktsGivere = details
-                .distinctBy { it.fullmaktsgiver }
-                .map {
-                    FullmaktsGiver(
-                        ident = it.fullmaktsgiver,
-                        navn = it.fullmaktsgiverNavn
-                    )
-            }
-        )
-    }
-}
+)
 
 data class FullmaktsGiver(
     val ident: String,
