@@ -6,8 +6,6 @@ metadata:
   labels:
     team: min-side
 spec:
-  envFrom:
-    - secret: mine-saker-api-jwk
   image: {{version}}
   port: 8080
   liveness:
