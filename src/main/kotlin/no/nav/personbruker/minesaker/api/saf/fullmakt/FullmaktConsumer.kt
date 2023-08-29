@@ -1,6 +1,5 @@
 package no.nav.personbruker.minesaker.api.saf.fullmakt
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -16,14 +15,17 @@ class FullmaktConsumer(
     private val tokendingsExchange: TokendingsExchange,
     private val pdlFullmaktUrl: String
 ) {
-    private val log = KotlinLogging.logger {}
-
-    suspend fun getFullmaktForhold(user: IdportenUser): FullmaktForhold {
-        return getFullmaktDetails(tokendingsExchange.pdlFullmaktToken(user))
-            .let { FullmaktForhold.fromFullmaktDetails(user.ident, it) }
+    suspend fun getFullmaktsGivere(user: IdportenUser): List<FullmaktGiver> {
+        return getFullmaktList(tokendingsExchange.pdlFullmaktToken(user))
+            .map {
+                FullmaktGiver(
+                    ident = it.fullmaktsgiver,
+                    navn = it.fullmaktsgiverNavn
+                )
+            }
     }
 
-    private suspend fun getFullmaktDetails(accessToken: String): List<FullmaktDetails> =
+    private suspend fun getFullmaktList(accessToken: String): FullmaktResponse =
         withContext(Dispatchers.IO) {
             httpClient.get {
                 url("$pdlFullmaktUrl/api/fullmektig/tema")
@@ -40,3 +42,10 @@ class FullmaktConsumer(
 
     suspend fun token(user: IdportenUser): String = tokendingsExchange.pdlFullmaktToken(user)
 }
+
+typealias FullmaktResponse = List<FullmaktResponseEntry>
+
+data class FullmaktResponseEntry(
+    val fullmaktsgiver: String,
+    val fullmaktsgiverNavn: String
+)

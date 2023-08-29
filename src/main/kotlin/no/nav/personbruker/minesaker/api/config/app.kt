@@ -1,19 +1,20 @@
 package no.nav.personbruker.minesaker.api.config
 
+import com.expediagroup.graphql.client.ktor.GraphQLKtorClient
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktConsumer
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktInterception
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktRedisService
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktService
+import no.nav.personbruker.minesaker.api.saf.fullmakt.*
 import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.tms.token.support.tokendings.exchange.TokendingsServiceBuilder
+import java.net.URL
 
 fun main() {
     val environment = Environment()
     val httpClient = HttpClientBuilder.build()
+    val pdlApiClient = GraphQLKtorClient(url = URL(environment.pdlApiUrl), httpClient = httpClient)
+
     val innsynsUrlResolver = InnsynsUrlResolver(environment.innsynsLenker, environment.defaultInnsynLenke)
 
     val tokendingsService = TokendingsServiceBuilder.buildTokendingsService(maxCachedEntries = 10000)
@@ -22,11 +23,13 @@ fun main() {
         tokendingsService = tokendingsService,
         safselvbetjeningClientId = environment.safClientId,
         digiSosClientId = environment.digiSosClientId,
-        pdlFullmaktClientId = environment.pdlFullmaktClientId
+        pdlFullmaktClientId = environment.pdlFullmaktClientId,
+        pdlApiClientId = environment.pdlApiClientId
     )
 
+    val navnService = NavnService(pdlApiClient, environment.pdlApiUrl, tokendingsExchange)
     val fullmaktConsumer = FullmaktConsumer(httpClient, tokendingsExchange, environment.pdlFullmaktUrl)
-    val fullmaktService = FullmaktService(fullmaktConsumer)
+    val fullmaktService = FullmaktService(fullmaktConsumer, navnService)
     val fullmaktRedisService = FullmaktRedisService()
     val fullmaktInterception = FullmaktInterception(fullmaktRedisService)
 

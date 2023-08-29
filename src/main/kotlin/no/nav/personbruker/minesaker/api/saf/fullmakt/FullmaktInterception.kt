@@ -11,7 +11,7 @@ import io.ktor.util.*
 
 class FullmaktInterception(private val redisService: FullmaktRedisService) {
     companion object {
-        val FullmaktAttribute = AttributeKey<FullmaktWrapper>("fullmakt_attribute")
+        val FullmaktAttribute = AttributeKey<FullmaktSessionWrapper>("fullmakt_attribute")
     }
 
     private val log = KotlinLogging.logger {}
@@ -28,14 +28,14 @@ class FullmaktInterception(private val redisService: FullmaktRedisService) {
                 val subject = accessToken.subjectClaim
 
                 try {
-                    val wrapper = FullmaktWrapper {
-                        redisService.getForhold(subject)
+                    val wrapper = FullmaktSessionWrapper {
+                        redisService.getCurrentFullmaktGiver(subject)
                     }
 
                     call.attributes.put(FullmaktAttribute, wrapper)
                 } catch (e: Exception) {
                     log.warn(e) { "Fullmektig-feil" }
-                    redisService.clearForhold(subject)
+                    redisService.clearFullmaktGiver(subject)
                 }
             }
         }
@@ -53,24 +53,11 @@ private fun ApplicationRequest.authHeader(): JWT? {
         ?.let { SignedJWT.parse(it) }
 }
 
-class FullmaktWrapper (
-    private val fullmaktProvider: () -> ValidForhold?
+class FullmaktSessionWrapper (
+    private val fullmaktProvider: () -> FullmaktGiver?
 ) {
-    val fullmakt: Fullmakt? by lazy {
+    val fullmaktGiver: FullmaktGiver? by lazy {
         fullmaktProvider.invoke()
-            ?.let {
-                Fullmakt(
-                    fullmektigIdent = it.fullmektigIdent,
-                    representertIdent = it.representertIdent,
-                    representertNavn = it.representertNavn
-                )
-            }
     }
 
 }
-
-data class Fullmakt(
-    val fullmektigIdent: String,
-    val representertIdent: String,
-    val representertNavn: String
-): Principal

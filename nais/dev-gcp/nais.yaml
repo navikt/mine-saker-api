@@ -6,8 +6,6 @@ metadata:
   labels:
     team: min-side
 spec:
-  envFrom:
-    - secret: mine-saker-api-jwk
   image: {{version}}
   port: 8080
   liveness:
@@ -46,12 +44,11 @@ spec:
         - host: "sosialhjelp-soknad-api-intern.dev.nav.no"
         - host: "sosialhjelp-soknad-api.dev-fss-pub.nais.io"
         - host: "pdl-fullmakt.dev-fss-pub.nais.io"
+        - host: "pdl-api.dev-fss-pub.nais.io"
       rules:
         - application: "safselvbetjening-q1"
           namespace: "teamdokumenthandtering"
           cluster: "dev-fss"
-        - application: "pdl-fullmakt-api"
-          namespace: "repr"
   ingresses:
     - "https://person.dev.nav.no/mine-saker-api"
     - "https://www.intern.dev.nav.no/mine-saker-api"
@@ -91,5 +88,7 @@ spec:
       value: "https://pdl-fullmakt.dev-fss-pub.nais.io"
     - name: PDL_FULLMAKT_CLIENT_ID
       value: "dev-fss:pdl:pdl-fullmakt"
-    - name: FULLMAKT_JWT_ISSUER
-      value: "mine-saker-api-dev"
+    - name: PDL_API_URL
+      value: "https://pdl-api.dev-fss-pub.nais.io/graphql"
+    - name: PDL_API_CLIENT_ID
+      value: "dev-fss:pdl:pdl-api"

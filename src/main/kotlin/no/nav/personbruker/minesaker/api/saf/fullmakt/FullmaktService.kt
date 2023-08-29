@@ -2,34 +2,42 @@ package no.nav.personbruker.minesaker.api.saf.fullmakt
 
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 
-class FullmaktService(private val fullmaktConsumer: FullmaktConsumer) {
+class FullmaktService(
+    private val fullmaktConsumer: FullmaktConsumer,
+    private val navnService: NavnService
+) {
     suspend fun getFullmaktForhold(user: IdportenUser): FullmaktForhold {
-        return fullmaktConsumer.getFullmaktForhold(user)
+        val fullmaktsGivere = fullmaktConsumer.getFullmaktsGivere(user)
+
+        val navn = navnService.getNavn(user)
+
+        return FullmaktForhold(
+            navn = navn,
+            ident = user.ident,
+            fullmaktsGivere = fullmaktsGivere
+        )
     }
 
-    suspend fun validateFullmaktsForhold(user: IdportenUser, giverIdent: String): ValidForhold {
-        val alleForhold = fullmaktConsumer.getFullmaktForhold(user)
+    suspend fun validateFullmaktsGiver(user: IdportenUser, giverIdent: String): FullmaktGiver {
+        val fullmaktsGivere = fullmaktConsumer.getFullmaktsGivere(user)
 
-        val foundForhold = alleForhold.fullmaktsGivere.find { it.ident == giverIdent }
+        return fullmaktsGivere.find { it.ident == giverIdent }
             ?: throw UgyldigFullmaktException("Manglende forhold", giver = giverIdent, fullmektig = user.ident)
-
-        return ValidForhold(
-            fullmektigIdent = alleForhold.ident,
-            representertIdent = foundForhold.ident,
-            representertNavn = foundForhold.navn
-        )
     }
 
     suspend fun token(user: IdportenUser) = fullmaktConsumer.token(user)
 }
 
-data class ValidForhold(
-    val fullmektigIdent: String,
-    val representertIdent: String,
-    val representertNavn: String,
-) {
-    val fullmektigNavn = "N/A"
-}
+data class FullmaktForhold(
+    val navn: String,
+    val ident: String,
+    val fullmaktsGivere: List<FullmaktGiver>
+)
+
+data class FullmaktGiver(
+    val ident: String,
+    val navn: String
+)
 
 class UgyldigFullmaktException(
     override val message: String,
