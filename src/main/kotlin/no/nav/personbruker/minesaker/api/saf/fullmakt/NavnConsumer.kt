@@ -7,20 +7,19 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import no.nav.pdl.generated.dto.HentNavn
 import no.nav.pdl.generated.dto.hentnavn.Navn
+import no.nav.personbruker.minesaker.api.config.TokendingsExchange
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
-import no.nav.tms.token.support.tokendings.exchange.TokendingsService
 
 class NavnConsumer(
     private val client: GraphQLKtorClient,
     private val pdlUrl: String,
-    private val tokendingsService: TokendingsService,
-    private val pdlClientId: String
+    private val tokendingsExchange: TokendingsExchange
 ) {
 
     private val log = KotlinLogging.logger {}
 
     suspend fun fetchNavn(user: IdportenUser): String {
-        val token = tokendingsService.exchangeToken(user.tokenString, pdlClientId)
+        val token = tokendingsExchange.pdlApiToken(user)
         val response: GraphQLClientResponse<HentNavn.Result> = sendQuery(user.ident, token)
         checkForErrors(response)
         return getNavnFromGraphQl(response).concatenateFull()

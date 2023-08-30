@@ -23,10 +23,11 @@ fun main() {
         tokendingsService = tokendingsService,
         safselvbetjeningClientId = environment.safClientId,
         digiSosClientId = environment.digiSosClientId,
-        pdlFullmaktClientId = environment.pdlFullmaktClientId
+        pdlFullmaktClientId = environment.pdlFullmaktClientId,
+        pdlApiClientId = environment.pdlApiClientId
     )
 
-    val navnConsumer = NavnConsumer(pdlApiClient, environment.pdlApiUrl, tokendingsService, environment.pdlApiClientId)
+    val navnConsumer = NavnConsumer(pdlApiClient, environment.pdlApiUrl, tokendingsExchange)
     val fullmaktConsumer = FullmaktConsumer(httpClient, tokendingsExchange, environment.pdlFullmaktUrl)
     val fullmaktService = FullmaktService(fullmaktConsumer, navnConsumer)
     val fullmaktRedisService = FullmaktRedisService()
