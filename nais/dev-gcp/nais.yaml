@@ -89,6 +89,6 @@ spec:
     - name: PDL_FULLMAKT_CLIENT_ID
       value: "dev-fss:pdl:pdl-fullmakt"
     - name: PDL_API_URL
-      value: "https://pdl-api.dev-fss-pub.nais.io"
+      value: "https://pdl-api.dev-fss-pub.nais.io/graphql"
     - name: PDL_API_CLIENT_ID
       value: "dev-fss:pdl:pdl-api"
