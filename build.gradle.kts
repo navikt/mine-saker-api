@@ -29,6 +29,7 @@ repositories {
 }
 
 dependencies {
+    implementation(Caffeine.caffeine)
     implementation(DittNAVCommonLib.utils)
     implementation(GraphQL.kotlinClient)
     implementation(GraphQL.kotlinKtorClient)

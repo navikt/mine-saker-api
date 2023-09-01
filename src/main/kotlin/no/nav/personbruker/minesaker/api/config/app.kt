@@ -27,9 +27,9 @@ fun main() {
         pdlApiClientId = environment.pdlApiClientId
     )
 
-    val navnConsumer = NavnConsumer(pdlApiClient, environment.pdlApiUrl, tokendingsExchange)
+    val navnService = NavnService(pdlApiClient, environment.pdlApiUrl, tokendingsExchange)
     val fullmaktConsumer = FullmaktConsumer(httpClient, tokendingsExchange, environment.pdlFullmaktUrl)
-    val fullmaktService = FullmaktService(fullmaktConsumer, navnConsumer)
+    val fullmaktService = FullmaktService(fullmaktConsumer, navnService)
     val fullmaktRedisService = FullmaktRedisService()
     val fullmaktInterception = FullmaktInterception(fullmaktRedisService)
 

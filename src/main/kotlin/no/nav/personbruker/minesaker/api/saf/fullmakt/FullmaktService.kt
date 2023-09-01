@@ -4,12 +4,12 @@ import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 
 class FullmaktService(
     private val fullmaktConsumer: FullmaktConsumer,
-    private val navnConsumer: NavnConsumer
+    private val navnService: NavnService
 ) {
     suspend fun getFullmaktForhold(user: IdportenUser): FullmaktForhold {
         val fullmaktsGivere = fullmaktConsumer.getFullmaktsGivere(user)
 
-        val navn = navnConsumer.fetchNavn(user)
+        val navn = navnService.getNavn(user)
 
         return FullmaktForhold(
             navn = navn,
@@ -18,26 +18,25 @@ class FullmaktService(
         )
     }
 
-    suspend fun validateFullmaktsForhold(user: IdportenUser, giverIdent: String): ValidForhold {
+    suspend fun validateFullmaktsGiver(user: IdportenUser, giverIdent: String): FullmaktGiver {
         val fullmaktsGivere = fullmaktConsumer.getFullmaktsGivere(user)
 
-        val foundForhold = fullmaktsGivere.find { it.ident == giverIdent }
+        return fullmaktsGivere.find { it.ident == giverIdent }
             ?: throw UgyldigFullmaktException("Manglende forhold", giver = giverIdent, fullmektig = user.ident)
-
-        return ValidForhold(
-            fullmektigIdent = user.ident,
-            representertIdent = foundForhold.ident,
-            representertNavn = foundForhold.navn
-        )
     }
 
     suspend fun token(user: IdportenUser) = fullmaktConsumer.token(user)
 }
 
-data class ValidForhold(
-    val fullmektigIdent: String,
-    val representertIdent: String,
-    val representertNavn: String,
+data class FullmaktForhold(
+    val navn: String,
+    val ident: String,
+    val fullmaktsGivere: List<FullmaktGiver>
+)
+
+data class FullmaktGiver(
+    val ident: String,
+    val navn: String
 )
 
 class UgyldigFullmaktException(

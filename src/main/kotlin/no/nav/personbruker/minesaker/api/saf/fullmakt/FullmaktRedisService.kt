@@ -21,20 +21,20 @@ class FullmaktRedisService(
 
     private val objectMapper = jacksonObjectMapper()
 
-    fun setForhold(subject: String, validForhold: ValidForhold) {
-        commands.setex(subject, oneHourInSeconds, validForhold.toJson())
+    fun setFullmaktGiver(ident: String, fullmaktGiver: FullmaktGiver) {
+        commands.setex(ident, oneHourInSeconds, fullmaktGiver.toJson())
     }
 
-    fun getForhold(subject: String): ValidForhold? {
-        return commands.get(subject)
-            ?.validForholdFromJson()
+    fun getCurrentFullmaktGiver(ident: String): FullmaktGiver? {
+        return commands.get(ident)
+            ?.fullmaktGiverFromJson()
     }
 
-    fun clearForhold(subject: String) {
-        commands.del(subject)
+    fun clearFullmaktGiver(ident: String) {
+        commands.del(ident)
     }
 
-    private fun ValidForhold.toJson() = objectMapper.writeValueAsString(this)
+    private fun FullmaktGiver.toJson() = objectMapper.writeValueAsString(this)
 
-    private fun String.validForholdFromJson(): ValidForhold = objectMapper.readValue(this, ValidForhold::class.java)
+    private fun String.fullmaktGiverFromJson() = objectMapper.readValue(this, FullmaktGiver::class.java)
 }

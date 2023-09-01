@@ -9,17 +9,18 @@ import no.nav.personbruker.minesaker.api.config.idportenUser
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 
 fun Route.fullmaktApi(fullmaktService: FullmaktService, redisService: FullmaktRedisService) {
-    get("/fullmakt/info") {
-        val fullmaktSession = call.fullmaktAttribute?.fullmakt
 
-        if (fullmaktSession == null) {
+    get("/fullmakt/info") {
+        val fullmaktGiver = call.fullmaktAttribute?.fullmaktGiver
+
+        if (fullmaktGiver == null) {
             call.respond(FullmaktInfo(false))
         } else {
             call.respond(
                 FullmaktInfo(
                     viserRepresentertesData = true,
-                    representertNavn = fullmaktSession.representertNavn,
-                    representertIdent = fullmaktSession.representertIdent
+                    representertNavn = fullmaktGiver.navn,
+                    representertIdent = fullmaktGiver.ident
                 )
             )
         }
@@ -33,12 +34,12 @@ fun Route.fullmaktApi(fullmaktService: FullmaktService, redisService: FullmaktRe
         val representert = call.represertIdent()
 
         if (representert == idportenUser.ident) {
-            redisService.clearForhold(idportenUser.subject)
+            redisService.clearFullmaktGiver(idportenUser.ident)
             call.respond(HttpStatusCode.OK)
         } else {
-            val validForhold = fullmaktService.validateFullmaktsForhold(idportenUser, representert)
+            val validForhold = fullmaktService.validateFullmaktsGiver(idportenUser, representert)
 
-            redisService.setForhold(idportenUser.subject, validForhold)
+            redisService.setFullmaktGiver(idportenUser.ident, validForhold)
 
             call.respond(HttpStatusCode.OK)
         }
@@ -47,8 +48,6 @@ fun Route.fullmaktApi(fullmaktService: FullmaktService, redisService: FullmaktRe
 
 private val ApplicationCall.fullmaktAttribute get() =
     attributes.getOrNull(FullmaktInterception.FullmaktAttribute)
-
-private val IdportenUser.subject get() = jwt.subject
 
 private suspend fun ApplicationCall.represertIdent() = receive<Representert>().ident
 
