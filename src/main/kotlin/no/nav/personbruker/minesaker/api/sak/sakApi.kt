@@ -46,6 +46,8 @@ fun Route.sakApi(
 
         val sakstema = result.find { it.kode == sakstemakode }
 
+        log.info { "DEBUG: $sakstema" }
+
         val journalpost = sakstema?.journalposter
             ?.find { it.journalpostId == journalpostId }
 
