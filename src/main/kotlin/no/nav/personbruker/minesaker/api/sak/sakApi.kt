@@ -38,7 +38,7 @@ fun Route.sakApi(
         call.respond(HttpStatusCode.OK, result)
     }
 
-    get("/sakstema/${sakstemakode}/journalpost/{$journalpostIdParameterName}") {
+    get("/sakstema/{$sakstemakode}/journalpost/{$journalpostIdParameterName}") {
         val sakstemakode = call.sakstemakodeFromParameters()
         val journalpostId = call.journalpostId()
 
