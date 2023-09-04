@@ -37,8 +37,6 @@ class SakService(
     }
 
     suspend fun hentJournalposterForSakstema(user: IdportenUser, representert: String?, sakstema: Sakstemakode): List<Sakstema> {
-        log.info { "Henter journalpost for bruker $user, representert $representert. Kode $sakstema" }
-
         return if (representert != null) {
             hentJournalposterForRepresentertForSakstema(user, representert, sakstema)
         } else {

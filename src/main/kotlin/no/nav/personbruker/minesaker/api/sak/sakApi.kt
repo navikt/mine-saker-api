@@ -42,15 +42,9 @@ fun Route.sakApi(
         val sakstemakode = call.sakstemakodeFromParameters()
         val journalpostId = call.journalpostId()
 
-        log.info { "Sakstema: $sakstemakode, journalpost: $journalpostId" }
-
         val result = service.hentJournalposterForSakstema(idportenUser, null, sakstemakode)
 
-        log.info { "Result: $result" }
-
         val sakstema = result.find { it.kode == sakstemakode }
-
-        log.info { "DEBUG: $sakstema" }
 
         val journalpost = sakstema?.journalposter
             ?.find { it.journalpostId == journalpostId }
