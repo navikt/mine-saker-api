@@ -46,6 +46,8 @@ fun Route.sakApi(
 
         val result = service.hentJournalposterForSakstema(idportenUser, null, sakstemakode)
 
+        log.info { "Result: $result" }
+
         val sakstema = result.find { it.kode == sakstemakode }
 
         log.info { "DEBUG: $sakstema" }
