@@ -63,7 +63,16 @@ fun Route.sakApi(
         val result = service.hentSakstemaer(idportenUser, representert)
         if (result.hasErrors()) {
             log.warn { "En eller flere kilder i kall til /sakstemnaer feilet: ${result.errors()}" }
-            secureLog.warn { "En eller flere kilder i kall til /sakstemner for ident ${idportenUser.ident} feilet: ${result.errors()}" }
+            secureLog.warn { "En eller flere kilder i kall til /sakstemaer for ident ${idportenUser.ident} feilet: ${result.errors()}" }
+        }
+        call.respond(result.determineHttpCode(), result.resultsSorted())
+    }
+
+    get("/sakstemaer/egne") {
+        val result = service.hentSakstemaer(idportenUser, null)
+        if (result.hasErrors()) {
+            log.warn { "En eller flere kilder i kall til /sakstemnaer feilet: ${result.errors()}" }
+            secureLog.warn { "En eller flere kilder i kall til /sakstemaer for ident ${idportenUser.ident} feilet: ${result.errors()}" }
         }
         call.respond(result.determineHttpCode(), result.resultsSorted())
     }
