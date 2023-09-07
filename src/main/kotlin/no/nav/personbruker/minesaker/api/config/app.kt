@@ -30,8 +30,7 @@ fun main() {
     val navnService = NavnService(pdlApiClient, environment.pdlApiUrl, tokendingsExchange)
     val fullmaktConsumer = FullmaktConsumer(httpClient, tokendingsExchange, environment.pdlFullmaktUrl)
     val fullmaktService = FullmaktService(fullmaktConsumer, navnService)
-    val fullmaktRedisService = FullmaktRedisService()
-    val fullmaktInterception = FullmaktInterception(fullmaktRedisService)
+    val fullmaktSessionStore = FullmaktRedisService()
 
     val safConsumer = SafConsumer(httpClient, environment.safEndpoint, innsynsUrlResolver)
     val digiSosConsumer = DigiSosConsumer(httpClient, environment.digiSosEndpoint, innsynsUrlResolver)
@@ -51,8 +50,7 @@ fun main() {
                     corsAllowedSchemes = environment.corsAllowedSchemes,
                     authConfig = authConfig(),
                     fullmaktService = fullmaktService,
-                    fullmaktInterception = fullmaktInterception,
-                    fullmaktRedisService = fullmaktRedisService
+                    fullmaktSessionStore = fullmaktSessionStore
                 )
             }
             connector {

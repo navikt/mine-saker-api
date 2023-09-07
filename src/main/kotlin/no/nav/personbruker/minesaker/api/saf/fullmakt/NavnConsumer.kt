@@ -16,6 +16,10 @@ import java.time.Duration
 class NavnService(
     private val navnConsumer: NavnConsumer
 ) {
+
+    private val log = KotlinLogging.logger { }
+    private val secureLog = KotlinLogging.logger("secureLogs")
+
     constructor(
         client: GraphQLKtorClient,
         pdlUrl: String,
@@ -27,8 +31,14 @@ class NavnService(
         .expireAfterWrite(Duration.ofMinutes(5))
         .build<String, String>()
 
-    fun getNavn(user: IdportenUser) = cache.get(user.ident) { _ ->
-        navnConsumer.fetchNavn(user)
+    fun getNavn(user: IdportenUser) = try {
+        cache.get(user.ident) { _ ->
+            navnConsumer.fetchNavn(user)
+        }
+    } catch (e: Exception) {
+        log.info { "Feil ved henting av navn" }
+        secureLog.info(e) { "Feil ved henting av navn for bruker ${user.ident}" }
+        user.ident
     }
 }
 

@@ -19,9 +19,9 @@ import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.config.TokendingsExchange
 import no.nav.personbruker.minesaker.api.saf.DokumentResponse
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktInterception
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktRedisService
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktService
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktSessionStore
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktTestSessionStore
 import no.nav.personbruker.minesaker.api.sak.Kildetype
 import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.personbruker.minesaker.api.sak.SakstemaResult
@@ -42,9 +42,7 @@ internal class ExceptionApiTest {
                 } throws CommunicationException("Fikk http-status [500] fra SAF.")
             })
 
-            val fullmaktService = mockk<FullmaktService>()
-            val fullmaktRedisService = mockk<FullmaktRedisService>()
-            val fullmaktInterception = FullmaktInterception(fullmaktRedisService)
+            val (fullmaktService, fullmaktRedisService) = mockFullmakt()
 
             mineSakerApi(
                 sakService = sakserviceMock,
@@ -54,8 +52,7 @@ internal class ExceptionApiTest {
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev",
                 fullmaktService = fullmaktService,
-                fullmaktRedisService = fullmaktRedisService,
-                fullmaktInterception = fullmaktInterception
+                fullmaktSessionStore = fullmaktRedisService,
             )
         }
 
@@ -82,9 +79,7 @@ internal class ExceptionApiTest {
                 } throws GraphQLResultException("Ingen data i resultatet fra SAF.", listOf(), mapOf())
             })
 
-            val fullmaktService = mockk<FullmaktService>()
-            val fullmaktRedisService = mockk<FullmaktRedisService>()
-            val fullmaktInterception = FullmaktInterception(fullmaktRedisService)
+            val (fullmaktService, fullmaktRedisService) = mockFullmakt()
 
             mineSakerApi(
                 sakService = sakserviceMock,
@@ -94,8 +89,7 @@ internal class ExceptionApiTest {
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev",
                 fullmaktService = fullmaktService,
-                fullmaktRedisService = fullmaktRedisService,
-                fullmaktInterception = fullmaktInterception
+                fullmaktSessionStore = fullmaktRedisService,
             )
         }
 
@@ -115,9 +109,7 @@ internal class ExceptionApiTest {
             coEvery { it.hentSakstemaer(any(), any()) } returns SakstemaResult(errors = listOf(Kildetype.SAF))
         }
 
-        val fullmaktService = mockk<FullmaktService>()
-        val fullmaktRedisService = mockk<FullmaktRedisService>()
-        val fullmaktInterception = FullmaktInterception(fullmaktRedisService)
+        val (fullmaktService, fullmaktRedisService) = mockFullmakt()
 
         val digiSosConsumerMockk = mockk<DigiSosConsumer>().also {
             coEvery { it.hentSakstemaer(any()) } returns SakstemaResult(
@@ -141,8 +133,7 @@ internal class ExceptionApiTest {
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev",
                 fullmaktService = fullmaktService,
-                fullmaktRedisService = fullmaktRedisService,
-                fullmaktInterception = fullmaktInterception
+                fullmaktSessionStore = fullmaktRedisService,
             )
         }
 
@@ -165,9 +156,7 @@ internal class ExceptionApiTest {
             } returns DokumentResponse(ByteArray(10), ContentType.Application.Pdf)
         }
 
-        val fullmaktService = mockk<FullmaktService>()
-        val fullmaktRedisService = mockk<FullmaktRedisService>()
-        val fullmaktInterception = FullmaktInterception(fullmaktRedisService)
+        val (fullmaktService, fullmaktRedisService) = mockFullmakt()
 
         application {
             val sakserviceMock = createSakService(safConsumer = safconsumerMockk)
@@ -180,8 +169,7 @@ internal class ExceptionApiTest {
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev",
                 fullmaktService = fullmaktService,
-                fullmaktRedisService = fullmaktRedisService,
-                fullmaktInterception = fullmaktInterception
+                fullmaktSessionStore = fullmaktRedisService,
             )
         }
         client.get("/dokument/gghh11/hfajskk").apply {
@@ -221,5 +209,12 @@ internal class ExceptionApiTest {
             staticUserPid = testfnr
 
         }
+
+    private fun mockFullmakt(): Pair<FullmaktService, FullmaktSessionStore> {
+        val fullmaktService: FullmaktService = mockk()
+        val sessionStore = FullmaktTestSessionStore()
+
+        return fullmaktService to sessionStore
+    }
 
 }
