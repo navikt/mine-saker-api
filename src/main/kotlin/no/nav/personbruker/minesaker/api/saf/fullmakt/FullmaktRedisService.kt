@@ -3,6 +3,8 @@ package no.nav.personbruker.minesaker.api.saf.fullmakt
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisURI
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import no.nav.personbruker.dittnav.common.util.config.StringEnvVar.getEnvVar
 
 class FullmaktRedisService(
@@ -21,16 +23,16 @@ class FullmaktRedisService(
 
     private val objectMapper = jacksonObjectMapper()
 
-    fun setFullmaktGiver(ident: String, fullmaktGiver: FullmaktGiver) {
+    suspend fun setFullmaktGiver(ident: String, fullmaktGiver: FullmaktGiver) = withContext(Dispatchers.IO) {
         commands.setex(ident, oneHourInSeconds, fullmaktGiver.toJson())
     }
 
-    fun getCurrentFullmaktGiver(ident: String): FullmaktGiver? {
-        return commands.get(ident)
+    suspend fun getCurrentFullmaktGiver(ident: String): FullmaktGiver? = withContext(Dispatchers.IO) {
+        commands.get(ident)
             ?.fullmaktGiverFromJson()
     }
 
-    fun clearFullmaktGiver(ident: String) {
+    suspend fun clearFullmaktGiver(ident: String) = withContext(Dispatchers.IO) {
         commands.del(ident)
     }
 

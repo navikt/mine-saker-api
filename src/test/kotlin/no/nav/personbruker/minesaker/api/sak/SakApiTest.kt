@@ -27,7 +27,6 @@ import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.config.TokendingsExchange
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktInterception
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktRedisService
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktService
 import no.nav.personbruker.minesaker.api.sak.ForventetSakstemaInnhold.Companion.toDigisosResponse
@@ -77,7 +76,6 @@ class SakApiTest {
 
         val fullmaktService = mockk<FullmaktService>()
         val fullmaktJwtService = mockk<FullmaktRedisService>()
-        val fullmaktInterception = FullmaktInterception(fullmaktJwtService)
 
         mockApi(
             sakService = SakService(
@@ -88,8 +86,7 @@ class SakApiTest {
             httpClient = appClient,
             sakerUrl = "http://mine.saker.dev",
             fullmaktService = fullmaktService,
-            fullmaktRedisService = fullmaktJwtService,
-            fullmaktInterception = fullmaktInterception
+            fullmaktRedisService = fullmaktJwtService
         )
 
         setupExternalServices(
@@ -142,7 +139,6 @@ private fun ApplicationTestBuilder.mockApi(
     sakService: SakService,
     fullmaktService: FullmaktService,
     fullmaktRedisService: FullmaktRedisService,
-    fullmaktInterception: FullmaktInterception,
     httpClient: HttpClient,
     corsAllowedOrigins: String = "*",
     corsAllowedSchemes: String = "*",
@@ -167,8 +163,7 @@ private fun ApplicationTestBuilder.mockApi(
         authConfig = authConfig,
         sakerUrl = sakerUrl,
         fullmaktService = fullmaktService,
-        fullmaktRedisService = fullmaktRedisService,
-        fullmaktInterception = fullmaktInterception
+        fullmaktRedisService = fullmaktRedisService
     )
 }
 

@@ -6,23 +6,25 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.request.receive
 import no.nav.personbruker.minesaker.api.config.idportenUser
-import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 
 fun Route.fullmaktApi(fullmaktService: FullmaktService, redisService: FullmaktRedisService) {
 
-    get("/fullmakt/info") {
-        val fullmaktGiver = call.fullmaktAttribute?.fullmaktGiver
+    enableFullmakt {
 
-        if (fullmaktGiver == null) {
-            call.respond(FullmaktInfo(false))
-        } else {
-            call.respond(
-                FullmaktInfo(
-                    viserRepresentertesData = true,
-                    representertNavn = fullmaktGiver.navn,
-                    representertIdent = fullmaktGiver.ident
+        get("/fullmakt/info") {
+            val fullmaktGiver = call.fullmaktGiver
+
+            if (fullmaktGiver == null) {
+                call.respond(FullmaktInfo(false))
+            } else {
+                call.respond(
+                    FullmaktInfo(
+                        viserRepresentertesData = true,
+                        representertNavn = fullmaktGiver.navn,
+                        representertIdent = fullmaktGiver.ident
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -46,8 +48,8 @@ fun Route.fullmaktApi(fullmaktService: FullmaktService, redisService: FullmaktRe
     }
 }
 
-private val ApplicationCall.fullmaktAttribute get() =
-    attributes.getOrNull(FullmaktInterception.FullmaktAttribute)
+private val ApplicationCall.fullmaktGiver get() =
+    attributes.getOrNull(FullmaktAttribute)
 
 private suspend fun ApplicationCall.represertIdent() = receive<Representert>().ident
 

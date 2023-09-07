@@ -42,7 +42,6 @@ fun Application.mineSakerApi(
     sakerUrl: String,
     fullmaktService: FullmaktService,
     fullmaktRedisService: FullmaktRedisService,
-    fullmaktInterception: FullmaktInterception,
     authConfig: Application.() -> Unit
 ) {
     DefaultExports.initialize()
@@ -116,7 +115,9 @@ fun Application.mineSakerApi(
     }
 
     authConfig()
-    install(fullmaktInterception.interceptor)
+    install(Fullmakt) {
+        sessionStore = fullmaktRedisService
+    }
 
     install(ContentNegotiation) {
         jackson {
@@ -137,7 +138,8 @@ fun Application.mineSakerApi(
         healthApi()
 
         authenticate {
-            sakApi(sakService, sakerUrl)
+            sakApi(sakService)
+            sakApiExternal(sakService, sakerUrl)
             fullmaktApi(fullmaktService, fullmaktRedisService)
         }
     }
