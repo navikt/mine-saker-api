@@ -27,8 +27,9 @@ import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.config.TokendingsExchange
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktRedisService
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktService
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktSessionStore
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktTestSessionStore
 import no.nav.personbruker.minesaker.api.sak.ForventetSakstemaInnhold.Companion.toDigisosResponse
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.installIdPortenAuthMock
@@ -75,7 +76,7 @@ class SakApiTest {
         )
 
         val fullmaktService = mockk<FullmaktService>()
-        val fullmaktJwtService = mockk<FullmaktRedisService>()
+        val fullmaktSessionStore = FullmaktTestSessionStore()
 
         mockApi(
             sakService = SakService(
@@ -86,7 +87,7 @@ class SakApiTest {
             httpClient = appClient,
             sakerUrl = "http://mine.saker.dev",
             fullmaktService = fullmaktService,
-            fullmaktRedisService = fullmaktJwtService
+            fullmaktSessionStore = fullmaktSessionStore
         )
 
         setupExternalServices(
@@ -138,7 +139,7 @@ private fun JsonNode?.asLocalDateTime(): LocalDateTime? = this?.let {
 private fun ApplicationTestBuilder.mockApi(
     sakService: SakService,
     fullmaktService: FullmaktService,
-    fullmaktRedisService: FullmaktRedisService,
+    fullmaktSessionStore: FullmaktSessionStore,
     httpClient: HttpClient,
     corsAllowedOrigins: String = "*",
     corsAllowedSchemes: String = "*",
@@ -163,7 +164,7 @@ private fun ApplicationTestBuilder.mockApi(
         authConfig = authConfig,
         sakerUrl = sakerUrl,
         fullmaktService = fullmaktService,
-        fullmaktRedisService = fullmaktRedisService
+        fullmaktSessionStore = fullmaktSessionStore
     )
 }
 

@@ -19,8 +19,9 @@ import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.config.TokendingsExchange
 import no.nav.personbruker.minesaker.api.saf.DokumentResponse
-import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktRedisService
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktService
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktSessionStore
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktTestSessionStore
 import no.nav.personbruker.minesaker.api.sak.Kildetype
 import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.personbruker.minesaker.api.sak.SakstemaResult
@@ -51,7 +52,7 @@ internal class ExceptionApiTest {
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev",
                 fullmaktService = fullmaktService,
-                fullmaktRedisService = fullmaktRedisService,
+                fullmaktSessionStore = fullmaktRedisService,
             )
         }
 
@@ -88,7 +89,7 @@ internal class ExceptionApiTest {
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev",
                 fullmaktService = fullmaktService,
-                fullmaktRedisService = fullmaktRedisService,
+                fullmaktSessionStore = fullmaktRedisService,
             )
         }
 
@@ -132,7 +133,7 @@ internal class ExceptionApiTest {
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev",
                 fullmaktService = fullmaktService,
-                fullmaktRedisService = fullmaktRedisService,
+                fullmaktSessionStore = fullmaktRedisService,
             )
         }
 
@@ -168,7 +169,7 @@ internal class ExceptionApiTest {
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev",
                 fullmaktService = fullmaktService,
-                fullmaktRedisService = fullmaktRedisService,
+                fullmaktSessionStore = fullmaktRedisService,
             )
         }
         client.get("/dokument/gghh11/hfajskk").apply {
@@ -209,13 +210,11 @@ internal class ExceptionApiTest {
 
         }
 
-    private fun mockFullmakt(): Pair<FullmaktService, FullmaktRedisService> {
+    private fun mockFullmakt(): Pair<FullmaktService, FullmaktSessionStore> {
         val fullmaktService: FullmaktService = mockk()
-        val redisService: FullmaktRedisService = mockk()
+        val sessionStore = FullmaktTestSessionStore()
 
-        coEvery { redisService.getCurrentFullmaktGiver(any()) } returns null
-
-        return fullmaktService to redisService
+        return fullmaktService to sessionStore
     }
 
 }

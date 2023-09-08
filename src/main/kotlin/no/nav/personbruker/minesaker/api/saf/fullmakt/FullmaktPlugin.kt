@@ -17,7 +17,7 @@ fun Route.enableFullmakt(
 }
 
 class FullmaktConfig {
-    lateinit var sessionStore: FullmaktRedisService
+    lateinit var sessionStore: FullmaktSessionStore
 }
 
 class Fullmakt(val config: FullmaktConfig) {

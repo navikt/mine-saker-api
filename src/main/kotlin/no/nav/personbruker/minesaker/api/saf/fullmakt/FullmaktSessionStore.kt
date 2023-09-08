@@ -7,11 +7,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.nav.personbruker.dittnav.common.util.config.StringEnvVar.getEnvVar
 
+interface FullmaktSessionStore {
+    suspend fun setFullmaktGiver(ident: String, fullmaktGiver: FullmaktGiver)
+    suspend fun getCurrentFullmaktGiver(ident: String): FullmaktGiver?
+    suspend fun clearFullmaktGiver(ident: String)
+}
+
 class FullmaktRedisService(
     host: String = getEnvVar("REDIS_URI_FULLMAKT"),
     username: String = getEnvVar("REDIS_USERNAME_FULLMAKT"),
     password: String = getEnvVar("REDIS_PASSWORD_FULLMAKT")
-) {
+) : FullmaktSessionStore {
     private val oneHourInSeconds = 3600L
 
     private val commands = RedisURI.builder(RedisURI.create(host))
@@ -23,16 +29,16 @@ class FullmaktRedisService(
 
     private val objectMapper = jacksonObjectMapper()
 
-    suspend fun setFullmaktGiver(ident: String, fullmaktGiver: FullmaktGiver) = withContext(Dispatchers.IO) {
+    override suspend fun setFullmaktGiver(ident: String, fullmaktGiver: FullmaktGiver): Unit = withContext(Dispatchers.IO) {
         commands.setex(ident, oneHourInSeconds, fullmaktGiver.toJson())
     }
 
-    suspend fun getCurrentFullmaktGiver(ident: String): FullmaktGiver? = withContext(Dispatchers.IO) {
+    override suspend fun getCurrentFullmaktGiver(ident: String): FullmaktGiver? = withContext(Dispatchers.IO) {
         commands.get(ident)
             ?.fullmaktGiverFromJson()
     }
 
-    suspend fun clearFullmaktGiver(ident: String) = withContext(Dispatchers.IO) {
+    override suspend fun clearFullmaktGiver(ident: String): Unit = withContext(Dispatchers.IO) {
         commands.del(ident)
     }
 

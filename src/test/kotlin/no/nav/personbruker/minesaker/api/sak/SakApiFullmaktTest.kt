@@ -1,4 +1,4 @@
-package no.nav.personbruker.minesaker.api.fullmakt
+package no.nav.personbruker.minesaker.api.sak
 
 import io.kotest.matchers.shouldBe
 import io.ktor.client.*
@@ -11,16 +11,12 @@ import io.ktor.server.testing.*
 import io.ktor.util.*
 import io.mockk.clearMocks
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
 import no.nav.personbruker.minesaker.api.config.jsonConfig
 import no.nav.personbruker.minesaker.api.config.mineSakerApi
 import no.nav.personbruker.minesaker.api.domain.*
-import no.nav.personbruker.minesaker.api.domain.Journalposttype.NOTAT
 import no.nav.personbruker.minesaker.api.saf.fullmakt.*
-import no.nav.personbruker.minesaker.api.sak.Kildetype
-import no.nav.personbruker.minesaker.api.sak.SakService
-import no.nav.personbruker.minesaker.api.sak.SakstemaResult
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.installIdPortenAuthMock
 import org.junit.jupiter.api.AfterEach
@@ -29,10 +25,10 @@ import java.time.ZonedDateTime
 
 class SakApiFullmaktTest {
     private val sakService: SakService = mockk()
-    private val redisService: FullmaktRedisService = mockk()
     private val navnService: NavnService = mockk()
     private val fullmaktConsumer: FullmaktConsumer = mockk()
 
+    private val sessionStore = FullmaktTestSessionStore()
     private val fullmaktService = FullmaktService(fullmaktConsumer, navnService)
 
     private val ident = "123"
@@ -41,15 +37,13 @@ class SakApiFullmaktTest {
 
 
     @AfterEach
-    fun cleanUp() {
-        clearMocks(sakService, redisService, navnService, fullmaktConsumer)
+    fun cleanUp() = runBlocking {
+        clearMocks(sakService, navnService, fullmaktConsumer)
+        sessionStore.clearFullmaktGiver(ident)
     }
 
     @Test
-    fun `henter sakstema for innlogget bruker hvis fullmaktsgiver ikke er satt`() = fullmaktApiTest { client ->
-        coEvery {
-            redisService.getCurrentFullmaktGiver(ident)
-        } returns null
+    fun `henter sakstema for innlogget bruker hvis fullmaktsgiver ikke er satt`() = sakApiFullmaktTest { client ->
 
         coEvery {
             sakService.hentSakstemaer(any(), null)
@@ -65,11 +59,9 @@ class SakApiFullmaktTest {
     }
 
     @Test
-    fun `henter sakstema for fullmaktsgiver hvis den er satt for session`() = fullmaktApiTest { client ->
+    fun `henter sakstema for fullmaktsgiver hvis den er satt for session`() = sakApiFullmaktTest { client ->
 
-        coEvery {
-            redisService.getCurrentFullmaktGiver(ident)
-        } returns fullmaktGiver1
+        sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
 
         coEvery {
             sakService.hentSakstemaer(any(), null)
@@ -85,14 +77,10 @@ class SakApiFullmaktTest {
     }
 
     @Test
-    fun `henter journalposter for innlogget bruker hvis fullmaktsgiver ikke er satt`() = fullmaktApiTest { client ->
+    fun `henter journalposter for innlogget bruker hvis fullmaktsgiver ikke er satt`() = sakApiFullmaktTest { client ->
 
         val navnForBruker = "Tilhører bruker"
         val navnForRepresentert = "Tilhører representert"
-
-        coEvery {
-            redisService.getCurrentFullmaktGiver(ident)
-        } returns null
 
         coEvery {
             sakService.hentJournalposterForSakstema(any(), null, Sakstemakode.AAP)
@@ -110,13 +98,11 @@ class SakApiFullmaktTest {
     }
 
     @Test
-    fun `henter journalposter for fullmaktsgiver hvis den er satt`() = fullmaktApiTest { client ->
+    fun `henter journalposter for fullmaktsgiver hvis den er satt`() = sakApiFullmaktTest { client ->
         val navnForBruker = "Tilhører bruker"
         val navnForRepresentert = "Tilhører representert"
 
-        coEvery {
-            redisService.getCurrentFullmaktGiver(ident)
-        } returns fullmaktGiver1
+        sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
 
         coEvery {
             sakService.hentJournalposterForSakstema(any(), null, Sakstemakode.AAP)
@@ -136,7 +122,7 @@ class SakApiFullmaktTest {
 
 
     @KtorDsl
-    private fun fullmaktApiTest(testBlock: suspend (HttpClient) -> Unit) = testApplication {
+    private fun sakApiFullmaktTest(testBlock: suspend (HttpClient) -> Unit) = testApplication {
         val testClient = createClient {
             install(ContentNegotiation) {
                 jackson {
@@ -154,7 +140,7 @@ class SakApiFullmaktTest {
                 corsAllowedSchemes = "*",
                 sakerUrl = "N/A",
                 fullmaktService = fullmaktService,
-                fullmaktRedisService = redisService,
+                fullmaktSessionStore = sessionStore,
                 authConfig = {
                     installIdPortenAuthMock {
                         setAsDefault = true
@@ -189,7 +175,7 @@ class SakApiFullmaktTest {
                 Journalpost(
                     tittel = "Tittel",
                     journalpostId = "123",
-                    journalposttype = NOTAT,
+                    journalposttype = Journalposttype.NOTAT,
                     avsender = null,
                     mottaker = null,
                     sisteEndret = ZonedDateTime.now(),

@@ -7,7 +7,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.request.receive
 import no.nav.personbruker.minesaker.api.config.idportenUser
 
-fun Route.fullmaktApi(fullmaktService: FullmaktService, redisService: FullmaktRedisService) {
+fun Route.fullmaktApi(fullmaktService: FullmaktService, sessionStore: FullmaktSessionStore) {
 
     enableFullmakt {
 
@@ -36,12 +36,12 @@ fun Route.fullmaktApi(fullmaktService: FullmaktService, redisService: FullmaktRe
         val representert = call.represertIdent()
 
         if (representert == idportenUser.ident) {
-            redisService.clearFullmaktGiver(idportenUser.ident)
+            sessionStore.clearFullmaktGiver(idportenUser.ident)
             call.respond(HttpStatusCode.OK)
         } else {
             val validForhold = fullmaktService.validateFullmaktsGiver(idportenUser, representert)
 
-            redisService.setFullmaktGiver(idportenUser.ident, validForhold)
+            sessionStore.setFullmaktGiver(idportenUser.ident, validForhold)
 
             call.respond(HttpStatusCode.OK)
         }
@@ -57,7 +57,7 @@ private data class Representert(
     val ident: String
 )
 
-private data class FullmaktInfo(
+data class FullmaktInfo(
     val viserRepresentertesData: Boolean,
     val representertNavn: String? = null,
     val representertIdent: String? = null,

@@ -41,7 +41,7 @@ fun Application.mineSakerApi(
     corsAllowedSchemes: String,
     sakerUrl: String,
     fullmaktService: FullmaktService,
-    fullmaktRedisService: FullmaktRedisService,
+    fullmaktSessionStore: FullmaktSessionStore,
     authConfig: Application.() -> Unit
 ) {
     DefaultExports.initialize()
@@ -116,7 +116,7 @@ fun Application.mineSakerApi(
 
     authConfig()
     install(Fullmakt) {
-        sessionStore = fullmaktRedisService
+        sessionStore = fullmaktSessionStore
     }
 
     install(ContentNegotiation) {
@@ -140,7 +140,7 @@ fun Application.mineSakerApi(
         authenticate {
             sakApi(sakService)
             sakApiExternal(sakService, sakerUrl)
-            fullmaktApi(fullmaktService, fullmaktRedisService)
+            fullmaktApi(fullmaktService, fullmaktSessionStore)
         }
     }
 
