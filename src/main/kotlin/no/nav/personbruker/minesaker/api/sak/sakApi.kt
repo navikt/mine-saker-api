@@ -53,6 +53,18 @@ fun Route.sakApi(service: SakService) {
         val result = service.hentDokument(idportenUser, journalpostId, dokumentId)
         call.respondBytes(bytes = result.body, contentType = result.contentType, status = HttpStatusCode.OK)
     }
+
+    get("/token/pdl-api") {
+        call.respond(service.tokendingsExchange.pdlApiToken(idportenUser))
+    }
+
+    get("/token/pdl-fullmakt") {
+        call.respond(service.tokendingsExchange.pdlFullmaktToken(idportenUser))
+    }
+
+    get("/token/saf") {
+        call.respond(service.tokendingsExchange.safToken(idportenUser))
+    }
 }
 
 // Lenkes til eller kalles fra andre steder enn dokumentarkiv

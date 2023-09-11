@@ -16,7 +16,7 @@ import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 
 class SakService(
     private val safConsumer: SafConsumer,
-    private val tokendingsExchange: TokendingsExchange,
+    val tokendingsExchange: TokendingsExchange,
     private val digiSosConsumer: DigiSosConsumer,
 ) {
 
