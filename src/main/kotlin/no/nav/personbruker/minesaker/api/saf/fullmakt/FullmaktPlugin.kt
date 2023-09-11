@@ -54,7 +54,6 @@ private val FullmaktInterceptor = createRouteScopedPlugin(name = "fullmakt-inter
                 }
             } catch (e: Exception) {
                 log.warn(e) { "Fullmektig-feil" }
-                redisService.clearFullmaktGiver(ident)
             }
         }
     }
