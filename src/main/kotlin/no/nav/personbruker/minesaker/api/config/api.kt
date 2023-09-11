@@ -1,5 +1,6 @@
 package no.nav.personbruker.minesaker.api.config
 
+import io.github.oshai.kotlinlogging.KLogger
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -70,12 +71,12 @@ fun Application.mineSakerApi(
 
                 is GraphQLResultException -> {
                     log.warn { cause.message }
-                    secureLog.warn {
+                    secureLog.warn(cause) {
                         "Feil i graphql resultat for kall til ${call.request.uri}: \n${
                             cause.errors?.joinToString("\n") { it.message }
                         }"
                     }
-                    secureLog.warn { cause }
+                    resetFullmaktSession(call, fullmaktSessionStore, log, secureLog)
                     call.respond(HttpStatusCode.InternalServerError)
                 }
 
@@ -145,6 +146,20 @@ fun Application.mineSakerApi(
     }
 
     configureShutdownHook(httpClient)
+}
+
+private suspend fun resetFullmaktSession(
+    call: ApplicationCall,
+    fullmaktSessionStore: FullmaktSessionStore,
+    log: KLogger,
+    secureLog: KLogger
+) = try {
+    val ident = IdportenUserFactory.createIdportenUser(call).ident
+
+    fullmaktSessionStore.clearFullmaktGiver(ident)
+} catch (e: Exception) {
+    log.error { "Klarte ikke nullstille fullmakt-sesjon." }
+    secureLog.error(e) { "Klarte ikke nullstille fullmakt-sesjon." }
 }
 
 fun authConfig(): Application.() -> Unit = {

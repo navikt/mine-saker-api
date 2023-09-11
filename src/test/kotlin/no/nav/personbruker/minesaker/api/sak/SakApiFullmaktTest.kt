@@ -6,6 +6,7 @@ import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.testing.*
 import io.ktor.util.*
@@ -16,6 +17,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.personbruker.minesaker.api.config.jsonConfig
 import no.nav.personbruker.minesaker.api.config.mineSakerApi
 import no.nav.personbruker.minesaker.api.domain.*
+import no.nav.personbruker.minesaker.api.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.saf.fullmakt.*
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.installIdPortenAuthMock
@@ -119,6 +121,54 @@ class SakApiFullmaktTest {
         responseForPathParam.first().navn shouldBe navnForRepresentert
     }
 
+    @Test
+    fun `nullstiller fullmakt-sesjon dersom saf returnerer feil for sakstemaer`() = sakApiFullmaktTest { client ->
+        sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
+
+        coEvery {
+            sakService.hentSakstemaer(any(), null)
+        } returns sakstemaResponse(Sakstemakode.AAP)
+
+        coEvery {
+            sakService.hentSakstemaer(any(), fullmaktGiver1.ident)
+        } throws GraphQLResultException("Error", emptyList(), emptyMap())
+
+        val firstResponse = client.get("sakstemaer")
+        val secondResponse = client.get("sakstemaer")
+
+        firstResponse.status shouldBe HttpStatusCode.InternalServerError
+        secondResponse.status shouldBe HttpStatusCode.OK
+
+        secondResponse.body<List<ForenkletSakstema>>().first().kode shouldBe Sakstemakode.AAP
+
+        sessionStore.getCurrentFullmaktGiver(ident) shouldBe null
+    }
+
+
+    @Test
+    fun `nullstiller fullmakt-sesjon dersom saf returnerer feil for journalposter`() = sakApiFullmaktTest { client ->
+        val navnForBruker = "Tilhører bruker"
+
+        sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
+
+        coEvery {
+            sakService.hentJournalposterForSakstema(any(), null, Sakstemakode.AAP)
+        } returns journalpostResponse(navnForBruker)
+
+        coEvery {
+            sakService.hentJournalposterForSakstema(any(), fullmaktGiver1.ident, Sakstemakode.AAP)
+        } throws GraphQLResultException("Error", emptyList(), emptyMap())
+
+        val firstResponse = client.get("journalposter/AAP")
+        val secondResponse = client.get("journalposter/AAP")
+
+        firstResponse.status shouldBe HttpStatusCode.InternalServerError
+        secondResponse.status shouldBe HttpStatusCode.OK
+
+        secondResponse.body<List<Sakstema>>().first().navn shouldBe navnForBruker
+
+        sessionStore.getCurrentFullmaktGiver(ident) shouldBe null
+    }
 
 
     @KtorDsl
