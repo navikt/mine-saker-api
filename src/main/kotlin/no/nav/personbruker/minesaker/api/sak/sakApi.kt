@@ -6,6 +6,8 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.ktor.client.statement.*
+import io.ktor.util.*
 import no.nav.personbruker.minesaker.api.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.config.idportenUser
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
@@ -54,16 +56,21 @@ fun Route.sakApi(service: SakService) {
         call.respondBytes(bytes = result.body, contentType = result.contentType, status = HttpStatusCode.OK)
     }
 
-    get("/token/pdl-api") {
-        call.respond(service.tokendingsExchange.pdlApiToken(idportenUser))
+    get("/debug/sakstemaer") {
+        val representert = call.representert()
+        val response = service.hentSakstemaerDebug(idportenUser, representert)
+
+        log.info { "'/debug/sakstemaer' ${response.headers}" }
+        call.respond(response.status, response.readBytes())
     }
 
-    get("/token/pdl-fullmakt") {
-        call.respond(service.tokendingsExchange.pdlFullmaktToken(idportenUser))
-    }
+    get("/debug/journalposter") {
+        val representert = call.representert()
+        val sakstemakode = call.sakstemaFromQueryParameters()
+        val response = service.hentJournalposterForSakstemaDebug(idportenUser, representert, sakstemakode)
 
-    get("/token/saf") {
-        call.respond(service.tokendingsExchange.safToken(idportenUser))
+        log.info { "'/debug/journalposter' ${response.headers}" }
+        call.respond(response.status, response.readBytes())
     }
 }
 
@@ -137,6 +144,9 @@ private fun resolveSakstemakode(sakstemakode: String): Sakstemakode =
 
 private fun ApplicationCall.journalpostId(): String = parameters[journalpostIdParameterName]
     ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$journalpostIdParameterName' er spesifisert.")
+
+
+private fun ApplicationCall.representert() = request.queryParameters["representert"]
 
 
 private fun ApplicationCall.dokumentInfoId(): String = parameters[dokumentIdParameterName]

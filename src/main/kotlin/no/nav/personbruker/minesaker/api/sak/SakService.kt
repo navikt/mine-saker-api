@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.ktor.client.statement.*
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
 import no.nav.personbruker.minesaker.api.domain.Sakstema
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
@@ -21,6 +22,17 @@ class SakService(
 ) {
 
     private val log = KotlinLogging.logger { }
+
+    suspend fun hentSakstemaerDebug(user: IdportenUser, representert: String?): HttpResponse {
+        val exchangedToken = tokendingsExchange.safToken(user)
+        return safConsumer.hentSakstemaerDebug(SakstemaerRequest.create(representert ?: user.ident), exchangedToken)
+    }
+
+    suspend fun hentJournalposterForSakstemaDebug(user: IdportenUser, representert: String?, sakstema: Sakstemakode): HttpResponse {
+        val exchangedToken = tokendingsExchange.safToken(user)
+        val journalposterRequest = JournalposterRequest.create(representert ?: user.ident, sakstema)
+        return safConsumer.hentJournalposterDebug(journalposterRequest, exchangedToken)
+    }
 
     suspend fun hentSakstemaer(user: IdportenUser, representert: String?): SakstemaResult = withContext(Dispatchers.IO) {
         if (representert != null) {

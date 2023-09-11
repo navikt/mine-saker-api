@@ -22,6 +22,7 @@ import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.personbruker.minesaker.api.sak.Kildetype
 import no.nav.personbruker.minesaker.api.sak.SakstemaResult
+import org.apache.http.util.ByteArrayBuffer
 import java.net.URL
 import java.util.*
 
@@ -35,6 +36,13 @@ class SafConsumer(
     private val safCallIdHeaderName = "Nav-Callid"
     private val navConsumerIdHeaderName = "Nav-Consumer-Id"
     private val navConsumerId = "mine-saker-api"
+
+    suspend fun hentSakstemaerDebug(request: SakstemaerRequest, accessToken: String) = sendQuery(request, accessToken)
+
+    suspend fun hentJournalposterDebug(
+        request: JournalposterRequest,
+        accessToken: String
+    ) = sendQuery(request, accessToken)
 
     suspend fun hentSakstemaer(request: SakstemaerRequest, accessToken: String): SakstemaResult =
         try {
