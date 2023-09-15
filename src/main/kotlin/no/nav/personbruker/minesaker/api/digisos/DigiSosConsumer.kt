@@ -1,7 +1,5 @@
 package no.nav.personbruker.minesaker.api.digisos
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -10,10 +8,9 @@ import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.ktor.serialization.*
 import no.nav.personbruker.minesaker.api.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.config.InnsynsUrlResolver
-import no.nav.personbruker.minesaker.api.config.jsonConfig
-import no.nav.personbruker.minesaker.api.sak.Kildetype
 import no.nav.personbruker.minesaker.api.sak.SakstemaResult
 import java.net.URL
 import java.util.*
@@ -28,21 +25,21 @@ class DigiSosConsumer(
     private val callIdHeaderName = "Nav-Callid"
 
     suspend fun hentSakstemaer(accessToken: String): SakstemaResult {
-        return try {
-            hent(accessToken).let { response ->
-                if (!response.status.isSuccess()) {
-                    throw CommunicationException("Klarte ikke hente data fra digisos. Http-status [${response.status}]")
-                }
-                val responseElements: List<DigiSosResponse> = response.body()
-                return SakstemaResult(responseElements.toInternal(innsynsUrlResolver))
+        hent(accessToken).let { response ->
+            if (!response.status.isSuccess()) {
+                throw CommunicationException("Klarte ikke hente data fra digisos. Http-status [${response.status}]")
             }
 
-        } catch (e: Exception) {
-            log.warn(e) {
-                "Klarte ikke å hente data fra DigiSos, returnerer et resultat med info om at det feilet mot DigiSos: $e"
-            }
-            SakstemaResult(errors = listOf(Kildetype.DIGISOS))
+            return unpackResponse(response)
+                .toInternal(innsynsUrlResolver)
+                .let { SakstemaResult(it) }
         }
+    }
+
+    private suspend fun unpackResponse(response: HttpResponse): List<DigiSosResponse> = try {
+        response.body()
+    } catch (e: JsonConvertException) {
+        throw CommunicationException("Uventet form på json i svar fra Digisos.", e)
     }
 
     private suspend fun hent(accessToken: String): HttpResponse = withContext(Dispatchers.IO) {

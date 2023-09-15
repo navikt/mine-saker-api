@@ -20,7 +20,6 @@ import no.nav.personbruker.minesaker.api.domain.Sakstema
 import no.nav.personbruker.minesaker.api.saf.common.GraphQLResponse
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
-import no.nav.personbruker.minesaker.api.sak.Kildetype
 import no.nav.personbruker.minesaker.api.sak.SakstemaResult
 import java.net.URL
 import java.util.*
@@ -28,7 +27,7 @@ import java.util.*
 class SafConsumer(
     private val httpClient: HttpClient,
     private val safEndpoint: URL,
-    private val  innsynsUrlResolver: InnsynsUrlResolver
+    private val innsynsUrlResolver: InnsynsUrlResolver
 ) {
 
     private val log = KotlinLogging.logger {}
@@ -36,14 +35,10 @@ class SafConsumer(
     private val navConsumerIdHeaderName = "Nav-Consumer-Id"
     private val navConsumerId = "mine-saker-api"
 
-    suspend fun hentSakstemaer(request: SakstemaerRequest, accessToken: String): SakstemaResult =
-        try {
-            val result: HentSakstemaer.Result = unwrapGraphQLResponse(sendQuery(request, accessToken))
-            result.toInternal(innsynsUrlResolver)
-        } catch (e: Exception) {
-            log.warn(e) {"Klarte ikke å hente data fra SAF."}
-            SakstemaResult(errors = listOf(Kildetype.SAF))
-        }
+    suspend fun hentSakstemaer(request: SakstemaerRequest, accessToken: String): SakstemaResult {
+        return unwrapGraphQLResponse<HentSakstemaer.Result>(sendQuery(request, accessToken))
+            .toInternal(innsynsUrlResolver)
+    }
 
     suspend fun hentJournalposter(
         innloggetBruker: String,
@@ -60,7 +55,7 @@ class SafConsumer(
         accessToken: String
     ): DokumentResponse {
             val httpResponse = fetchDocument(journapostId, dokumentinfoId, accessToken)
-            return unpackRawResponseBody(httpResponse)
+            return unpackRawResponseBody(httpResponse, journapostId, dokumentinfoId)
     }
 
     private suspend fun fetchDocument(
@@ -81,10 +76,12 @@ class SafConsumer(
         }
     }
 
-    private suspend fun unpackRawResponseBody(response: HttpResponse): DokumentResponse {
+    private suspend fun unpackRawResponseBody(response: HttpResponse, journalpostId: String, dokumentinfoId: String): DokumentResponse {
         if (response.status == HttpStatusCode.NotFound) {
             throw DocumentNotFoundException(
                 "Fant ikke dokument hos SAF",
+                journalpostId = journalpostId,
+                dokumentinfoId = dokumentinfoId,
                 sensitiveMessage = "Fant ikke dokument hos SAF for url ${response.request.url}"
             )
         } else if (!response.status.isSuccess()) {

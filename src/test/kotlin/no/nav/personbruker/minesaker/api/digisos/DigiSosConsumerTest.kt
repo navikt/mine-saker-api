@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
@@ -20,6 +21,7 @@ import no.nav.personbruker.minesaker.api.config.InnsynsUrlResolver
 import no.nav.personbruker.minesaker.api.config.jsonConfig
 
 import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
+import no.nav.personbruker.minesaker.api.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.sak.Kildetype
 import org.junit.jupiter.api.Test
 
@@ -61,7 +63,7 @@ internal class DigiSosConsumerTest {
     }
 
     @Test
-    fun `Hvis henting av sakstema feiler, saa skal det returneres et tomt resultat med info om at DigiSos feilet`() {
+    fun `Hvis henting av sakstema feiler, saa skal det kastes exception`() {
         val invalidJsonResponseSomVilTriggeEnException = "invalid response"
         val mockHttpClient = createMockHttpClient {
             respond(
@@ -71,13 +73,12 @@ internal class DigiSosConsumerTest {
         }
         val consumer = DigiSosConsumer(mockHttpClient, digiSosEndpoint = digiSosDummyEndpoint, dummyResolver)
 
-        val sakstemarespons = runBlocking {
-            consumer.hentSakstemaer(dummyToken)
+        shouldThrow<CommunicationException> {
+            runBlocking {
+                consumer.hentSakstemaer(dummyToken)
+            }
         }
 
-        sakstemarespons.hasErrors() shouldBe true
-        sakstemarespons.resultsSorted().shouldBeEmpty()
-        sakstemarespons.errors() shouldContain Kildetype.DIGISOS
     }
 
     private fun createMockHttpClient(respond: MockRequestHandleScope.() -> HttpResponseData): HttpClient {

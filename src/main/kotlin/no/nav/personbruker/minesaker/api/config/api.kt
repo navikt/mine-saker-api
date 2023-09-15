@@ -65,12 +65,12 @@ fun Application.mineSakerApi(
                     cause.sensitiveMessage?.let {
                         secureLog.error { it }
                     }
-                    secureLog.warn { cause }
+                    secureLog.warn(cause) { "Kommunikasjonsfeil mot SAF eller Digisos." }
                     call.respond(HttpStatusCode.ServiceUnavailable)
                 }
 
                 is GraphQLResultException -> {
-                    log.warn { cause.message }
+                    log.warn { "Feil i resultat fra SAF." }
                     secureLog.warn(cause) {
                         "Feil i graphql resultat for kall til ${call.request.uri}: \n${
                             cause.errors?.joinToString("\n") { it.message }
@@ -81,10 +81,8 @@ fun Application.mineSakerApi(
                 }
 
                 is DocumentNotFoundException -> {
-                    log.warn { cause.message }
-                    cause.sensitiveMessage?.let {
-                        secureLog.warn { "$it" }
-                    }
+                    log.warn { "Dokument ikke funnet." }
+                    secureLog.warn(cause) { "Dokument { journalpostId: ${cause.journalpostId}, dokumentinfoId: ${cause.dokumentinfoId} } ikke funnet." }
                     call.respond(HttpStatusCode.NotFound)
                 }
 

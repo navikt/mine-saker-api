@@ -21,6 +21,7 @@ class SakService(
 ) {
 
     private val log = KotlinLogging.logger { }
+    private val secureLog = KotlinLogging.logger("secureLogs")
 
     suspend fun hentSakstemaer(user: IdportenUser, representert: String?): SakstemaResult = withContext(Dispatchers.IO) {
         if (representert != null) {
@@ -44,9 +45,13 @@ class SakService(
         }
     }
 
-    private suspend fun hentSakstemaerFraSaf(user: IdportenUser): SakstemaResult {
+    private suspend fun hentSakstemaerFraSaf(user: IdportenUser): SakstemaResult = try {
         val exchangedToken = tokendingsExchange.safToken(user)
-        return safConsumer.hentSakstemaer(SakstemaerRequest.create(user.ident), exchangedToken)
+        safConsumer.hentSakstemaer(SakstemaerRequest.create(user.ident), exchangedToken)
+    } catch (e: Exception) {
+        log.warn { "Klarte ikke å hente brukers data fra SAF." }
+        secureLog.warn(e) { "Klarte ikke hente brukers (${user.ident}) data fra SAF." }
+        SakstemaResult(errors = listOf(Kildetype.SAF))
     }
 
     private suspend fun hentSakstemaerForRepresentertFraSaf(user: IdportenUser, representert: String): SakstemaResult {
@@ -54,9 +59,13 @@ class SakService(
         return safConsumer.hentSakstemaer(SakstemaerRequest.create(representert), exchangedToken)
     }
 
-    private suspend fun hentSakstemaerFraDigiSos(user: IdportenUser): SakstemaResult {
+    private suspend fun hentSakstemaerFraDigiSos(user: IdportenUser): SakstemaResult = try {
         val exchangedToken = tokendingsExchange.digisosToken(user)
-        return digiSosConsumer.hentSakstemaer(exchangedToken)
+        digiSosConsumer.hentSakstemaer(exchangedToken)
+    } catch (e: Exception) {
+        log.warn { "Klarte ikke å hente brukers data fra DigiSos." }
+        secureLog.warn(e) { "Klarte ikke å hente brukers (${user.ident}) data fra DigiSos." }
+        SakstemaResult(errors = listOf(Kildetype.DIGISOS))
     }
 
     private suspend fun hentJournalposterForBrukerForSakstema(user: IdportenUser, sakstema: Sakstemakode): List<Sakstema> {

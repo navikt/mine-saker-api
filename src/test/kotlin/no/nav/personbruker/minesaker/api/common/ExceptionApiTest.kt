@@ -180,7 +180,7 @@ internal class ExceptionApiTest {
         }
 
         clearMocks(safconsumerMockk)
-        coEvery { safconsumerMockk.hentDokument(any(), any(), any()) } throws DocumentNotFoundException("")
+        coEvery { safconsumerMockk.hentDokument(any(), any(), any()) } throws DocumentNotFoundException("", "123", "456")
 
         client.get("/dokument/gghh11/hfajskk").apply {
             status shouldBe HttpStatusCode.NotFound
