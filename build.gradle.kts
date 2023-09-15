@@ -1,4 +1,7 @@
+import com.expediagroup.graphql.plugin.gradle.config.GraphQLSerializer
 import com.expediagroup.graphql.plugin.gradle.graphql
+import com.expediagroup.graphql.plugin.gradle.tasks.GraphQLDownloadSDLTask
+import com.expediagroup.graphql.plugin.gradle.tasks.GraphQLGenerateClientTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -26,8 +29,10 @@ repositories {
 }
 
 dependencies {
+    implementation(Caffeine.caffeine)
     implementation(DittNAVCommonLib.utils)
     implementation(GraphQL.kotlinClient)
+    implementation(GraphQL.kotlinKtorClient)
     implementation(JacksonDatatype.datatypeJsr310)
     implementation(Kotlinx.coroutines)
     implementation(Logstash.logbackEncoder)
@@ -44,9 +49,12 @@ dependencies {
     implementation(Ktor.Server.htmlDsl)
     implementation(Ktor.Server.netty)
     implementation(Ktor.Server.statusPages)
+    implementation(Nimbusds.joseJwt)
+    implementation(Nimbusds.oauth2OidcSdk)
     implementation(Prometheus.common)
     implementation(Prometheus.hotspot)
     implementation(Prometheus.logback)
+    implementation(Lettuce.core)
     implementation(TmsCommonLib.commonLib)
     implementation(TmsKtorTokenSupport.idportenSidecar)
     implementation(TmsKtorTokenSupport.tokendingsExchange)
@@ -78,14 +86,31 @@ tasks {
             events("passed", "skipped", "failed")
         }
     }
+
+    compileKotlin {
+        dependsOn("graphqlPdlClient")
+    }
 }
 
 graphql {
     client {
         sdlEndpoint = "https://navikt.github.io/safselvbetjening/schema.graphqls"
         packageName = "no.nav.dokument.saf.selvbetjening.generated.dto"
+        queryFileDirectory = "${project.projectDir.absolutePath}/src/main/resources/saf"
     }
 }
 
+val graphqlPdlSdl by tasks.registering(GraphQLDownloadSDLTask::class) {
+    endpoint.set("https://navikt.github.io/pdl/pdl-api-sdl.graphqls")
+    dependsOn("graphqlGenerateClient")
+}
+
+val graphqlPdlClient by tasks.registering(GraphQLGenerateClientTask::class) {
+    packageName.set("no.nav.pdl.generated.dto")
+    schemaFile.set(graphqlPdlSdl.get().outputFile)
+    queryFileDirectory.set(File("${project.projectDir.absolutePath}/src/main/resources/pdl-api"))
+    serializer.set(GraphQLSerializer.KOTLINX)
+    dependsOn("graphqlPdlSdl")
+}
 
 apply(plugin = Shadow.pluginId)

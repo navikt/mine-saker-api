@@ -1,5 +1,6 @@
 package no.nav.personbruker.minesaker.api.config
 
+import io.github.oshai.kotlinlogging.KLogger
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -27,6 +28,7 @@ import no.nav.personbruker.minesaker.api.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.exception.TransformationException
 import no.nav.personbruker.minesaker.api.health.healthApi
+import no.nav.personbruker.minesaker.api.saf.fullmakt.*
 import no.nav.personbruker.minesaker.api.sak.*
 import no.nav.tms.token.support.idporten.sidecar.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.installIdPortenAuth
@@ -39,6 +41,8 @@ fun Application.mineSakerApi(
     corsAllowedOrigins: String,
     corsAllowedSchemes: String,
     sakerUrl: String,
+    fullmaktService: FullmaktService,
+    fullmaktSessionStore: FullmaktSessionStore,
     authConfig: Application.() -> Unit
 ) {
     DefaultExports.initialize()
@@ -57,42 +61,44 @@ fun Application.mineSakerApi(
                 }
 
                 is CommunicationException -> {
-                    log.error { cause.message }
-                    cause.sensitiveMessage?.let {
-                        secureLog.error { it }
-                    }
-                    secureLog.warn { cause.stackTrace }
+                    log.error { "Kommunikasjonsfeil mot SAF eller Digisos." }
+                    secureLog.warn(cause) { "Kommunikasjonsfeil mot SAF eller Digisos." }
                     call.respond(HttpStatusCode.ServiceUnavailable)
                 }
 
                 is GraphQLResultException -> {
-                    log.warn { cause.message }
-                    secureLog.warn {
+                    log.warn { "Feil i resultat fra SAF." }
+                    secureLog.warn(cause) {
                         "Feil i graphql resultat for kall til ${call.request.uri}: \n${
                             cause.errors?.joinToString("\n") { it.message }
                         }"
                     }
-                    secureLog.warn { cause.stackTrace }
+                    resetFullmaktSession(call, fullmaktSessionStore, log, secureLog)
                     call.respond(HttpStatusCode.InternalServerError)
                 }
 
                 is DocumentNotFoundException -> {
-                    log.warn { cause.message }
-                    cause.sensitiveMessage?.let {
-                        secureLog.warn { "$it" }
-                    }
+                    log.warn { "Dokument ikke funnet." }
+                    secureLog.warn(cause) { "Dokument { journalpostId: ${cause.journalpostId}, dokumentinfoId: ${cause.dokumentinfoId} } ikke funnet." }
                     call.respond(HttpStatusCode.NotFound)
                 }
 
                 is TransformationException -> {
-                    log.warn { cause.message }
-                    secureLog.warn { cause.stackTrace }
+                    log.warn { "Feil ved transformering av data." }
+                    secureLog.warn(cause) { "Feil ved transformering av data." }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
 
+                is UgyldigFullmaktException -> {
+                    log.warn { "Bruker forsøkte å sette ugyldig fullmakt." }
+                    secureLog.warn(cause) { "Bruker forsøkte å sette ugyldig fullmakt. Bruker ${cause.fullmektig} er ikke representant for ${cause.giver}" }
+
+                    call.respond(HttpStatusCode.Forbidden)
+                }
+
                 else -> {
-                    secureLog.error { "Kall til ${call.request.uri} feiler: ${cause.message}" }
-                    secureLog.warn { cause.stackTrace }
+                    log.error { "Kall til ${call.request.uri}" }
+                    secureLog.error(cause) { "Kall til ${call.request.uri} feiler." }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
             }
@@ -106,6 +112,9 @@ fun Application.mineSakerApi(
     }
 
     authConfig()
+    install(FullmaktSessions) {
+        sessionStore = fullmaktSessionStore
+    }
 
     install(ContentNegotiation) {
         jackson {
@@ -119,17 +128,34 @@ fun Application.mineSakerApi(
 
         maskPathParams("/mine-saker-api/journalposter/{sakstemakode}")
         maskPathParams("/mine-saker-api/dokument/{journalpostId}/{dokumentId}")
+        maskPathParams("/mine-saker-api/sakstema/{sakstemakode}/journalpost/{journalpostId}")
     }
 
     routing {
         healthApi()
 
         authenticate {
-            sakApi(sakService, sakerUrl)
+            sakApi(sakService)
+            sakApiExternal(sakService, sakerUrl)
+            fullmaktApi(fullmaktService, fullmaktSessionStore)
         }
     }
 
     configureShutdownHook(httpClient)
+}
+
+private suspend fun resetFullmaktSession(
+    call: ApplicationCall,
+    fullmaktSessionStore: FullmaktSessionStore,
+    log: KLogger,
+    secureLog: KLogger
+) = try {
+    val ident = IdportenUserFactory.createIdportenUser(call).ident
+
+    fullmaktSessionStore.clearFullmaktGiver(ident)
+} catch (e: Exception) {
+    log.error { "Klarte ikke nullstille fullmakt-sesjon." }
+    secureLog.error(e) { "Klarte ikke nullstille fullmakt-sesjon." }
 }
 
 fun authConfig(): Application.() -> Unit = {

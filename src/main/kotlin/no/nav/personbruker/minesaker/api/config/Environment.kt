@@ -18,5 +18,10 @@ data class Environment(
     val defaultInnsynLenke: String = getEnvVar("DEFAULT_INNSYN_LENKE"),
     val innsynsLenker: Map<Sakstemakode, String> = mapOf(
         Sakstemakode.KOM to getEnvVar("SOSIALHJELP_INNSYN")
-    )
+    ),
+    val pdlFullmaktUrl: String = getEnvVar("PDL_FULLMAKT_URL"),
+    val pdlFullmaktClientId: String = getEnvVar("PDL_FULLMAKT_CLIENT_ID"),
+    val pdlApiUrl: String = getEnvVar("PDL_API_URL"),
+    val pdlApiClientId: String = getEnvVar("PDL_API_CLIENT_ID"),
 )
+

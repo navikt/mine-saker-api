@@ -1,8 +1,7 @@
 package no.nav.personbruker.minesaker.api.saf
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.kotest.matchers.collections.shouldBeEmpty
-import io.kotest.matchers.collections.shouldContain
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -27,7 +26,6 @@ import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.journalposter.HentJournalposterResultTestData
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.HentSakstemaResultTestData
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
-import no.nav.personbruker.minesaker.api.sak.Kildetype
 
 import org.junit.jupiter.api.Test
 import java.net.URL
@@ -67,7 +65,7 @@ internal class SafConsumerTest {
     }
 
     @Test
-    fun `Hvis henting av sakstema feiler, saa skal det returneres et tomt resultat med info om at SAF feilet`() {
+    fun `Hvis henting av sakstema returnerer generisk feil, skal det kastes CommunicationException`() {
         val invalidJsonResponseSomVilTriggeEnException = "invalid response"
         val mockHttpClient = createMockHttpClient {
             respond(
@@ -79,13 +77,31 @@ internal class SafConsumerTest {
 
         val request = SakstemaerRequest.create(dummyIdent)
 
-        val sakstemarespons = runBlocking {
-            consumer.hentSakstemaer(request, dummyToken)
+        shouldThrow<CommunicationException> {
+            runBlocking {
+                consumer.hentSakstemaer(request, dummyToken)
+            }
         }
+    }
 
-        sakstemarespons.hasErrors() shouldBe true
-        sakstemarespons.resultsSorted().shouldBeEmpty()
-        sakstemarespons.errors() shouldContain Kildetype.SAF
+    @Test
+    fun `Hvis henting av sakstema returnerer resultat uten data, skal det kastes GraphQLException`() {
+        val feilrespons =  """{ "data": null }"""
+        val mockHttpClient = createMockHttpClient {
+            respond(
+                feilrespons,
+                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            )
+        }
+        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint, dummyUrlResolver)
+
+        val request = SakstemaerRequest.create(dummyIdent)
+
+        shouldThrow<GraphQLResultException> {
+            runBlocking {
+                consumer.hentSakstemaer(request, dummyToken)
+            }
+        }
     }
 
     @Test

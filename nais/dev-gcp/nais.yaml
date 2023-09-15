@@ -14,6 +14,9 @@ spec:
   readiness:
     path: /mine-saker-api/internal/isReady
     initialDelay: 15
+  redis:
+    - instance: fullmakt
+      access: readwrite
   prometheus:
     enabled: true
     path: /mine-saker-api/metrics
@@ -40,12 +43,13 @@ spec:
         - host: "safselvbetjening-q1.dev-fss-pub.nais.io"
         - host: "sosialhjelp-soknad-api-intern.dev.nav.no"
         - host: "sosialhjelp-soknad-api.dev-fss-pub.nais.io"
+        - host: "pdl-fullmakt.dev-fss-pub.nais.io"
+        - host: "pdl-api.dev-fss-pub.nais.io"
       rules:
         - application: "safselvbetjening-q1"
           namespace: "teamdokumenthandtering"
           cluster: "dev-fss"
   ingresses:
-    - "https://person.dev.nav.no/mine-saker-api"
     - "https://www.intern.dev.nav.no/mine-saker-api"
   resources:
     limits:
@@ -66,7 +70,7 @@ spec:
     - name: SYKEFRAVAER_INNSYN
       value: https://www-gcp.dev.nav.no/syk/sykefravaer
     - name: DEFAULT_INNSYN_LENKE
-      value: https://www.intern.dev.nav.no/mine-saker/tema
+      value: https://www.intern.dev.nav.no/dokumentarkiv/tema
     - name: CORS_ALLOWED_ORIGINS
       value: www.intern.dev.nav.no
     - name: DIGISOS_API_URL
@@ -79,3 +83,11 @@ spec:
       value: dev-fss:teamdokumenthandtering:safselvbetjening-q1
     - name: MINE_SAKER_URL
       value: https://www.intern.dev.nav.no/mine-saker/
+    - name: PDL_FULLMAKT_URL
+      value: "https://pdl-fullmakt.dev-fss-pub.nais.io"
+    - name: PDL_FULLMAKT_CLIENT_ID
+      value: "dev-fss:pdl:pdl-fullmakt"
+    - name: PDL_API_URL
+      value: "https://pdl-api.dev-fss-pub.nais.io/graphql"
+    - name: PDL_API_CLIENT_ID
+      value: "dev-fss:pdl:pdl-api"

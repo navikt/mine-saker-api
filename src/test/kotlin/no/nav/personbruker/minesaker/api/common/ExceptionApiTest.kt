@@ -19,6 +19,9 @@ import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.config.TokendingsExchange
 import no.nav.personbruker.minesaker.api.saf.DokumentResponse
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktService
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktSessionStore
+import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktTestSessionStore
 import no.nav.personbruker.minesaker.api.sak.Kildetype
 import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.personbruker.minesaker.api.sak.SakstemaResult
@@ -38,13 +41,18 @@ internal class ExceptionApiTest {
                     it.hentJournalposter(any(), any(), any())
                 } throws CommunicationException("Fikk http-status [500] fra SAF.")
             })
+
+            val (fullmaktService, fullmaktRedisService) = mockFullmakt()
+
             mineSakerApi(
                 sakService = sakserviceMock,
                 httpClient = mockk(),
                 corsAllowedOrigins = "*",
                 corsAllowedSchemes = "*",
                 authConfig = { defaultAuthConfig() },
-                sakerUrl = "http://minesaker.dev"
+                sakerUrl = "http://minesaker.dev",
+                fullmaktService = fullmaktService,
+                fullmaktSessionStore = fullmaktRedisService,
             )
         }
 
@@ -70,13 +78,18 @@ internal class ExceptionApiTest {
                     it.hentJournalposter(any(), any(), any())
                 } throws GraphQLResultException("Ingen data i resultatet fra SAF.", listOf(), mapOf())
             })
+
+            val (fullmaktService, fullmaktRedisService) = mockFullmakt()
+
             mineSakerApi(
                 sakService = sakserviceMock,
                 httpClient = mockk(),
                 corsAllowedOrigins = "*",
                 corsAllowedSchemes = "*",
                 authConfig = { defaultAuthConfig() },
-                sakerUrl = "http://minesaker.dev"
+                sakerUrl = "http://minesaker.dev",
+                fullmaktService = fullmaktService,
+                fullmaktSessionStore = fullmaktRedisService,
             )
         }
 
@@ -95,6 +108,9 @@ internal class ExceptionApiTest {
         val safConsumerMock = mockk<SafConsumer>().also {
             coEvery { it.hentSakstemaer(any(), any()) } returns SakstemaResult(errors = listOf(Kildetype.SAF))
         }
+
+        val (fullmaktService, fullmaktRedisService) = mockFullmakt()
+
         val digiSosConsumerMockk = mockk<DigiSosConsumer>().also {
             coEvery { it.hentSakstemaer(any()) } returns SakstemaResult(
                 results = listOf(
@@ -115,7 +131,9 @@ internal class ExceptionApiTest {
                 corsAllowedOrigins = "*",
                 corsAllowedSchemes = "*",
                 authConfig = { defaultAuthConfig() },
-                sakerUrl = "http://minesaker.dev"
+                sakerUrl = "http://minesaker.dev",
+                fullmaktService = fullmaktService,
+                fullmaktSessionStore = fullmaktRedisService,
             )
         }
 
@@ -138,6 +156,8 @@ internal class ExceptionApiTest {
             } returns DokumentResponse(ByteArray(10), ContentType.Application.Pdf)
         }
 
+        val (fullmaktService, fullmaktRedisService) = mockFullmakt()
+
         application {
             val sakserviceMock = createSakService(safConsumer = safconsumerMockk)
 
@@ -147,7 +167,9 @@ internal class ExceptionApiTest {
                 corsAllowedOrigins = "*",
                 corsAllowedSchemes = "*",
                 authConfig = { defaultAuthConfig() },
-                sakerUrl = "http://minesaker.dev"
+                sakerUrl = "http://minesaker.dev",
+                fullmaktService = fullmaktService,
+                fullmaktSessionStore = fullmaktRedisService,
             )
         }
         client.get("/dokument/gghh11/hfajskk").apply {
@@ -158,7 +180,7 @@ internal class ExceptionApiTest {
         }
 
         clearMocks(safconsumerMockk)
-        coEvery { safconsumerMockk.hentDokument(any(), any(), any()) } throws DocumentNotFoundException("")
+        coEvery { safconsumerMockk.hentDokument(any(), any(), any()) } throws DocumentNotFoundException("", "123", "456")
 
         client.get("/dokument/gghh11/hfajskk").apply {
             status shouldBe HttpStatusCode.NotFound
@@ -187,5 +209,12 @@ internal class ExceptionApiTest {
             staticUserPid = testfnr
 
         }
+
+    private fun mockFullmakt(): Pair<FullmaktService, FullmaktSessionStore> {
+        val fullmaktService: FullmaktService = mockk()
+        val sessionStore = FullmaktTestSessionStore()
+
+        return fullmaktService to sessionStore
+    }
 
 }

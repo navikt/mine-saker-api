@@ -21,30 +21,63 @@ class SakService(
 ) {
 
     private val log = KotlinLogging.logger { }
+    private val secureLog = KotlinLogging.logger("secureLogs")
 
-    suspend fun hentSakstemaer(user: IdportenUser): SakstemaResult = withContext(Dispatchers.IO) {
-        val sakstemaerFraSaf = async {
-            hentSakstemaerFraSaf(user)
+    suspend fun hentSakstemaer(user: IdportenUser, representert: String? = null): SakstemaResult = withContext(Dispatchers.IO) {
+        if (representert != null) {
+            hentSakstemaerForRepresentertFraSaf(user, representert)
+        } else {
+            val sakstemaerFraSaf = async {
+                hentSakstemaerFraSaf(user)
+            }
+            val sakstemaerFraDigiSos = async {
+                hentSakstemaerFraDigiSos(user)
+            }
+            sakstemaerFraSaf.await() + sakstemaerFraDigiSos.await()
         }
-        val sakstemaerFraDigiSos = async {
-            hentSakstemaerFraDigiSos(user)
-        }
-        sakstemaerFraSaf.await() + sakstemaerFraDigiSos.await()
     }
 
-    suspend fun hentSakstemaerFraSaf(user: IdportenUser): SakstemaResult {
+    suspend fun hentJournalposterForSakstema(user: IdportenUser, sakstema: Sakstemakode, representert: String? = null): List<Sakstema> {
+        return if (representert != null) {
+            hentJournalposterForRepresentertForSakstema(user, representert, sakstema)
+        } else {
+            hentJournalposterForBrukerForSakstema(user, sakstema)
+        }
+    }
+
+    private suspend fun hentSakstemaerFraSaf(user: IdportenUser): SakstemaResult = try {
         val exchangedToken = tokendingsExchange.safToken(user)
-        return safConsumer.hentSakstemaer(SakstemaerRequest.create(user.ident), exchangedToken)
+        safConsumer.hentSakstemaer(SakstemaerRequest.create(user.ident), exchangedToken)
+    } catch (e: Exception) {
+        log.warn { "Klarte ikke å hente brukers data fra SAF." }
+        secureLog.warn(e) { "Klarte ikke hente brukers (${user.ident}) data fra SAF." }
+        SakstemaResult(errors = listOf(Kildetype.SAF))
     }
 
-    suspend fun hentSakstemaerFraDigiSos(user: IdportenUser): SakstemaResult {
+    private suspend fun hentSakstemaerForRepresentertFraSaf(user: IdportenUser, representert: String): SakstemaResult {
+        val exchangedToken = tokendingsExchange.safToken(user)
+        return safConsumer.hentSakstemaer(SakstemaerRequest.create(representert), exchangedToken)
+    }
+
+    private suspend fun hentSakstemaerFraDigiSos(user: IdportenUser): SakstemaResult = try {
         val exchangedToken = tokendingsExchange.digisosToken(user)
-        return digiSosConsumer.hentSakstemaer(exchangedToken)
+        digiSosConsumer.hentSakstemaer(exchangedToken)
+    } catch (e: Exception) {
+        log.warn { "Klarte ikke å hente brukers data fra DigiSos." }
+        secureLog.warn(e) { "Klarte ikke å hente brukers (${user.ident}) data fra DigiSos." }
+        SakstemaResult(errors = listOf(Kildetype.DIGISOS))
     }
 
-    suspend fun hentJournalposterForSakstema(user: IdportenUser, sakstema: Sakstemakode): List<Sakstema> {
+    private suspend fun hentJournalposterForBrukerForSakstema(user: IdportenUser, sakstema: Sakstemakode): List<Sakstema> {
         val exchangedToken = tokendingsExchange.safToken(user)
         val journalposterRequest = JournalposterRequest.create(user.ident, sakstema)
+        return safConsumer.hentJournalposter(user.ident, journalposterRequest, exchangedToken)
+    }
+
+
+    private suspend fun hentJournalposterForRepresentertForSakstema(user: IdportenUser, representert: String, sakstema: Sakstemakode): List<Sakstema> {
+        val exchangedToken = tokendingsExchange.safToken(user)
+        val journalposterRequest = JournalposterRequest.create(representert, sakstema)
         return safConsumer.hentJournalposter(user.ident, journalposterRequest, exchangedToken)
     }
 

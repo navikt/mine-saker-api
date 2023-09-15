@@ -42,7 +42,7 @@ internal class SakServiceTest {
         coEvery { digiSosConsumer.hentSakstemaer(any()) } returns SakstemaResultTestData.createDigiSosResults()
 
         runBlocking {
-            service.hentSakstemaer(dummyIdportenUser)
+            service.hentSakstemaer(dummyIdportenUser, representert = null)
         }
 
         coVerify(exactly = 1) { safConsumer.hentSakstemaer(capture(parameterSendtVidere), any()) }
@@ -64,7 +64,7 @@ internal class SakServiceTest {
         coEvery { digiSosConsumer.hentSakstemaer(any()) } returns SakstemaResultTestData.createDigiSosError()
 
         val result = runBlocking {
-            service.hentSakstemaer(dummyIdportenUser)
+            service.hentSakstemaer(dummyIdportenUser, representert = null)
         }
 
         result.hasErrors() shouldBe true
@@ -115,7 +115,7 @@ internal class SakServiceTest {
         val result = runCatching {
             runBlocking {
                 val dummykode = Sakstemakode.FOR
-                service.hentJournalposterForSakstema(dummyIdportenUser, dummykode)
+                service.hentJournalposterForSakstema(dummyIdportenUser,dummykode)
             }
         }
 
