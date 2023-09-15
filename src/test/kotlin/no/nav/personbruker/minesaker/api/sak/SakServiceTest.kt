@@ -83,7 +83,7 @@ internal class SakServiceTest {
         val parameterSendtVidere = slot<JournalposterRequest>()
 
         runBlocking {
-            service.hentJournalposterForSakstema(dummyIdportenUser, null, expectedSakstemakode)
+            service.hentJournalposterForSakstema(dummyIdportenUser, expectedSakstemakode)
         }
 
         coVerify(exactly = 1) {
@@ -115,7 +115,7 @@ internal class SakServiceTest {
         val result = runCatching {
             runBlocking {
                 val dummykode = Sakstemakode.FOR
-                service.hentJournalposterForSakstema(dummyIdportenUser, representert = null,dummykode)
+                service.hentJournalposterForSakstema(dummyIdportenUser,dummykode)
             }
         }
 

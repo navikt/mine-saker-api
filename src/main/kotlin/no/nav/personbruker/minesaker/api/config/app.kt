@@ -27,10 +27,10 @@ fun main() {
         pdlApiClientId = environment.pdlApiClientId
     )
 
-    val navnService = NavnService(pdlApiClient, environment.pdlApiUrl, tokendingsExchange)
+    val navnService = NavnFetcher(pdlApiClient, environment.pdlApiUrl, tokendingsExchange)
     val fullmaktConsumer = FullmaktConsumer(httpClient, tokendingsExchange, environment.pdlFullmaktUrl)
     val fullmaktService = FullmaktService(fullmaktConsumer, navnService)
-    val fullmaktSessionStore = FullmaktRedisService()
+    val fullmaktSessionStore = FullmaktRedis()
 
     val safConsumer = SafConsumer(httpClient, environment.safEndpoint, innsynsUrlResolver)
     val digiSosConsumer = DigiSosConsumer(httpClient, environment.digiSosEndpoint, innsynsUrlResolver)

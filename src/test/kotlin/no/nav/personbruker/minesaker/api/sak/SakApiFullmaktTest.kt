@@ -27,7 +27,7 @@ import java.time.ZonedDateTime
 
 class SakApiFullmaktTest {
     private val sakService: SakService = mockk()
-    private val navnService: NavnService = mockk()
+    private val navnService: NavnFetcher = mockk()
     private val fullmaktConsumer: FullmaktConsumer = mockk()
 
     private val sessionStore = FullmaktTestSessionStore()
@@ -48,7 +48,7 @@ class SakApiFullmaktTest {
     fun `henter sakstema for innlogget bruker hvis fullmaktsgiver ikke er satt`() = sakApiFullmaktTest { client ->
 
         coEvery {
-            sakService.hentSakstemaer(any(), null)
+            sakService.hentSakstemaer(any())
         } returns sakstemaResponse(Sakstemakode.AAP)
 
         coEvery {
@@ -66,7 +66,7 @@ class SakApiFullmaktTest {
         sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
 
         coEvery {
-            sakService.hentSakstemaer(any(), null)
+            sakService.hentSakstemaer(any())
         } returns sakstemaResponse(Sakstemakode.AAP)
 
         coEvery {
@@ -85,11 +85,11 @@ class SakApiFullmaktTest {
         val navnForRepresentert = "Tilhører representert"
 
         coEvery {
-            sakService.hentJournalposterForSakstema(any(), null, Sakstemakode.AAP)
+            sakService.hentJournalposterForSakstema(any(), Sakstemakode.AAP)
         } returns journalpostResponse(navnForBruker)
 
         coEvery {
-            sakService.hentJournalposterForSakstema(any(), fullmaktGiver1.ident, Sakstemakode.AAP)
+            sakService.hentJournalposterForSakstema(any(), Sakstemakode.AAP, fullmaktGiver1.ident)
         } returns journalpostResponse(navnForRepresentert)
 
         val responseForQuery: List<Sakstema> = client.get("journalposter?sakstemakode=AAP").body()
@@ -107,11 +107,11 @@ class SakApiFullmaktTest {
         sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
 
         coEvery {
-            sakService.hentJournalposterForSakstema(any(), null, Sakstemakode.AAP)
+            sakService.hentJournalposterForSakstema(any(), Sakstemakode.AAP)
         } returns journalpostResponse(navnForBruker)
 
         coEvery {
-            sakService.hentJournalposterForSakstema(any(), fullmaktGiver1.ident, Sakstemakode.AAP)
+            sakService.hentJournalposterForSakstema(any(), Sakstemakode.AAP, fullmaktGiver1.ident)
         } returns journalpostResponse(navnForRepresentert)
 
         val responseForQuery: List<Sakstema> = client.get("journalposter?sakstemakode=AAP").body()
@@ -126,7 +126,7 @@ class SakApiFullmaktTest {
         sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
 
         coEvery {
-            sakService.hentSakstemaer(any(), null)
+            sakService.hentSakstemaer(any())
         } returns sakstemaResponse(Sakstemakode.AAP)
 
         coEvery {
@@ -152,11 +152,11 @@ class SakApiFullmaktTest {
         sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
 
         coEvery {
-            sakService.hentJournalposterForSakstema(any(), null, Sakstemakode.AAP)
+            sakService.hentJournalposterForSakstema(any(), Sakstemakode.AAP)
         } returns journalpostResponse(navnForBruker)
 
         coEvery {
-            sakService.hentJournalposterForSakstema(any(), fullmaktGiver1.ident, Sakstemakode.AAP)
+            sakService.hentJournalposterForSakstema(any(), Sakstemakode.AAP, fullmaktGiver1.ident)
         } throws GraphQLResultException("Error", emptyList(), emptyMap())
 
         val firstResponse = client.get("journalposter/AAP")

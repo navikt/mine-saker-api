@@ -13,7 +13,7 @@ import no.nav.personbruker.minesaker.api.config.TokendingsExchange
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 import java.time.Duration
 
-class NavnService(
+class NavnFetcher(
     private val navnConsumer: NavnConsumer
 ) {
 
@@ -48,12 +48,14 @@ class NavnConsumer(
     private val tokendingsExchange: TokendingsExchange
 ) {
     private val log = KotlinLogging.logger {}
+    private val secureLog = KotlinLogging.logger("secureLogs")
 
     fun fetchNavn(user: IdportenUser) = runBlocking {
         val token = tokendingsExchange.pdlApiToken(user)
-        val response: GraphQLClientResponse<HentNavn.Result> = sendQuery(user.ident, token)
-        checkForErrors(response)
-        getNavnFromGraphQl(response).concatenateFull()
+        sendQuery(user.ident, token)
+            .also { checkForErrors(it) }
+            .let { unpackNavn(it) }
+            .let { concatenate(it) }
     }
 
     private suspend fun sendQuery(ident: String, token: String): GraphQLClientResponse<HentNavn.Result> {
@@ -73,17 +75,18 @@ class NavnConsumer(
     private fun checkForErrors(response: GraphQLClientResponse<HentNavn.Result>) {
         response.errors?.let { errors ->
             if (errors.isNotEmpty()) {
-                log.warn { "Feil i GraphQL-responsen: $errors" }
-                throw QueryResponseException("Feil i responsen under henting av navn")
+                log.warn { "Feil i GraphQL-respons fra pdl-api." }
+                secureLog.warn { "Feil i GraphQL-respons fra pdl-api: $errors" }
+                throw QueryResponseException("Feil i respons ved henting av navn")
             }
         }
     }
 
-    private fun Navn.concatenateFull() = listOf(fornavn, mellomnavn, etternavn)
-        .filter { navn -> !navn.isNullOrBlank() }
+    private fun concatenate(navn: Navn) = listOf(navn.fornavn, navn.mellomnavn, navn.etternavn)
+        .filter { !it.isNullOrBlank() }
         .joinToString(" ")
 
-    private fun getNavnFromGraphQl(result: GraphQLClientResponse<HentNavn.Result>) =
+    private fun unpackNavn(result: GraphQLClientResponse<HentNavn.Result>) =
         result.data?.hentPerson?.navn?.first()
             ?: throw QueryResponseException("Klarte ikke hente navn.")
 

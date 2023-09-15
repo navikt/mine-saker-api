@@ -20,15 +20,15 @@ class FullmaktConfig {
     lateinit var sessionStore: FullmaktSessionStore
 }
 
-class Fullmakt(val config: FullmaktConfig) {
+class FullmaktSessions(val config: FullmaktConfig) {
 
-    companion object : BaseApplicationPlugin<Application, FullmaktConfig, Fullmakt> {
+    companion object : BaseApplicationPlugin<Application, FullmaktConfig, FullmaktSessions> {
 
-        override val key: AttributeKey<Fullmakt> = AttributeKey("FullmaktHolder")
-        override fun install(pipeline: Application, configure: FullmaktConfig.() -> Unit): Fullmakt {
+        override val key: AttributeKey<FullmaktSessions> = AttributeKey("FullmaktHolder")
+        override fun install(pipeline: Application, configure: FullmaktConfig.() -> Unit): FullmaktSessions {
             requireNotNull(pipeline.pluginOrNull(Authentication)) { "Fullmaktinterceptor must be installed after Authentication" }
             val config = FullmaktConfig().apply(configure)
-            return Fullmakt(config)
+            return FullmaktSessions(config)
         }
     }
 }
@@ -36,9 +36,11 @@ class Fullmakt(val config: FullmaktConfig) {
 val FullmaktAttribute = AttributeKey<FullmaktGiver>("fullmakt_attribute")
 
 private val FullmaktInterceptor = createRouteScopedPlugin(name = "fullmakt-interceptor") {
-    val config = application.plugin(Fullmakt).config
+    val config = application.plugin(FullmaktSessions).config
     val redisService = config.sessionStore
+
     val log = KotlinLogging.logger { }
+    val secureLog = KotlinLogging.logger("secureLogs")
 
     on(AuthenticationChecked) { call ->
 
@@ -46,14 +48,12 @@ private val FullmaktInterceptor = createRouteScopedPlugin(name = "fullmakt-inter
 
         if (principal != null) {
 
-            val ident = principal.ident
-
             try {
-                redisService.getCurrentFullmaktGiver(ident)?.let { fullmaktGiver ->
-                    call.attributes.put(FullmaktAttribute, fullmaktGiver)
-                }
+                redisService.getCurrentFullmaktGiver(principal.ident)
+                    ?.let { fullmaktGiver -> call.attributes.put(FullmaktAttribute, fullmaktGiver) }
             } catch (e: Exception) {
-                log.warn(e) { "Fullmektig-feil" }
+                log.warn { "Feil mot fullmakt-sessionstore." }
+                secureLog.warn(e) { "Feil mot fullmakt-sessionstore." }
             }
         }
     }

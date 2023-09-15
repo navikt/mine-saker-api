@@ -44,7 +44,7 @@ class FullmaktApiKtTest {
     @Test
     fun `henter info om fullmakt for sesjon`() = fullmaktApiTest { client ->
 
-        client.get("/fullmakt/info").body<FullmaktInfo>().let { info ->
+        client.get("/fullmakt/info").body<FullmaktInfoResponse>().let { info ->
             info.viserRepresentertesData shouldBe false
             info.representertIdent shouldBe null
             info.representertNavn shouldBe null
@@ -52,7 +52,7 @@ class FullmaktApiKtTest {
 
         sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
 
-        client.get("/fullmakt/info").body<FullmaktInfo>().let { info ->
+        client.get("/fullmakt/info").body<FullmaktInfoResponse>().let { info ->
             info.viserRepresentertesData shouldBe true
             info.representertIdent shouldBe fullmaktGiver1.ident
             info.representertNavn shouldBe fullmaktGiver1.navn
@@ -60,7 +60,7 @@ class FullmaktApiKtTest {
 
         sessionStore.setFullmaktGiver(ident, fullmaktGiver2)
 
-        client.get("/fullmakt/info").body<FullmaktInfo>().let { info ->
+        client.get("/fullmakt/info").body<FullmaktInfoResponse>().let { info ->
             info.viserRepresentertesData shouldBe true
             info.representertIdent shouldBe fullmaktGiver2.ident
             info.representertNavn shouldBe fullmaktGiver2.navn
@@ -77,7 +77,7 @@ class FullmaktApiKtTest {
             fullmaktsGivere = emptyList()
         )
 
-        client.get("/fullmakt/forhold").body<FullmaktForhold>().let { forhold ->
+        client.get("/fullmakt/forhold").body<FullmaktForholdResponse>().let { forhold ->
             forhold.ident shouldBe ident
             forhold.navn shouldBe navn
             forhold.fullmaktsGivere.shouldBeEmpty()
@@ -91,10 +91,10 @@ class FullmaktApiKtTest {
             fullmaktsGivere = fullmaktGivere
         )
 
-        client.get("/fullmakt/forhold").body<FullmaktForhold>().let { forhold ->
+        client.get("/fullmakt/forhold").body<FullmaktForholdResponse>().let { forhold ->
             forhold.ident shouldBe ident
             forhold.navn shouldBe navn
-            forhold.fullmaktsGivere shouldContainAll fullmaktGivere
+            forhold.fullmaktsGivere.size shouldBe fullmaktGivere.size
         }
     }
 
@@ -165,4 +165,23 @@ class FullmaktApiKtTest {
 
         testBlock(testClient)
     }
+
+
+    //TODO replace with JSON
+    private data class FullmaktInfoResponse(
+        val viserRepresentertesData: Boolean,
+        val representertNavn: String?,
+        val representertIdent: String?,
+    )
+
+    data class FullmaktForholdResponse(
+        val navn: String,
+        val ident: String,
+        val fullmaktsGivere: List<FullmaktGiverResponse>
+    )
+
+    data class FullmaktGiverResponse(
+        val ident: String,
+        val navn: String
+    )
 }

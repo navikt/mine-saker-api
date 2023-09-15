@@ -61,10 +61,7 @@ fun Application.mineSakerApi(
                 }
 
                 is CommunicationException -> {
-                    log.error { cause.message }
-                    cause.sensitiveMessage?.let {
-                        secureLog.error { it }
-                    }
+                    log.error { "Kommunikasjonsfeil mot SAF eller Digisos." }
                     secureLog.warn(cause) { "Kommunikasjonsfeil mot SAF eller Digisos." }
                     call.respond(HttpStatusCode.ServiceUnavailable)
                 }
@@ -87,20 +84,21 @@ fun Application.mineSakerApi(
                 }
 
                 is TransformationException -> {
-                    log.warn { cause.message }
-                    secureLog.warn { "$cause" }
+                    log.warn { "Feil ved transformering av data." }
+                    secureLog.warn(cause) { "Feil ved transformering av data." }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
 
                 is UgyldigFullmaktException -> {
-                    log.warn { cause.message }
-                    secureLog.warn { "Bruker ${cause.fullmektig} er ikke representant for ${cause.giver}" }
+                    log.warn { "Bruker forsøkte å sette ugyldig fullmakt." }
+                    secureLog.warn(cause) { "Bruker forsøkte å sette ugyldig fullmakt. Bruker ${cause.fullmektig} er ikke representant for ${cause.giver}" }
 
                     call.respond(HttpStatusCode.Forbidden)
                 }
 
                 else -> {
-                    secureLog.error(cause) { "Kall til ${call.request.uri} feiler: ${cause.message}" }
+                    log.error { "Kall til ${call.request.uri}" }
+                    secureLog.error(cause) { "Kall til ${call.request.uri} feiler." }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
             }
@@ -114,7 +112,7 @@ fun Application.mineSakerApi(
     }
 
     authConfig()
-    install(Fullmakt) {
+    install(FullmaktSessions) {
         sessionStore = fullmaktSessionStore
     }
 

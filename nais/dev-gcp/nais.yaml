@@ -50,7 +50,6 @@ spec:
           namespace: "teamdokumenthandtering"
           cluster: "dev-fss"
   ingresses:
-    - "https://person.dev.nav.no/mine-saker-api"
     - "https://www.intern.dev.nav.no/mine-saker-api"
   resources:
     limits:

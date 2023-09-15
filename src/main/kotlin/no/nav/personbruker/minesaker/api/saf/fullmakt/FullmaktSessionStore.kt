@@ -13,7 +13,7 @@ interface FullmaktSessionStore {
     suspend fun clearFullmaktGiver(ident: String)
 }
 
-class FullmaktRedisService(
+class FullmaktRedis(
     host: String = getEnvVar("REDIS_URI_FULLMAKT"),
     username: String = getEnvVar("REDIS_USERNAME_FULLMAKT"),
     password: String = getEnvVar("REDIS_PASSWORD_FULLMAKT")

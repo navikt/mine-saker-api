@@ -23,7 +23,7 @@ class SakService(
     private val log = KotlinLogging.logger { }
     private val secureLog = KotlinLogging.logger("secureLogs")
 
-    suspend fun hentSakstemaer(user: IdportenUser, representert: String?): SakstemaResult = withContext(Dispatchers.IO) {
+    suspend fun hentSakstemaer(user: IdportenUser, representert: String? = null): SakstemaResult = withContext(Dispatchers.IO) {
         if (representert != null) {
             hentSakstemaerForRepresentertFraSaf(user, representert)
         } else {
@@ -37,7 +37,7 @@ class SakService(
         }
     }
 
-    suspend fun hentJournalposterForSakstema(user: IdportenUser, representert: String?, sakstema: Sakstemakode): List<Sakstema> {
+    suspend fun hentJournalposterForSakstema(user: IdportenUser, sakstema: Sakstemakode, representert: String? = null): List<Sakstema> {
         return if (representert != null) {
             hentJournalposterForRepresentertForSakstema(user, representert, sakstema)
         } else {

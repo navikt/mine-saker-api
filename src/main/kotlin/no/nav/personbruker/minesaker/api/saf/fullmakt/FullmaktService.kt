@@ -4,26 +4,19 @@ import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 
 class FullmaktService(
     private val fullmaktConsumer: FullmaktConsumer,
-    private val navnService: NavnService
+    private val navnService: NavnFetcher
 ) {
-    suspend fun getFullmaktForhold(user: IdportenUser): FullmaktForhold {
-        val fullmaktsGivere = fullmaktConsumer.getFullmaktsGivere(user)
-
-        val navn = navnService.getNavn(user)
-
-        return FullmaktForhold(
-            navn = navn,
+    suspend fun getFullmaktForhold(user: IdportenUser) =
+        FullmaktForhold(
+            navn = navnService.getNavn(user),
             ident = user.ident,
-            fullmaktsGivere = fullmaktsGivere
+            fullmaktsGivere = fullmaktConsumer.getFullmaktsGivere(user)
         )
-    }
 
-    suspend fun validateFullmaktsGiver(user: IdportenUser, giverIdent: String): FullmaktGiver {
-        val fullmaktsGivere = fullmaktConsumer.getFullmaktsGivere(user)
-
-        return fullmaktsGivere.find { it.ident == giverIdent }
+    suspend fun validateFullmaktsGiver(user: IdportenUser, giverIdent: String) =
+        fullmaktConsumer.getFullmaktsGivere(user)
+            .find { it.ident == giverIdent }
             ?: throw UgyldigFullmaktException("Manglende forhold", giver = giverIdent, fullmektig = user.ident)
-    }
 
     suspend fun token(user: IdportenUser) = fullmaktConsumer.token(user)
 }

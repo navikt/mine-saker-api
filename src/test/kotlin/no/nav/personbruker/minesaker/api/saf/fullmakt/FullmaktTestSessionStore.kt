@@ -7,9 +7,7 @@ class FullmaktTestSessionStore: FullmaktSessionStore {
         sessionMap.remove(ident)
     }
 
-    override suspend fun getCurrentFullmaktGiver(ident: String): FullmaktGiver? {
-        return sessionMap[ident]
-    }
+    override suspend fun getCurrentFullmaktGiver(ident: String) = sessionMap[ident]
 
     override suspend fun setFullmaktGiver(ident: String, fullmaktGiver: FullmaktGiver) {
         sessionMap[ident] = fullmaktGiver

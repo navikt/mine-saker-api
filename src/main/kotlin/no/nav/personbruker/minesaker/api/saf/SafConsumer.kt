@@ -31,6 +31,8 @@ class SafConsumer(
 ) {
 
     private val log = KotlinLogging.logger {}
+    private val secureLog = KotlinLogging.logger("secureLogs")
+
     private val safCallIdHeaderName = "Nav-Callid"
     private val navConsumerIdHeaderName = "Nav-Consumer-Id"
     private val navConsumerId = "mine-saker-api"
@@ -136,9 +138,11 @@ class SafConsumer(
         response.body<GraphQLResponse<T>>()
             .also {
                 if (it.containsData() && it.containsErrors()) {
-                    val msg = "Resultatet inneholdt data og feil, dataene returneres til bruker. " +
-                            "Feilene var errors: ${it.errors}, extensions: ${it.extensions}"
-                    log.warn { msg }
+                    val baseMsg = "Resultatet inneholdt data og feil, dataene returneres til bruker."
+                    log.warn { baseMsg }
+                    secureLog.warn {
+                        "$baseMsg Feilene var errors: ${it.errors}, extensions: ${it.extensions}"
+                    }
                 }
             }
     } catch (e: Exception) {

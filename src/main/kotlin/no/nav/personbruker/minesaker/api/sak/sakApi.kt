@@ -23,22 +23,30 @@ fun Route.sakApi(service: SakService) {
 
     enableFullmakt {
         get("/journalposter") {
-            val representert = call.representert
-            val sakstema = call.sakstemaFromQueryParameters()
-            val result = service.hentJournalposterForSakstema(idportenUser, representert, sakstema)
-            call.respond(HttpStatusCode.OK, result)
+            service.hentJournalposterForSakstema(
+                user = idportenUser,
+                sakstema = call.sakstemaFromQueryParameters(),
+                representert = call.representert
+            ).let { result ->
+                call.respond(HttpStatusCode.OK, result)
+            }
         }
 
         get("/journalposter/{$sakstemakode}") {
-            val representert = call.representert
-            val sakstema = call.sakstemakodeFromParameters()
-            val result = service.hentJournalposterForSakstema(idportenUser, representert, sakstema)
-            call.respond(HttpStatusCode.OK, result)
+            service.hentJournalposterForSakstema(
+                user = idportenUser,
+                sakstema = call.sakstemakodeFromParameters(),
+                representert = call.representert
+            ).let { result ->
+                call.respond(HttpStatusCode.OK, result)
+            }
         }
 
         get("/sakstemaer") {
-            val representert = call.representert
-            val result = service.hentSakstemaer(idportenUser, representert)
+            val result = service.hentSakstemaer(
+                user = idportenUser,
+                representert = call.representert
+            )
             if (result.hasErrors()) {
                 log.warn { "En eller flere kilder i kall til /sakstemnaer feilet: ${result.errors()}" }
                 secureLog.warn { "En eller flere kilder i kall til /sakstemaer for ident ${idportenUser.ident} feilet: ${result.errors()}" }
@@ -48,10 +56,17 @@ fun Route.sakApi(service: SakService) {
     }
 
     get("/dokument/{$journalpostIdParameterName}/{$dokumentIdParameterName}") {
-        val journalpostId = call.journalpostId()
-        val dokumentId = call.dokumentInfoId()
-        val result = service.hentDokument(idportenUser, journalpostId, dokumentId)
-        call.respondBytes(bytes = result.body, contentType = result.contentType, status = HttpStatusCode.OK)
+        service.hentDokument(
+            idportenUser,
+            call.journalpostId(),
+            call.dokumentInfoId()
+        ).let { result ->
+            call.respondBytes(
+                bytes = result.body,
+                contentType = result.contentType,
+                status = HttpStatusCode.OK
+            )
+        }
     }
 }
 
@@ -65,14 +80,13 @@ fun Route.sakApiExternal(
 
     get("/sakstema/{$sakstemakode}/journalpost/{$journalpostIdParameterName}") {
         val sakstemakode = call.sakstemakodeFromParameters()
-        val journalpostId = call.journalpostId()
 
-        val result = service.hentJournalposterForSakstema(idportenUser, null, sakstemakode)
+        val result = service.hentJournalposterForSakstema(idportenUser, sakstemakode)
 
         val sakstema = result.find { it.kode == sakstemakode }
 
         val journalpost = sakstema?.journalposter
-            ?.find { it.journalpostId == journalpostId }
+            ?.find { it.journalpostId == call.journalpostId() }
 
         if (journalpost != null) {
             val response = sakstema.copy(journalposter = listOf(journalpost))
@@ -84,7 +98,7 @@ fun Route.sakApiExternal(
     }
 
     get("/sakstemaer/egne") {
-        val result = service.hentSakstemaer(idportenUser, null)
+        val result = service.hentSakstemaer(idportenUser)
         if (result.hasErrors()) {
             log.warn { "En eller flere kilder i kall til /sakstemnaer feilet: ${result.errors()}" }
             secureLog.warn { "En eller flere kilder i kall til /sakstemaer for ident ${idportenUser.ident} feilet: ${result.errors()}" }
@@ -94,7 +108,7 @@ fun Route.sakApiExternal(
 
     get("/siste"){
         val result = service
-            .hentSakstemaer(idportenUser, null)
+            .hentSakstemaer(idportenUser)
         if (result.hasErrors()) {
             log.warn { "En eller flere kilder feilet: ${result.errors()}" }
         }
