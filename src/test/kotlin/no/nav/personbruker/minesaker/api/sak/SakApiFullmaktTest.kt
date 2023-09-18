@@ -14,10 +14,13 @@ import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import no.nav.personbruker.minesaker.api.config.TokendingsExchange
 import no.nav.personbruker.minesaker.api.config.jsonConfig
 import no.nav.personbruker.minesaker.api.config.mineSakerApi
+import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
 import no.nav.personbruker.minesaker.api.domain.*
 import no.nav.personbruker.minesaker.api.exception.GraphQLResultException
+import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.saf.fullmakt.*
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.installIdPortenAuthMock
@@ -170,6 +173,62 @@ class SakApiFullmaktTest {
         sessionStore.getCurrentFullmaktGiver(ident) shouldBe null
     }
 
+    @Test
+    fun `filtrerer journalposter etter sakstemakode hvis SAF leverer for mange`() = testApplication {
+        val navn = "Tilhører representert"
+
+        sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
+
+        val safConsumer: SafConsumer = mockk(relaxed = true)
+        val tokendingsExchange: TokendingsExchange = mockk(relaxed = true)
+        val digiSosConsumer: DigiSosConsumer = mockk()
+
+        val localSakService = SakService(safConsumer, tokendingsExchange, digiSosConsumer)
+
+        coEvery {
+            tokendingsExchange.safToken(any())
+        } returns "token"
+
+        coEvery {
+            safConsumer.hentJournalposter(any(), any(), any())
+        } returns journalpostResponse(navn, Sakstemakode.AAP) + journalpostResponse(navn, Sakstemakode.YRK)
+
+        val testClient = createClient {
+            install(ContentNegotiation) {
+                jackson {
+                    jsonConfig()
+                }
+            }
+            install(HttpTimeout)
+        }
+
+        application {
+            mineSakerApi(
+                sakService = localSakService,
+                httpClient = testClient,
+                corsAllowedOrigins = "*",
+                corsAllowedSchemes = "*",
+                sakerUrl = "N/A",
+                fullmaktService = fullmaktService,
+                fullmaktSessionStore = sessionStore,
+                authConfig = {
+                    installIdPortenAuthMock {
+                        setAsDefault = true
+                        alwaysAuthenticated = true
+                        staticLevelOfAssurance = LevelOfAssurance.HIGH
+                        staticUserPid = ident
+                    }
+                }
+            )
+        }
+
+        val responseAAP: List<Sakstema> = testClient.get("journalposter/AAP").body()
+        val responseYRK: List<Sakstema> = testClient.get("journalposter/YRK").body()
+
+        responseAAP.first().kode shouldBe Sakstemakode.AAP
+        responseYRK.first().kode shouldBe Sakstemakode.YRK
+    }
+
 
     @KtorDsl
     private fun sakApiFullmaktTest(testBlock: suspend (HttpClient) -> Unit) = testApplication {
@@ -217,10 +276,10 @@ class SakApiFullmaktTest {
         listOf(Kildetype.SAF)
     )
 
-    private fun journalpostResponse(navn: String) = listOf(
+    private fun journalpostResponse(navn: String, temakode: Sakstemakode = Sakstemakode.AAP) = listOf(
         Sakstema(
             navn = navn,
-            kode = Sakstemakode.AAP,
+            kode = temakode,
             journalposter = listOf(
                 Journalpost(
                     tittel = "Tittel",
