@@ -10,7 +10,6 @@ import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.ApplicationStopping
 import io.ktor.server.application.call
 import io.ktor.server.application.install
-import io.ktor.server.auth.authenticate
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.plugins.defaultheaders.DefaultHeaders
@@ -21,6 +20,7 @@ import io.ktor.server.routing.routing
 import io.ktor.util.pipeline.PipelineContext
 import io.prometheus.client.hotspot.DefaultExports
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.ktor.server.auth.*
 import nav.no.tms.common.metrics.installTmsMicrometerMetrics
 import no.nav.personbruker.minesaker.api.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.exception.DocumentNotFoundException
