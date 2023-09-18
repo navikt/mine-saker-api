@@ -1,7 +1,8 @@
 package no.nav.personbruker.minesaker.api.saf.fullmakt
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.matchers.collections.shouldBeEmpty
-import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -10,6 +11,7 @@ import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.testing.*
@@ -42,33 +44,33 @@ class FullmaktApiKtTest {
     }
 
     @Test
-    fun `henter info om fullmakt for sesjon`() = fullmaktApiTest { client ->
+    fun `henter info om fullmakt for sesjon`() = fullmaktApiTest {
 
-        client.get("/fullmakt/info").body<FullmaktInfoResponse>().let { info ->
-            info.viserRepresentertesData shouldBe false
-            info.representertIdent shouldBe null
-            info.representertNavn shouldBe null
+        client.get("/fullmakt/info").validateResponse { json ->
+            json["viserRepresentertesData"].asBoolean() shouldBe false
+            json["representertIdent"].isNull shouldBe true
+            json["representertNavn"].isNull shouldBe true
         }
 
         sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
 
-        client.get("/fullmakt/info").body<FullmaktInfoResponse>().let { info ->
-            info.viserRepresentertesData shouldBe true
-            info.representertIdent shouldBe fullmaktGiver1.ident
-            info.representertNavn shouldBe fullmaktGiver1.navn
+        client.get("/fullmakt/info").validateResponse { json ->
+            json["viserRepresentertesData"].asBoolean() shouldBe true
+            json["representertIdent"].asText() shouldBe fullmaktGiver1.ident
+            json["representertNavn"].asText() shouldBe fullmaktGiver1.navn
         }
 
         sessionStore.setFullmaktGiver(ident, fullmaktGiver2)
 
-        client.get("/fullmakt/info").body<FullmaktInfoResponse>().let { info ->
-            info.viserRepresentertesData shouldBe true
-            info.representertIdent shouldBe fullmaktGiver2.ident
-            info.representertNavn shouldBe fullmaktGiver2.navn
+        client.get("/fullmakt/info").validateResponse { json ->
+            json["viserRepresentertesData"].asBoolean() shouldBe true
+            json["representertIdent"].asText() shouldBe fullmaktGiver2.ident
+            json["representertNavn"].asText() shouldBe fullmaktGiver2.navn
         }
     }
 
     @Test
-    fun `henter gjeldende forhold for bruker`() = fullmaktApiTest { client ->
+    fun `henter gjeldende forhold for bruker`() = fullmaktApiTest {
         coEvery {
             fullmaktService.getFullmaktForhold(any())
         } returns FullmaktForhold(
@@ -77,10 +79,10 @@ class FullmaktApiKtTest {
             fullmaktsGivere = emptyList()
         )
 
-        client.get("/fullmakt/forhold").body<FullmaktForholdResponse>().let { forhold ->
-            forhold.ident shouldBe ident
-            forhold.navn shouldBe navn
-            forhold.fullmaktsGivere.shouldBeEmpty()
+        client.get("/fullmakt/forhold").validateResponse { json ->
+            json["ident"].asText() shouldBe ident
+            json["navn"].asText() shouldBe navn
+            json["fullmaktsGivere"].size() shouldBe 0
         }
 
         coEvery {
@@ -91,15 +93,15 @@ class FullmaktApiKtTest {
             fullmaktsGivere = fullmaktGivere
         )
 
-        client.get("/fullmakt/forhold").body<FullmaktForholdResponse>().let { forhold ->
-            forhold.ident shouldBe ident
-            forhold.navn shouldBe navn
-            forhold.fullmaktsGivere.size shouldBe fullmaktGivere.size
+        client.get("/fullmakt/forhold").validateResponse { json ->
+            json["ident"].asText() shouldBe ident
+            json["navn"].asText() shouldBe navn
+            json["fullmaktsGivere"].size() shouldBe fullmaktGivere.size
         }
     }
 
     @Test
-    fun `setter fullmaktsgiver for sesjon hvis forhold er gyldig`() = fullmaktApiTest { client ->
+    fun `setter fullmaktsgiver for sesjon hvis forhold er gyldig`() = fullmaktApiTest {
         coEvery {
             fullmaktService.validateFullmaktsGiver(any(), fullmaktGiver1.ident)
         } returns fullmaktGiver1
@@ -117,7 +119,7 @@ class FullmaktApiKtTest {
     }
 
     @Test
-    fun `svarer med feil dersom en setter aktivt forhold som ikke er gyldig`() = fullmaktApiTest { client ->
+    fun `svarer med feil dersom en setter aktivt forhold som ikke er gyldig`() = fullmaktApiTest {
         coEvery {
             fullmaktService.validateFullmaktsGiver(any(), fullmaktGiver1.ident)
         } throws UgyldigFullmaktException("Ugyldig", fullmaktGiver1.ident, ident)
@@ -133,7 +135,7 @@ class FullmaktApiKtTest {
     }
 
     @KtorDsl
-    private fun fullmaktApiTest(testBlock: suspend (HttpClient) -> Unit) = testApplication {
+    private fun fullmaktApiTest(testBlock: suspend ApplicationTestBuilder.() -> Unit) = testApplication {
         val testClient = createClient {
             install(ContentNegotiation) {
                 jackson {
@@ -163,25 +165,14 @@ class FullmaktApiKtTest {
             )
         }
 
-        testBlock(testClient)
+        testBlock()
     }
 
+    private val objectMapper = jacksonObjectMapper()
 
-    //TODO replace with JSON
-    private data class FullmaktInfoResponse(
-        val viserRepresentertesData: Boolean,
-        val representertNavn: String?,
-        val representertIdent: String?,
-    )
+    private suspend fun HttpResponse.validateResponse(validator: (JsonNode) -> Unit) =
+        bodyAsText()
+            .let { objectMapper.readTree(it) }
+            .let { validator(it) }
 
-    data class FullmaktForholdResponse(
-        val navn: String,
-        val ident: String,
-        val fullmaktsGivere: List<FullmaktGiverResponse>
-    )
-
-    data class FullmaktGiverResponse(
-        val ident: String,
-        val navn: String
-    )
 }
