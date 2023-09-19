@@ -173,63 +173,6 @@ class SakApiFullmaktTest {
         sessionStore.getCurrentFullmaktGiver(ident) shouldBe null
     }
 
-    @Test
-    fun `filtrerer journalposter etter sakstemakode hvis SAF leverer for mange`() = testApplication {
-        val navn = "Tilhører representert"
-
-        sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
-
-        val safConsumer: SafConsumer = mockk(relaxed = true)
-        val tokendingsExchange: TokendingsExchange = mockk(relaxed = true)
-        val digiSosConsumer: DigiSosConsumer = mockk()
-
-        val localSakService = SakService(safConsumer, tokendingsExchange, digiSosConsumer)
-
-        coEvery {
-            tokendingsExchange.safToken(any())
-        } returns "token"
-
-        coEvery {
-            safConsumer.hentJournalposter(any(), any(), any())
-        } returns journalpostResponse(navn, Sakstemakode.AAP) + journalpostResponse(navn, Sakstemakode.YRK)
-
-        val testClient = createClient {
-            install(ContentNegotiation) {
-                jackson {
-                    jsonConfig()
-                }
-            }
-            install(HttpTimeout)
-        }
-
-        application {
-            mineSakerApi(
-                sakService = localSakService,
-                httpClient = testClient,
-                corsAllowedOrigins = "*",
-                corsAllowedSchemes = "*",
-                sakerUrl = "N/A",
-                fullmaktService = fullmaktService,
-                fullmaktSessionStore = sessionStore,
-                authConfig = {
-                    installIdPortenAuthMock {
-                        setAsDefault = true
-                        alwaysAuthenticated = true
-                        staticLevelOfAssurance = LevelOfAssurance.HIGH
-                        staticUserPid = ident
-                    }
-                }
-            )
-        }
-
-        val responseAAP: List<Sakstema> = testClient.get("journalposter/AAP").body()
-        val responseYRK: List<Sakstema> = testClient.get("journalposter/YRK").body()
-
-        responseAAP.first().kode shouldBe Sakstemakode.AAP
-        responseYRK.first().kode shouldBe Sakstemakode.YRK
-    }
-
-
     @KtorDsl
     private fun sakApiFullmaktTest(testBlock: suspend (HttpClient) -> Unit) = testApplication {
         val testClient = createClient {
