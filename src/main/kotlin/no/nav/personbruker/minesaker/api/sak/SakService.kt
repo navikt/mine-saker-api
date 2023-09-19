@@ -79,7 +79,6 @@ class SakService(
         val exchangedToken = tokendingsExchange.safToken(user)
         val journalposterRequest = JournalposterRequest.create(representert, sakstema)
         return safConsumer.hentJournalposter(user.ident, journalposterRequest, exchangedToken)
-            .filter { it.kode == sakstema } // SAF leverer alle sakstemaer med gjeldende fullmakt i stedet for det en bad om.
     }
 
     suspend fun hentDokument(
