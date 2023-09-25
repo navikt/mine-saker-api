@@ -27,6 +27,7 @@ spec:
     max: 4
   webproxy: true
   idporten:
+    enabled: true
     sidecar:
       enabled: true
       level: idporten-loa-substantial
