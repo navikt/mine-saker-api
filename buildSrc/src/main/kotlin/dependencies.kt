@@ -37,5 +37,5 @@ object Nimbusds: DependencyGroup {
 }
 
 object TmsTokenSupportBeta: TmsKtorTokenSupportDefaults {
-    override val version get() = "3.0.0-beta"
+    override val version get() = "3.0.0-beta-2"
 }

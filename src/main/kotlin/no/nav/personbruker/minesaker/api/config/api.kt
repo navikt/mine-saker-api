@@ -115,8 +115,6 @@ fun Application.mineSakerApi(
 
     authConfig()
 
-    install(IdPortenLogin)
-
     install(FullmaktSessions) {
         sessionStore = fullmaktSessionStore
     }
@@ -167,6 +165,8 @@ private suspend fun resetFullmaktSession(
 }
 
 fun authConfig(): Application.() -> Unit = {
+    install(IdPortenLogin)
+
     authentication {
         idPorten {
             setAsDefault = true
