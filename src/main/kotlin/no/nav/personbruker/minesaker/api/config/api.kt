@@ -31,7 +31,7 @@ import no.nav.personbruker.minesaker.api.health.healthApi
 import no.nav.personbruker.minesaker.api.saf.fullmakt.*
 import no.nav.personbruker.minesaker.api.sak.*
 import no.nav.tms.token.support.idporten.sidecar.LevelOfAssurance
-import no.nav.tms.token.support.idporten.sidecar.installIdPortenAuth
+import no.nav.tms.token.support.idporten.sidecar.idPorten
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUserFactory
 
 
@@ -136,8 +136,11 @@ fun Application.mineSakerApi(
 
         authenticate {
             sakApi(sakService)
-            sakApiExternal(sakService, sakerUrl)
             fullmaktApi(fullmaktService, fullmaktSessionStore)
+        }
+
+        authenticate(SubstantialAuth) {
+            sakApiExternal(sakService, sakerUrl)
         }
     }
 
@@ -159,11 +162,21 @@ private suspend fun resetFullmaktSession(
 }
 
 fun authConfig(): Application.() -> Unit = {
-    installIdPortenAuth {
-        setAsDefault = true
-        levelOfAssurance = LevelOfAssurance.HIGH
+    authentication {
+        idPorten {
+            setAsDefault = true
+            levelOfAssurance = LevelOfAssurance.HIGH
+        }
+
+        idPorten {
+            authenticatorName = SubstantialAuth
+            setAsDefault = false
+            levelOfAssurance = LevelOfAssurance.SUBSTANTIAL
+        }
     }
 }
+
+const val SubstantialAuth = "substantial_auth"
 
 private fun Application.configureShutdownHook(httpClient: HttpClient) {
     environment.monitor.subscribe(ApplicationStopping) {

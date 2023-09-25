@@ -14,15 +14,17 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
+import io.ktor.server.auth.*
 import io.ktor.server.testing.*
 import io.ktor.util.*
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import no.nav.personbruker.minesaker.api.config.SubstantialAuth
 import no.nav.personbruker.minesaker.api.config.jsonConfig
 import no.nav.personbruker.minesaker.api.config.mineSakerApi
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
-import no.nav.tms.token.support.idporten.sidecar.mock.installIdPortenAuthMock
+import no.nav.tms.token.support.idporten.sidecar.mock.idPortenMock
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 
@@ -155,11 +157,21 @@ class FullmaktApiKtTest {
                 fullmaktService = fullmaktService,
                 fullmaktSessionStore = sessionStore,
                 authConfig = {
-                    installIdPortenAuthMock {
-                        setAsDefault = true
-                        alwaysAuthenticated = true
-                        staticLevelOfAssurance = LevelOfAssurance.HIGH
-                        staticUserPid = ident
+                    authentication {
+                        idPortenMock {
+                            alwaysAuthenticated = true
+                            setAsDefault = true
+                            staticLevelOfAssurance = LevelOfAssurance.HIGH
+                            staticUserPid = ident
+                        }
+
+                        idPortenMock {
+                            authenticatorName = SubstantialAuth
+                            alwaysAuthenticated = true
+                            setAsDefault = false
+                            staticLevelOfAssurance = LevelOfAssurance.SUBSTANTIAL
+                            staticUserPid = ident
+                        }
                     }
                 }
             )

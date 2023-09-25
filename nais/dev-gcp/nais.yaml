@@ -27,11 +27,9 @@ spec:
     max: 4
   webproxy: true
   idporten:
-    enabled: true
-    postLogoutRedirectURIs:
-      - "https://www.dev.nav.no"
     sidecar:
       enabled: true
+      level: idporten-loa-substantial
   tokenx:
     enabled: true
   accessPolicy:

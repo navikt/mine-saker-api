@@ -5,10 +5,12 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.Application
+import io.ktor.server.auth.*
 import io.ktor.server.testing.*
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
+import no.nav.personbruker.minesaker.api.config.SubstantialAuth
 import no.nav.personbruker.minesaker.api.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.exception.DocumentNotFoundException
 import no.nav.personbruker.minesaker.api.exception.GraphQLResultException
@@ -25,8 +27,9 @@ import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktTestSessionStore
 import no.nav.personbruker.minesaker.api.sak.Kildetype
 import no.nav.personbruker.minesaker.api.sak.SakService
 import no.nav.personbruker.minesaker.api.sak.SakstemaResult
+import no.nav.tms.token.support.idporten.sidecar.idPorten
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
-import no.nav.tms.token.support.idporten.sidecar.mock.installIdPortenAuthMock
+import no.nav.tms.token.support.idporten.sidecar.mock.idPortenMock
 import org.junit.jupiter.api.Test
 
 internal class ExceptionApiTest {
@@ -202,12 +205,21 @@ internal class ExceptionApiTest {
     )
 
     private fun Application.defaultAuthConfig() =
-        installIdPortenAuthMock {
-            alwaysAuthenticated = true
-            setAsDefault = true
-            staticLevelOfAssurance = LevelOfAssurance.LEVEL_4
-            staticUserPid = testfnr
+        authentication {
+            idPortenMock {
+                alwaysAuthenticated = true
+                setAsDefault = true
+                staticLevelOfAssurance = LevelOfAssurance.HIGH
+                staticUserPid = testfnr
+            }
 
+            idPortenMock {
+                authenticatorName = SubstantialAuth
+                alwaysAuthenticated = true
+                setAsDefault = false
+                staticLevelOfAssurance = LevelOfAssurance.SUBSTANTIAL
+                staticUserPid = testfnr
+            }
         }
 
     private fun mockFullmakt(): Pair<FullmaktService, FullmaktSessionStore> {
