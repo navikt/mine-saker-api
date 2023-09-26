@@ -35,7 +35,3 @@ object Nimbusds: DependencyGroup {
     val joseJwt = dependency("nimbus-jose-jwt")
     val oauth2OidcSdk =  dependency("oauth2-oidc-sdk")
 }
-
-object TmsTokenSupportBeta: TmsKtorTokenSupportDefaults {
-    override val version get() = "3.0.0-beta-2"
-}
