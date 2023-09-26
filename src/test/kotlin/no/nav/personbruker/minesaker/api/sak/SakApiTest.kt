@@ -13,6 +13,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
+import io.ktor.server.auth.*
 import io.ktor.server.response.respondBytes
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
@@ -20,6 +21,7 @@ import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import io.mockk.coEvery
 import io.mockk.mockk
+import no.nav.personbruker.minesaker.api.config.SubstantialAuth
 import no.nav.personbruker.minesaker.api.config.jsonConfig
 import no.nav.personbruker.minesaker.api.config.mineSakerApi
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
@@ -32,7 +34,7 @@ import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktSessionStore
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktTestSessionStore
 import no.nav.personbruker.minesaker.api.sak.ForventetSakstemaInnhold.Companion.toDigisosResponse
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
-import no.nav.tms.token.support.idporten.sidecar.mock.installIdPortenAuthMock
+import no.nav.tms.token.support.idporten.sidecar.mock.idPortenMock
 import org.junit.jupiter.api.Test
 import java.net.URL
 import java.time.LocalDateTime
@@ -144,13 +146,22 @@ private fun ApplicationTestBuilder.mockApi(
     corsAllowedOrigins: String = "*",
     corsAllowedSchemes: String = "*",
     authConfig: Application.() -> Unit = {
-            installIdPortenAuthMock {
+        authentication {
+            idPortenMock {
                 alwaysAuthenticated = true
                 setAsDefault = true
-                staticLevelOfAssurance = LevelOfAssurance.LEVEL_4
+                staticLevelOfAssurance = LevelOfAssurance.HIGH
                 staticUserPid = "testfnr"
-
             }
+
+            idPortenMock {
+                authenticatorName = SubstantialAuth
+                alwaysAuthenticated = true
+                setAsDefault = false
+                staticLevelOfAssurance = LevelOfAssurance.SUBSTANTIAL
+                staticUserPid = "testfnr"
+            }
+        }
     },
     sakerUrl: String = "http://minesaker.dev"
 ) = application {

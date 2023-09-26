@@ -35,4 +35,3 @@ object Nimbusds: DependencyGroup {
     val joseJwt = dependency("nimbus-jose-jwt")
     val oauth2OidcSdk =  dependency("oauth2-oidc-sdk")
 }
-

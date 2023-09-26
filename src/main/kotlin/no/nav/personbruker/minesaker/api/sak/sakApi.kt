@@ -55,6 +55,25 @@ fun Route.sakApi(service: SakService) {
         }
     }
 
+    get("/sakstema/{$sakstemakode}/journalpost/{$journalpostIdParameterName}") {
+        val sakstemakode = call.sakstemakodeFromParameters()
+
+        val result = service.hentJournalposterForSakstema(idportenUser, sakstemakode)
+
+        val sakstema = result.find { it.kode == sakstemakode }
+
+        val journalpost = sakstema?.journalposter
+            ?.find { it.journalpostId == call.journalpostId() }
+
+        if (journalpost != null) {
+            val response = sakstema.copy(journalposter = listOf(journalpost))
+
+            call.respond(response)
+        } else {
+            call.respond(HttpStatusCode.NotFound)
+        }
+    }
+
     get("/dokument/{$journalpostIdParameterName}/{$dokumentIdParameterName}") {
         service.hentDokument(
             idportenUser,
@@ -77,25 +96,6 @@ fun Route.sakApiExternal(
 ) {
     val log = KotlinLogging.logger { }
     val secureLog = KotlinLogging.logger("secureLog")
-
-    get("/sakstema/{$sakstemakode}/journalpost/{$journalpostIdParameterName}") {
-        val sakstemakode = call.sakstemakodeFromParameters()
-
-        val result = service.hentJournalposterForSakstema(idportenUser, sakstemakode)
-
-        val sakstema = result.find { it.kode == sakstemakode }
-
-        val journalpost = sakstema?.journalposter
-            ?.find { it.journalpostId == call.journalpostId() }
-
-        if (journalpost != null) {
-            val response = sakstema.copy(journalposter = listOf(journalpost))
-
-            call.respond(response)
-        } else {
-            call.respond(HttpStatusCode.NotFound)
-        }
-    }
 
     get("/sakstemaer/egne") {
         val result = service.hentSakstemaer(idportenUser)
