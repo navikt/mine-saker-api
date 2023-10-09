@@ -49,7 +49,7 @@ fun Application.mineSakerApi(
 ) {
     DefaultExports.initialize()
     val log = KotlinLogging.logger { }
-    val secureLog = KotlinLogging.logger("secureLogs")
+    val secureLog = KotlinLogging.logger("secureLog")
 
     install(DefaultHeaders)
     install(StatusPages) {

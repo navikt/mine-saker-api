@@ -40,7 +40,7 @@ private val FullmaktInterceptor = createRouteScopedPlugin(name = "fullmakt-inter
     val redisService = config.sessionStore
 
     val log = KotlinLogging.logger { }
-    val secureLog = KotlinLogging.logger("secureLogs")
+    val secureLog = KotlinLogging.logger("secureLog")
 
     on(AuthenticationChecked) { call ->
 

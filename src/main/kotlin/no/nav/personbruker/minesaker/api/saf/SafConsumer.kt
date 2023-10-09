@@ -31,7 +31,7 @@ class SafConsumer(
 ) {
 
     private val log = KotlinLogging.logger {}
-    private val secureLog = KotlinLogging.logger("secureLogs")
+    private val secureLog = KotlinLogging.logger("secureLog")
 
     private val safCallIdHeaderName = "Nav-Callid"
     private val navConsumerIdHeaderName = "Nav-Consumer-Id"

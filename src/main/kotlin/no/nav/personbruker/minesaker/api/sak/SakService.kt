@@ -21,7 +21,7 @@ class SakService(
 ) {
 
     private val log = KotlinLogging.logger { }
-    private val secureLog = KotlinLogging.logger("secureLogs")
+    private val secureLog = KotlinLogging.logger("secureLog")
 
     suspend fun hentSakstemaer(user: IdportenUser, representert: String? = null): SakstemaResult = withContext(Dispatchers.IO) {
         if (representert != null) {

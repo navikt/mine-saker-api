@@ -18,7 +18,7 @@ class NavnFetcher(
 ) {
 
     private val log = KotlinLogging.logger { }
-    private val secureLog = KotlinLogging.logger("secureLogs")
+    private val secureLog = KotlinLogging.logger("secureLog")
 
     constructor(
         client: GraphQLKtorClient,
@@ -36,8 +36,8 @@ class NavnFetcher(
             navnConsumer.fetchNavn(user)
         }
     } catch (e: Exception) {
-        log.info { "Feil ved henting av navn" }
-        secureLog.info(e) { "Feil ved henting av navn for bruker ${user.ident}" }
+        log.warn { "Feil ved henting av navn" }
+        secureLog.warn(e) { "Feil ved henting av navn for bruker ${user.ident}" }
         user.ident
     }
 }
@@ -48,7 +48,7 @@ class NavnConsumer(
     private val tokendingsExchange: TokendingsExchange
 ) {
     private val log = KotlinLogging.logger {}
-    private val secureLog = KotlinLogging.logger("secureLogs")
+    private val secureLog = KotlinLogging.logger("secureLog")
 
     fun fetchNavn(user: IdportenUser) = runBlocking {
         val token = tokendingsExchange.pdlApiToken(user)
