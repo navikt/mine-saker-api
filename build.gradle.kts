@@ -86,31 +86,14 @@ tasks {
             events("passed", "skipped", "failed")
         }
     }
-
-    compileKotlin {
-        dependsOn("graphqlPdlClient")
-    }
 }
 
 graphql {
     client {
         sdlEndpoint = "https://navikt.github.io/safselvbetjening/schema.graphqls"
         packageName = "no.nav.dokument.saf.selvbetjening.generated.dto"
-        queryFileDirectory = "${project.projectDir.absolutePath}/src/main/resources/saf"
+        queryFileDirectory = "${project.projectDir.absolutePath}/src/main/resources"
     }
-}
-
-val graphqlPdlSdl by tasks.registering(GraphQLDownloadSDLTask::class) {
-    endpoint.set("https://navikt.github.io/pdl/pdl-api-sdl.graphqls")
-    dependsOn("graphqlGenerateClient")
-}
-
-val graphqlPdlClient by tasks.registering(GraphQLGenerateClientTask::class) {
-    packageName.set("no.nav.pdl.generated.dto")
-    schemaFile.set(graphqlPdlSdl.get().outputFile)
-    queryFileDirectory.set(File("${project.projectDir.absolutePath}/src/main/resources/pdl-api"))
-    serializer.set(GraphQLSerializer.KOTLINX)
-    dependsOn("graphqlPdlSdl")
 }
 
 apply(plugin = Shadow.pluginId)

@@ -4,11 +4,11 @@ import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 
 class FullmaktService(
     private val fullmaktConsumer: FullmaktConsumer,
-    private val navnService: NavnFetcher
+    private val navnFetcher: NavnFetcher
 ) {
     suspend fun getFullmaktForhold(user: IdportenUser) =
         FullmaktForhold(
-            navn = navnService.getNavn(user),
+            navn = navnFetcher.getNavn(user),
             ident = user.ident,
             fullmaktsGivere = fullmaktConsumer.getFullmaktsGivere(user)
         )

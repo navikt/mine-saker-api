@@ -11,11 +11,8 @@ enum class Sakstemakode {
     DAG,
     ENF,
     ERS,
-    EYB,
-    EYO,
     FAR,
     FEI,
-    FIP,
     FOR,
     FOS,
     FRI,
@@ -27,8 +24,6 @@ enum class Sakstemakode {
     HJE,
     IAR,
     IND,
-    KLL,
-    KOM,
     KON,
     MED,
     MOB,
@@ -45,7 +40,6 @@ enum class Sakstemakode {
     SAK,
     SAP,
     SER,
-    SIK,
     STO,
     SUP,
     SYK,
@@ -60,7 +54,12 @@ enum class Sakstemakode {
     UKJ,
     VEN,
     YRA,
-    YRK;
+    YRK,
+    FIP,
+    KLL,
+    EYB,
+    EYO,
+    KOM;
 
     companion object {
         fun teamKoderFraSAF(): List<Sakstemakode> {
