@@ -23,5 +23,6 @@ data class Environment(
     val pdlFullmaktClientId: String = getEnvVar("PDL_FULLMAKT_CLIENT_ID"),
     val pdlApiUrl: String = getEnvVar("PDL_API_URL"),
     val pdlApiClientId: String = getEnvVar("PDL_API_CLIENT_ID"),
+    val pdlBehandlingsnummer: String = getEnvVar("PDL_BEHANDLINGSNUMMER"),
 )
 
