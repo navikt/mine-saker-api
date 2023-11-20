@@ -16,7 +16,7 @@ import no.nav.personbruker.minesaker.api.exception.CommunicationException
 import no.nav.personbruker.minesaker.api.exception.DocumentNotFoundException
 import no.nav.personbruker.minesaker.api.exception.GraphQLResultException
 import no.nav.personbruker.minesaker.api.config.InnsynsUrlResolver
-import no.nav.personbruker.minesaker.api.domain.Sakstema
+import no.nav.personbruker.minesaker.api.domain.JournalposterResponse
 import no.nav.personbruker.minesaker.api.saf.common.GraphQLResponse
 import no.nav.personbruker.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.personbruker.minesaker.api.saf.sakstemaer.SakstemaerRequest
@@ -46,7 +46,7 @@ class SafConsumer(
         innloggetBruker: String,
         request: JournalposterRequest,
         accessToken: String
-    ): List<Sakstema> {
+    ): JournalposterResponse? {
         val result: HentJournalposter.Result = unwrapGraphQLResponse(sendQuery(request, accessToken))
         return result.toInternal(innloggetBruker)
     }

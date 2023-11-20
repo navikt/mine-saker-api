@@ -5,7 +5,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.personbruker.minesaker.api.digisos.DigiSosConsumer
-import no.nav.personbruker.minesaker.api.domain.Sakstema
+import no.nav.personbruker.minesaker.api.domain.JournalposterResponse
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.SafConsumer
 import no.nav.personbruker.minesaker.api.config.TokendingsExchange
@@ -37,7 +37,7 @@ class SakService(
         }
     }
 
-    suspend fun hentJournalposterForSakstema(user: IdportenUser, sakstema: Sakstemakode, representert: String? = null): List<Sakstema> {
+    suspend fun hentJournalposterForSakstema(user: IdportenUser, sakstema: Sakstemakode, representert: String? = null): JournalposterResponse? {
         return if (representert != null) {
             hentJournalposterForRepresentertForSakstema(user, representert, sakstema)
         } else {
@@ -68,14 +68,14 @@ class SakService(
         SakstemaResult(errors = listOf(Kildetype.DIGISOS))
     }
 
-    private suspend fun hentJournalposterForBrukerForSakstema(user: IdportenUser, sakstema: Sakstemakode): List<Sakstema> {
+    private suspend fun hentJournalposterForBrukerForSakstema(user: IdportenUser, sakstema: Sakstemakode): JournalposterResponse? {
         val exchangedToken = tokendingsExchange.safToken(user)
         val journalposterRequest = JournalposterRequest.create(user.ident, sakstema)
         return safConsumer.hentJournalposter(user.ident, journalposterRequest, exchangedToken)
     }
 
 
-    private suspend fun hentJournalposterForRepresentertForSakstema(user: IdportenUser, representert: String, sakstema: Sakstemakode): List<Sakstema> {
+    private suspend fun hentJournalposterForRepresentertForSakstema(user: IdportenUser, representert: String, sakstema: Sakstemakode): JournalposterResponse? {
         val exchangedToken = tokendingsExchange.safToken(user)
         val journalposterRequest = JournalposterRequest.create(representert, sakstema)
         return safConsumer.hentJournalposter(user.ident, journalposterRequest, exchangedToken)

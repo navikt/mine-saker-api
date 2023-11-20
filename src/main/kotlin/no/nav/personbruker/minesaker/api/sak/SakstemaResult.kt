@@ -2,10 +2,9 @@ package no.nav.personbruker.minesaker.api.sak
 
 import io.ktor.http.*
 import no.nav.personbruker.minesaker.api.domain.ForenkletSakstema
-import no.nav.personbruker.minesaker.api.domain.InternalSakstemaResponse
+import no.nav.personbruker.minesaker.api.domain.SakstemaerResponse
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.domain.SistEndredeSakstemaer
-import java.time.ZonedDateTime
 
 data class SakstemaResult(
     private val results: List<ForenkletSakstema>,
@@ -33,9 +32,9 @@ data class SakstemaResult(
         )
     }
 
-    fun recentlyModified(sakerUrl: String): InternalSakstemaResponse {
+    fun recentlyModified(sakerUrl: String): SakstemaerResponse {
         val sortedResults = resultsSorted()
-        return InternalSakstemaResponse(
+        return SakstemaerResponse(
             sakstemaer = sistEndret(sortedResults),
             dagpengerSistEndret = hentSistEndretForDagpenger(sortedResults),
             sakerURL = sakerUrl

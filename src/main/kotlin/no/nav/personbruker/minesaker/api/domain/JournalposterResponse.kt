@@ -2,20 +2,21 @@ package no.nav.personbruker.minesaker.api.domain
 
 import java.time.ZonedDateTime
 
-data class Sakstema(
-    val navn: String,
-    val kode: Sakstemakode,
+data class JournalposterResponse(
+    val temanavn: String,
+    val temakode: Sakstemakode,
     val journalposter: List<Journalpost> = emptyList()
-)
+) {
+    val navn get() = temanavn
+    val kode get() = temakode
+}
 
 data class SistEndredeSakstemaer(
     val sistEndrede: List<ForenkletSakstema>,
     val dagpengerSistEndret: ZonedDateTime?
 )
 
-
-//midlertidige mapper-klasse slik att dittnav-api fortsetter å fungere
-data class InternalSakstemaResponse(
+data class SakstemaerResponse(
     val sakerURL: String,
     val sakstemaer: List<ForenkletSakstema>,
     val dagpengerSistEndret: ZonedDateTime?)

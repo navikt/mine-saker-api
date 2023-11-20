@@ -94,8 +94,8 @@ class SakApiFullmaktTest {
             sakService.hentJournalposterForSakstema(any(), Sakstemakode.AAP, fullmaktGiver1.ident)
         } returns journalpostResponse(navnForRepresentert)
 
-        val responseForQuery: List<Sakstema> = client.get("journalposter?sakstemakode=AAP").body()
-        val responseForPathParam: List<Sakstema> = client.get("journalposter/AAP").body()
+        val responseForQuery: List<JournalposterResponse> = client.get("journalposter?sakstemakode=AAP").body()
+        val responseForPathParam: List<JournalposterResponse> = client.get("journalposter/AAP").body()
 
         responseForQuery.first().navn shouldBe navnForBruker
         responseForPathParam.first().navn shouldBe navnForBruker
@@ -116,8 +116,8 @@ class SakApiFullmaktTest {
             sakService.hentJournalposterForSakstema(any(), Sakstemakode.AAP, fullmaktGiver1.ident)
         } returns journalpostResponse(navnForRepresentert)
 
-        val responseForQuery: List<Sakstema> = client.get("journalposter?sakstemakode=AAP").body()
-        val responseForPathParam: List<Sakstema> = client.get("journalposter/AAP").body()
+        val responseForQuery: List<JournalposterResponse> = client.get("journalposter?sakstemakode=AAP").body()
+        val responseForPathParam: List<JournalposterResponse> = client.get("journalposter/AAP").body()
 
         responseForQuery.first().navn shouldBe navnForRepresentert
         responseForPathParam.first().navn shouldBe navnForRepresentert
@@ -167,7 +167,7 @@ class SakApiFullmaktTest {
         firstResponse.status shouldBe HttpStatusCode.InternalServerError
         secondResponse.status shouldBe HttpStatusCode.OK
 
-        secondResponse.body<List<Sakstema>>().first().navn shouldBe navnForBruker
+        secondResponse.body<List<JournalposterResponse>>().first().navn shouldBe navnForBruker
 
         sessionStore.getCurrentFullmaktGiver(ident) shouldBe null
     }
@@ -228,10 +228,10 @@ class SakApiFullmaktTest {
         listOf(Kildetype.SAF)
     )
 
-    private fun journalpostResponse(navn: String, temakode: Sakstemakode = Sakstemakode.AAP) = listOf(
-        Sakstema(
-            navn = navn,
-            kode = temakode,
+    private fun journalpostResponse(navn: String, temakode: Sakstemakode = Sakstemakode.AAP) =
+        JournalposterResponse(
+            temanavn = navn,
+            temakode = temakode,
             journalposter = listOf(
                 Journalpost(
                     tittel = "Tittel",
@@ -245,6 +245,5 @@ class SakApiFullmaktTest {
                 )
             )
         )
-    )
 
 }
