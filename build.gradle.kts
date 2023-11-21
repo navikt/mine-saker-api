@@ -1,7 +1,4 @@
-import com.expediagroup.graphql.plugin.gradle.config.GraphQLSerializer
 import com.expediagroup.graphql.plugin.gradle.graphql
-import com.expediagroup.graphql.plugin.gradle.tasks.GraphQLDownloadSDLTask
-import com.expediagroup.graphql.plugin.gradle.tasks.GraphQLGenerateClientTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -24,13 +21,17 @@ tasks.withType<KotlinCompile> {
 
 repositories {
     mavenCentral()
-    maven("https://jitpack.io")
+    maven("https://maven.pkg.github.com/navikt/*") {
+        credentials {
+            username = System.getenv("GITHUB_ACTOR")?: "x-access-token"
+            password = System.getenv("GITHUB_TOKEN")?: project.findProperty("githubPassword") as String
+        }
+    }
     mavenLocal()
 }
 
 dependencies {
     implementation(Caffeine.caffeine)
-    implementation(DittNAVCommonLib.utils)
     implementation(GraphQL.kotlinClient)
     implementation(GraphQL.kotlinKtorClient)
     implementation(JacksonDatatype.datatypeJsr310)
@@ -55,7 +56,8 @@ dependencies {
     implementation(Prometheus.hotspot)
     implementation(Prometheus.logback)
     implementation(Lettuce.core)
-    implementation(TmsCommonLib.commonLib)
+    implementation(TmsCommonLib.metrics)
+    implementation(TmsCommonLib.utils)
     implementation(TmsKtorTokenSupport.idportenSidecar)
     implementation(TmsKtorTokenSupport.tokendingsExchange)
 
@@ -75,7 +77,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("no.nav.personbruker.minesaker.api.config.AppKt")
+    mainClass.set("no.nav.tms.minesaker.api.config.AppKt")
 }
 
 tasks {
