@@ -8,6 +8,7 @@ import io.ktor.server.routing.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.personbruker.minesaker.api.exception.InvalidRequestException
 import no.nav.personbruker.minesaker.api.config.idportenUser
+import no.nav.personbruker.minesaker.api.domain.JournalposterResponse
 import no.nav.personbruker.minesaker.api.domain.Sakstemakode
 import no.nav.personbruker.minesaker.api.saf.fullmakt.FullmaktAttribute
 import no.nav.personbruker.minesaker.api.saf.fullmakt.enableFullmakt
@@ -27,8 +28,10 @@ fun Route.sakApi(service: SakService) {
                 user = idportenUser,
                 sakstema = call.sakstemaFromQueryParameters(),
                 representert = call.representert
-            ).let { result ->
-                call.respond(HttpStatusCode.OK, result)
+            )?.let { result ->
+                call.respond(HttpStatusCode.OK, listOf(result))
+            }?: suspend {
+                call.respond(HttpStatusCode.OK, emptyList<JournalposterResponse>())
             }
         }
 
@@ -37,8 +40,24 @@ fun Route.sakApi(service: SakService) {
                 user = idportenUser,
                 sakstema = call.sakstemakodeFromParameters(),
                 representert = call.representert
-            ).let { result ->
+            )?.let { result ->
+                call.respond(HttpStatusCode.OK, listOf(result))
+            }?: suspend {
+                call.respond(HttpStatusCode.OK, emptyList<JournalposterResponse>())
+            }
+        }
+
+        get("/sakstema/{$sakstemakode}/journalposter") {
+            val sakstemakode =call.sakstemakodeFromParameters()
+
+            service.hentJournalposterForSakstema(
+                user = idportenUser,
+                sakstema = sakstemakode,
+                representert = call.representert
+            )?.let { result ->
                 call.respond(HttpStatusCode.OK, result)
+            }?: suspend {
+                call.respondText("Fant ikke journalposter med kode $sakstemakode",status = HttpStatusCode.NotFound)
             }
         }
 
@@ -57,21 +76,20 @@ fun Route.sakApi(service: SakService) {
 
     get("/sakstema/{$sakstemakode}/journalpost/{$journalpostIdParameterName}") {
         val sakstemakode = call.sakstemakodeFromParameters()
+        val journalpostId = call.journalpostId()
 
-        val result = service.hentJournalposterForSakstema(idportenUser, sakstemakode)
+        val journalposter = service.hentJournalposterForSakstema(idportenUser, sakstemakode)
 
-        val sakstema = result.find { it.kode == sakstemakode }
-
-        val journalpost = sakstema?.journalposter
-            ?.find { it.journalpostId == call.journalpostId() }
-
-        if (journalpost != null) {
-            val response = sakstema.copy(journalposter = listOf(journalpost))
-
-            call.respond(response)
-        } else {
-            call.respond(HttpStatusCode.NotFound)
-        }
+        journalposter?.journalposter
+            ?.find { it.journalpostId == journalpostId }
+            ?.let {
+                call.respond(journalposter.copy(journalposter = listOf(it)))
+            }?: suspend {
+                call.respondText(
+                    "Fant ikke journalpost med tema $sakstemakode og journalpostId $journalpostId",
+                    status = HttpStatusCode.NotFound
+                )
+            }
     }
 
     get("/dokument/{$journalpostIdParameterName}/{$dokumentIdParameterName}") {

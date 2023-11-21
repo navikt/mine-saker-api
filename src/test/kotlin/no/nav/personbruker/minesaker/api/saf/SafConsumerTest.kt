@@ -123,10 +123,9 @@ internal class SafConsumerTest {
         }
 
         val externalSakstema = externalResponse.data!!.dokumentoversiktSelvbetjening.tema
-        internalSakstema.size shouldBe externalSakstema.size
-        internalSakstema[0].shouldBeInstanceOf<Sakstema>()
-        internalSakstema[0].navn shouldBe externalSakstema[0].navn
-        internalSakstema[0].kode.toString() shouldBe externalSakstema[0].kode
+        internalSakstema.shouldBeInstanceOf<JournalposterResponse>()
+        internalSakstema.navn shouldBe externalSakstema[0].navn
+        internalSakstema.kode.toString() shouldBe externalSakstema[0].kode
         internalSakstema shouldNotBe  externalSakstema
     }
 
@@ -247,8 +246,6 @@ internal class SafConsumerTest {
         }
 
         result.isSuccess shouldBe true
-        val dto = result.getOrThrow()
-        dto.size shouldBe externalResponseWithDataAndError.data?.dokumentoversiktSelvbetjening?.tema?.size
     }
 
     @Test
