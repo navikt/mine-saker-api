@@ -58,6 +58,7 @@ dependencies {
     implementation(Lettuce.core)
     implementation(TmsCommonLib.metrics)
     implementation(TmsCommonLib.utils)
+    implementation(TmsCommonLib.observability)
     implementation(TmsKtorTokenSupport.idportenSidecar)
     implementation(TmsKtorTokenSupport.tokendingsExchange)
 

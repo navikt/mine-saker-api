@@ -20,6 +20,7 @@ import io.ktor.server.routing.routing
 import io.ktor.util.pipeline.PipelineContext
 import io.prometheus.client.hotspot.DefaultExports
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import nav.no.tms.common.metrics.installTmsMicrometerMetrics
 import no.nav.tms.minesaker.api.exception.CommunicationException
@@ -34,6 +35,7 @@ import no.nav.tms.token.support.idporten.sidecar.IdPortenLogin
 import no.nav.tms.token.support.idporten.sidecar.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.idPorten
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUserFactory
+import observability.ApiMdc
 
 
 fun Application.mineSakerApi(
@@ -51,6 +53,8 @@ fun Application.mineSakerApi(
     val secureLog = KotlinLogging.logger("secureLog")
 
     install(DefaultHeaders)
+    install(ApiMdc)
+
     install(StatusPages) {
         exception<Throwable> { call, cause ->
             when (cause) {
