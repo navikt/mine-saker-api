@@ -131,10 +131,6 @@ fun Application.mineSakerApi(
     installTmsMicrometerMetrics {
         setupMetricsRoute = true
         installMicrometerPlugin = true
-
-        maskPathParams("/mine-saker-api/journalposter/{sakstemakode}")
-        maskPathParams("/mine-saker-api/dokument/{journalpostId}/{dokumentId}")
-        maskPathParams("/mine-saker-api/sakstema/{sakstemakode}/journalpost/{journalpostId}")
     }
 
     routing {
