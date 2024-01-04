@@ -63,4 +63,6 @@ private class FullmaktRouteSelector : RouteSelector() {
     override fun evaluate(context: RoutingResolveContext, segmentIndex: Int): RouteSelectorEvaluation {
         return RouteSelectorEvaluation.Transparent
     }
+
+    override fun toString() = "" // Unngå at den havner som et ledd i api-metrikker
 }

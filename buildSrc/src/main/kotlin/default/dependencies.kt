@@ -194,7 +194,7 @@ interface PrometheusDefaults: DependencyGroup {
 
 interface RapidsAndRiversDefaults: DependencyGroup {
     override val groupId get() = "com.github.navikt"
-    override val version get() = "2023101613431697456627.0cdd93eb696f"
+    override val version get() = "2024010209171704183456.6d035b91ffb4"
 
     val rapidsAndRivers get() = dependency("rapids-and-rivers")
 }
@@ -216,7 +216,7 @@ interface TestContainersDefaults: DependencyGroup {
 
 interface TmsCommonLibDefaults: DependencyGroup {
     override val groupId get() = "no.nav.tms.common"
-    override val version get() = "2.0.0"
+    override val version get() = "3.0.0"
 
     val metrics get() = dependency("metrics")
     val observability get() = dependency("observability")
