@@ -125,8 +125,7 @@ fun Route.sakApiExternal(
     }
 
     get("/siste"){
-        val result = service
-            .hentSakstemaer(idportenUser)
+        val result = service.hentSakstemaer(idportenUser)
         if (result.hasErrors()) {
             log.warn { "En eller flere kilder feilet: ${result.errors()}" }
         }

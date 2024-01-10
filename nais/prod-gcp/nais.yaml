@@ -69,7 +69,7 @@ spec:
     - name: SYKEFRAVAER_INNSYN
       value: https://www.nav.no/syk/sykefravaer
     - name: DEFAULT_INNSYN_LENKE
-      value: https://person.nav.no/mine-saker/tema
+      value: https://person.nav.no/dokumentarkiv/tema
     - name: CORS_ALLOWED_ORIGINS
       value: "*.nav.no"
     - name: DIGISOS_API_URL
@@ -81,7 +81,7 @@ spec:
     - name: SAF_CLIENT_ID
       value: prod-fss:teamdokumenthandtering:safselvbetjening
     - name: MINE_SAKER_URL
-      value: https://person.nav.no/mine-saker
+      value: https://person.nav.no/dokumentarkiv
     - name: PDL_FULLMAKT_URL
       value: "https://pdl-fullmakt.prod-fss-pub.nais.io"
     - name: PDL_FULLMAKT_CLIENT_ID

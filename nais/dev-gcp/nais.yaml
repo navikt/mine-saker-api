@@ -81,7 +81,7 @@ spec:
     - name: SAF_CLIENT_ID
       value: dev-fss:teamdokumenthandtering:safselvbetjening-q1
     - name: MINE_SAKER_URL
-      value: https://www.intern.dev.nav.no/mine-saker/
+      value: https://www.intern.dev.nav.no/dokumentarkiv/
     - name: PDL_FULLMAKT_URL
       value: "https://pdl-fullmakt.dev-fss-pub.nais.io"
     - name: PDL_FULLMAKT_CLIENT_ID
