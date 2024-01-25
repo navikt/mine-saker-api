@@ -53,7 +53,7 @@ spec:
       memory: 768Mi
     requests:
       cpu: "20m"
-      memory: 580Mi
+      memory: 256Mi
   env:
     - name: SOSIALHJELP_INNSYN
       value: https://www-q0.dev.nav.no/sosialhjelp/innsyn
