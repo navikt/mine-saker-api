@@ -34,9 +34,6 @@ spec:
   tokenx:
     enabled: true
   accessPolicy:
-    inbound:
-      rules:
-        - application: dittnav-api
     outbound:
       external:
         - host: "safselvbetjening-q1.dev-fss-pub.nais.io"
