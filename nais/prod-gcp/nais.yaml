@@ -52,10 +52,10 @@ spec:
     - "https://person.nav.no/mine-saker-api"
   resources:
     limits:
-      cpu: "3"
+      cpu: "1"
       memory: 768Mi
     requests:
-      cpu: "500m"
+      cpu: "50m"
       memory: 580Mi
   env:
     - name: DAGPENGER_INNSYN
