@@ -51,6 +51,7 @@ spec:
     limits:
       memory: 768Mi
     requests:
+      cpu: "50m"
       memory: 580Mi
   env:
     - name: SOSIALHJELP_INNSYN
