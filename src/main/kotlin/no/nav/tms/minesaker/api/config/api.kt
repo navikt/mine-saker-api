@@ -67,7 +67,7 @@ fun Application.mineSakerApi(
 
                 is CommunicationException -> {
                     log.error { "Kommunikasjonsfeil mot SAF eller Digisos." }
-                    secureLog.warn(cause) { "Kommunikasjonsfeil mot SAF eller Digisos." }
+                    secureLog.error(cause) { "Kommunikasjonsfeil mot SAF eller Digisos." }
                     call.respond(HttpStatusCode.ServiceUnavailable)
                 }
 

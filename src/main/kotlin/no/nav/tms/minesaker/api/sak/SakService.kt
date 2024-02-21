@@ -49,8 +49,8 @@ class SakService(
         val exchangedToken = tokendingsExchange.safToken(user)
         safConsumer.hentSakstemaer(SakstemaerRequest.create(user.ident), exchangedToken)
     } catch (e: Exception) {
-        log.warn { "Klarte ikke å hente brukers data fra SAF." }
-        secureLog.warn(e) { "Klarte ikke hente brukers (${user.ident}) data fra SAF." }
+        log.error { "Klarte ikke å hente brukers data fra SAF." }
+        secureLog.error(e) { "Klarte ikke hente brukers (${user.ident}) data fra SAF." }
         SakstemaResult(errors = listOf(Kildetype.SAF))
     }
 
@@ -63,8 +63,8 @@ class SakService(
         val exchangedToken = tokendingsExchange.digisosToken(user)
         digiSosConsumer.hentSakstemaer(exchangedToken)
     } catch (e: Exception) {
-        log.warn { "Klarte ikke å hente brukers data fra DigiSos." }
-        secureLog.warn(e) { "Klarte ikke å hente brukers (${user.ident}) data fra DigiSos." }
+        log.error { "Klarte ikke å hente brukers data fra DigiSos." }
+        secureLog.error(e) { "Klarte ikke å hente brukers (${user.ident}) data fra DigiSos." }
         SakstemaResult(errors = listOf(Kildetype.DIGISOS))
     }
 
