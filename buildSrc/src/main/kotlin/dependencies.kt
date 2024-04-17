@@ -27,11 +27,3 @@ object Lettuce: DependencyGroup {
 
     val core = dependency("lettuce-core")
 }
-
-object Nimbusds: DependencyGroup {
-    override val version = "9.19"
-    override val groupId = "com.nimbusds"
-
-    val joseJwt = dependency("nimbus-jose-jwt")
-    val oauth2OidcSdk =  dependency("oauth2-oidc-sdk")
-}
