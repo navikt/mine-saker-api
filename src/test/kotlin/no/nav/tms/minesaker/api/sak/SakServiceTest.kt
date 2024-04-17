@@ -5,13 +5,8 @@ import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.types.shouldBeInstanceOf
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.confirmVerified
-import io.mockk.mockk
-import io.mockk.slot
+import io.mockk.*
 import kotlinx.coroutines.runBlocking
-import no.nav.tms.minesaker.api.common.IdportenTestUser
 import no.nav.tms.minesaker.api.exception.CommunicationException
 import no.nav.tms.minesaker.api.digisos.DigiSosConsumer
 import no.nav.tms.minesaker.api.domain.Sakstemakode
@@ -19,15 +14,19 @@ import no.nav.tms.minesaker.api.saf.SafConsumer
 import no.nav.tms.minesaker.api.config.TokendingsExchange
 import no.nav.tms.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaerRequest
+import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 import org.junit.jupiter.api.Test
 
 internal class SakServiceTest {
 
-    private val dummyIdportenUser = IdportenTestUser.createIdportenUser()
+    private val dummyIdent = "12345"
+    private val dummyIdportenUser = mockk<IdportenUser>().also {
+        every { it.ident } returns dummyIdent
+    }
     private val safDummyToken = "saf<access_token>"
     private val tokendingsExchange = mockk<TokendingsExchange>().also {
-        coEvery { it.safToken(any()) } returns safDummyToken
-        coEvery { it.digisosToken(any()) } returns "digisos <access-token>"
+        coEvery { it.safToken(dummyIdportenUser) } returns safDummyToken
+        coEvery { it.digisosToken(dummyIdportenUser) } returns "digisos <access-token>"
     }
 
     @Test
@@ -88,7 +87,7 @@ internal class SakServiceTest {
 
         coVerify(exactly = 1) {
             safConsumer.hentJournalposter(
-                dummyIdportenUser.ident,
+                dummyIdent,
                 capture(parameterSendtVidere),
                 safDummyToken
             )
@@ -109,7 +108,7 @@ internal class SakServiceTest {
         val service = SakService(safConsumer, tokendingsExchange, digiSosConsumer)
 
         coEvery {
-            safConsumer.hentJournalposter(dummyIdportenUser.ident, any(), any())
+            safConsumer.hentJournalposter(dummyIdent, any(), any())
         } throws expectedException
 
         val result = runCatching {

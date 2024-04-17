@@ -1,22 +1,21 @@
 import com.expediagroup.graphql.plugin.gradle.graphql
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin on the JVM.
     kotlin("jvm").version(Kotlin.version)
-    kotlin("plugin.allopen").version(Kotlin.version)
-    kotlin("plugin.serialization").version(Kotlin.version)
 
     id(GraphQL.pluginId) version GraphQL.version
-    id(Shadow.pluginId) version "7.0.0"
+    id(Shadow.pluginId) version Shadow.version
 
     // Apply the application plugin to add support for building a CLI application.
     application
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "17"
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
 repositories {
@@ -33,7 +32,6 @@ dependencies {
     implementation(GraphQL.kotlinKtorClient)
     implementation(JacksonDatatype.datatypeJsr310)
     implementation(Kotlinx.coroutines)
-    implementation(Logstash.logbackEncoder)
     implementation(KotlinLogging.logging)
     implementation(KtorClientLogging.logging)
     implementation(Ktor.Server.auth)
@@ -47,8 +45,6 @@ dependencies {
     implementation(Ktor.Server.htmlDsl)
     implementation(Ktor.Server.netty)
     implementation(Ktor.Server.statusPages)
-    implementation(Nimbusds.joseJwt)
-    implementation(Nimbusds.oauth2OidcSdk)
     implementation(Prometheus.common)
     implementation(Prometheus.hotspot)
     implementation(Prometheus.logback)
@@ -65,9 +61,7 @@ dependencies {
     testImplementation(TmsKtorTokenSupport.idportenSidecarMock)
     testImplementation(Kotest.runnerJunit5)
     testImplementation(Kotest.assertionsCore)
-    testImplementation(Kotest.extensions)
     testImplementation(Mockk.mockk)
-    testImplementation(Jjwt.api)
 
     testRuntimeOnly(Jjwt.impl)
     testRuntimeOnly(Jjwt.jackson)
@@ -95,5 +89,3 @@ graphql {
         queryFileDirectory = "${project.projectDir.absolutePath}/src/main/resources"
     }
 }
-
-apply(plugin = Shadow.pluginId)
