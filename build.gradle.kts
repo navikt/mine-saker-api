@@ -45,6 +45,7 @@ dependencies {
     implementation(Ktor.Server.htmlDsl)
     implementation(Ktor.Server.netty)
     implementation(Ktor.Server.statusPages)
+    implementation(Logstash.logbackEncoder)
     implementation(Prometheus.common)
     implementation(Prometheus.hotspot)
     implementation(Prometheus.logback)
