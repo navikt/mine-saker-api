@@ -29,8 +29,10 @@ fun Route.sakApi(service: SakService) {
                 sakstema = call.sakstemaFromQueryParameters(),
                 representert = call.representert
             )?.let { result ->
+                call.response.header(HttpHeaders.CacheControl, "no-cache, max-age=0")
                 call.respond(HttpStatusCode.OK, listOf(result))
             }?: suspend {
+                call.response.header(HttpHeaders.CacheControl, "no-cache, max-age=0")
                 call.respond(HttpStatusCode.OK, emptyList<JournalposterResponse>())
             }
         }
@@ -41,8 +43,10 @@ fun Route.sakApi(service: SakService) {
                 sakstema = call.sakstemakodeFromParameters(),
                 representert = call.representert
             )?.let { result ->
+                call.response.header(HttpHeaders.CacheControl, "no-cache, max-age=0")
                 call.respond(HttpStatusCode.OK, listOf(result))
             }?: suspend {
+                call.response.header(HttpHeaders.CacheControl, "no-cache, max-age=0")
                 call.respond(HttpStatusCode.OK, emptyList<JournalposterResponse>())
             }
         }
@@ -55,6 +59,7 @@ fun Route.sakApi(service: SakService) {
                 sakstema = sakstemakode,
                 representert = call.representert
             )?.let { result ->
+                call.response.header(HttpHeaders.CacheControl, "no-cache, max-age=0")
                 call.respond(HttpStatusCode.OK, result)
             }?: suspend {
                 call.respondText("Fant ikke journalposter med kode $sakstemakode",status = HttpStatusCode.NotFound)
@@ -70,6 +75,7 @@ fun Route.sakApi(service: SakService) {
                 log.warn { "En eller flere kilder i kall til /sakstemnaer feilet: ${result.errors()}" }
                 secureLog.warn { "En eller flere kilder i kall til /sakstemaer for ident ${idportenUser.ident} feilet: ${result.errors()}" }
             }
+            call.response.header(HttpHeaders.CacheControl, "no-cache, max-age=0")
             call.respond(result.determineHttpCode(), result.resultsSorted())
         }
     }
@@ -83,9 +89,11 @@ fun Route.sakApi(service: SakService) {
         journalposter?.journalposter
             ?.find { it.journalpostId == journalpostId }
             ?.let {
+                call.response.header(HttpHeaders.CacheControl, "no-cache, max-age=0")
                 call.respond(journalposter.copy(journalposter = listOf(it)))
             }?: suspend {
-                call.respondText(
+            call.response.header(HttpHeaders.CacheControl, "no-cache, max-age=0")
+            call.respondText(
                     "Fant ikke journalpost med tema $sakstemakode og journalpostId $journalpostId",
                     status = HttpStatusCode.NotFound
                 )
