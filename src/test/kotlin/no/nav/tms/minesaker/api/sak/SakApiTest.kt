@@ -15,12 +15,13 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.call
 import io.ktor.server.auth.*
 import io.ktor.server.response.respondBytes
-import io.ktor.server.routing.get
-import io.ktor.server.routing.routing
+import io.ktor.server.routing.*
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import io.mockk.coEvery
 import io.mockk.mockk
+import no.nav.tms.common.testutils.RouteProvider
+import no.nav.tms.common.testutils.initExternalServices
 import no.nav.tms.minesaker.api.config.SubstantialAuth
 import no.nav.tms.minesaker.api.config.jsonConfig
 import no.nav.tms.minesaker.api.config.mineSakerApi
@@ -92,11 +93,10 @@ class SakApiTest {
             fullmaktSessionStore = fullmaktSessionStore
         )
 
-        setupExternalServices(
-            hostApiBase = testBaseUrl,
-            digissosEndpoint = "/minesaker/innsendte",
-            content = listOf(aapSak, dagSak, hjeSak).toDigisosResponse()
-        )
+        initExternalServices(testBaseUrl,
+            object : RouteProvider(path = "/minesaker/innsendte", routeMethodFunction = Routing::get) {
+                override fun content() = listOf(aapSak, dagSak, hjeSak).toDigisosResponse()
+            })
 
         client.get("/siste").apply {
             status shouldBe HttpStatusCode.OK
@@ -178,23 +178,3 @@ private fun ApplicationTestBuilder.mockApi(
         fullmaktSessionStore = fullmaktSessionStore
     )
 }
-
-
-internal fun ApplicationTestBuilder.setupExternalServices(
-    hostApiBase: String,
-    digissosEndpoint: String,
-    content: String
-) {
-    externalServices {
-        hosts(hostApiBase) {
-            routing {
-                get(digissosEndpoint) {
-                    call.respondBytes(
-                        contentType = ContentType.Application.Json,
-                        provider = { content.toByteArray() })
-                }
-            }
-        }
-    }
-}
-
