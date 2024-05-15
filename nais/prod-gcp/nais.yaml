@@ -49,7 +49,7 @@ spec:
     - "https://person.nav.no/mine-saker-api"
   resources:
     limits:
-      memory: 768Mi
+      memory: 1536Mi
     requests:
       cpu: "50m"
       memory: 580Mi
