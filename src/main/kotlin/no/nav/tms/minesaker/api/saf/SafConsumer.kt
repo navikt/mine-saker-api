@@ -62,11 +62,8 @@ class SafConsumer(
         val callId = UUID.randomUUID()
         log.info { "Sender POST-kall med correlationId=$callId" }
 
-        val urlToFetch = "$safEndpoint/rest/hentdokument/$journalpostId/$dokumentinfoId/ARKIV"
-        log.info { "Skal hente data fra: $urlToFetch" }
-
         val statement = httpClient.prepareGet {
-            url(urlToFetch)
+            url("$safEndpoint/rest/hentdokument/$journalpostId/$dokumentinfoId/ARKIV")
             method = HttpMethod.Get
             header(Authorization, "Bearer $accessToken")
             header(safCallIdHeaderName, callId)
