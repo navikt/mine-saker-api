@@ -12,6 +12,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
+import io.ktor.utils.io.*
 import kotlinx.coroutines.runBlocking
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
 import no.nav.tms.minesaker.api.exception.CommunicationException
@@ -252,16 +253,22 @@ internal class SafConsumerTest {
     fun `Skal kunne hente et dokument`() {
         val dummyBinaryDataResponse = "dummy data for å simulere binære data".toByteArray()
         val mockHttpClient = createMockHttpClient {
-            respond(dummyBinaryDataResponse)
+            respond(
+                dummyBinaryDataResponse,
+                headers = headers {
+                    append(HttpHeaders.ContentLength, dummyBinaryDataResponse.size.toString())
+                }
+            )
         }
         val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint, dummyUrlResolver)
 
-        val dokumentAsByteArray = runBlocking {
-            consumer.hentDokument("123", "456", dummyToken)
-        }
+        runBlocking {
+            consumer.hentDokument("123", "456", dummyToken) {
+                it.size shouldBe dummyBinaryDataResponse.size
 
-        dokumentAsByteArray.body.size shouldBe dummyBinaryDataResponse.size
-        dokumentAsByteArray.body shouldBe dummyBinaryDataResponse
+                it.receiveBody() shouldBe dummyBinaryDataResponse
+            }
+        }
     }
 
     @Test
@@ -274,7 +281,7 @@ internal class SafConsumerTest {
 
         val result = runCatching {
             runBlocking {
-                consumer.hentDokument("123", "456", dummyToken)
+                consumer.hentDokument("123", "456", dummyToken) {}
             }
         }
 
@@ -293,7 +300,7 @@ internal class SafConsumerTest {
 
         val result = runCatching {
             runBlocking {
-                consumer.hentDokument("123", "456", dummyToken)
+                consumer.hentDokument("123", "456", dummyToken) {}
             }
         }
 
@@ -309,19 +316,20 @@ internal class SafConsumerTest {
             respond(
                 dummyBinaryDataResponse,
                 headers = headers {
+                    append(HttpHeaders.ContentLength, dummyBinaryDataResponse.size.toString())
                     append(HttpHeaders.ContentType, ContentType.Application.Json)
                 }
             )
         }
         val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint, dummyUrlResolver)
 
-        val dokumentAsByteArray = runBlocking {
-            consumer.hentDokument("123", "456", dummyToken)
+        runBlocking {
+            consumer.hentDokument("123", "456", dummyToken) {
+                it.size shouldBe dummyBinaryDataResponse.size
+                it.contentType shouldBe ContentType.Application.Json
+                it.receiveBody() shouldBe dummyBinaryDataResponse
+            }
         }
-
-        dokumentAsByteArray.body.size shouldBe dummyBinaryDataResponse.size
-        dokumentAsByteArray.contentType shouldBe ContentType.Application.Json
-        dokumentAsByteArray.body shouldBe dummyBinaryDataResponse
     }
 
     private fun createMockHttpClient(respond: MockRequestHandleScope.() -> HttpResponseData): HttpClient {
@@ -339,7 +347,14 @@ internal class SafConsumerTest {
             install(HttpTimeout)
         }
     }
+}
 
+private suspend fun DokumentStream.receiveBody(): ByteArray {
+    val buffer = ByteArray(size.toInt())
+
+    channel.readAvailable(buffer)
+
+    return buffer
 }
 
 private fun response(): GraphQLResponse<HentSakstemaer.Result> {

@@ -7,6 +7,7 @@ import io.ktor.http.*
 import io.ktor.server.application.Application
 import io.ktor.server.auth.*
 import io.ktor.server.testing.*
+import io.ktor.utils.io.*
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -20,7 +21,7 @@ import no.nav.tms.minesaker.api.domain.ForenkletSakstema
 import no.nav.tms.minesaker.api.domain.Sakstemakode
 import no.nav.tms.minesaker.api.saf.SafConsumer
 import no.nav.tms.minesaker.api.config.TokendingsExchange
-import no.nav.tms.minesaker.api.saf.DokumentResponse
+import no.nav.tms.minesaker.api.saf.DokumentStream
 import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktService
 import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktSessionStore
 import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktTestSessionStore
@@ -154,8 +155,8 @@ internal class ExceptionApiTest {
 
         val safconsumerMockk = mockk<SafConsumer>().also {
             coEvery {
-                it.hentDokument(any(), any(), any())
-            } returns DokumentResponse(ByteArray(10), ContentType.Application.Pdf)
+                it.hentDokument(any(), any(), any(), any())
+            } returns Unit
         }
 
         val (fullmaktService, fullmaktRedisService) = mockFullmakt()
@@ -174,15 +175,13 @@ internal class ExceptionApiTest {
                 fullmaktSessionStore = fullmaktRedisService,
             )
         }
-        client.get("/dokument/gghh11/hfajskk").apply {
-            status shouldBe HttpStatusCode.OK
-        }
+
         client.get("/dokument/-/-").apply {
             status shouldBe HttpStatusCode.BadRequest
         }
 
         clearMocks(safconsumerMockk)
-        coEvery { safconsumerMockk.hentDokument(any(), any(), any()) } throws DocumentNotFoundException("", "123", "456")
+        coEvery { safconsumerMockk.hentDokument(any(), any(), any(), any()) } throws DocumentNotFoundException("", "123", "456")
 
         client.get("/dokument/gghh11/hfajskk").apply {
             status shouldBe HttpStatusCode.NotFound

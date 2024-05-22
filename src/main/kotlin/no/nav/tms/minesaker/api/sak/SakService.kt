@@ -9,7 +9,7 @@ import no.nav.tms.minesaker.api.domain.JournalposterResponse
 import no.nav.tms.minesaker.api.domain.Sakstemakode
 import no.nav.tms.minesaker.api.saf.SafConsumer
 import no.nav.tms.minesaker.api.config.TokendingsExchange
-import no.nav.tms.minesaker.api.saf.DokumentResponse
+import no.nav.tms.minesaker.api.saf.DokumentStream
 import no.nav.tms.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
@@ -81,14 +81,15 @@ class SakService(
         return safConsumer.hentJournalposter(user.ident, journalposterRequest, exchangedToken)
     }
 
-    suspend fun hentDokument(
+    suspend fun hentDokumentStream(
         user: IdportenUser,
         journapostId: String,
-        dokumentinfoId: String
-    ): DokumentResponse {
+        dokumentinfoId: String,
+        receiver: suspend (DokumentStream) -> Unit
+    ) {
         log.info { "Henter dokument $dokumentinfoId fra journalposten $journapostId" }
         val exchangedToken = tokendingsExchange.safToken(user)
-        return safConsumer.hentDokument(journapostId, dokumentinfoId, exchangedToken)
+        safConsumer.hentDokument(journapostId, dokumentinfoId, exchangedToken, receiver)
     }
 
 }
