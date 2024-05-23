@@ -6,6 +6,8 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.ktor.utils.io.*
+import io.ktor.utils.io.core.*
 import no.nav.tms.minesaker.api.exception.InvalidRequestException
 import no.nav.tms.minesaker.api.config.idportenUser
 import no.nav.tms.minesaker.api.domain.JournalposterResponse
@@ -93,17 +95,30 @@ fun Route.sakApi(service: SakService) {
     }
 
     get("/dokument/{$journalpostIdParameterName}/{$dokumentIdParameterName}") {
-        service.hentDokument(
+        service.hentDokumentStream(
             idportenUser,
             call.journalpostId(),
             call.dokumentInfoId()
-        ).let { result ->
-            call.respondBytes(
-                bytes = result.body,
-                contentType = result.contentType,
+        ) { stream ->
+
+            call.respondBytesWriter(
+                contentLength = stream.size,
+                contentType = stream.contentType,
                 status = HttpStatusCode.OK
-            )
+            ) {
+                streamFrom(stream.channel)
+            }
         }
+    }
+}
+
+private suspend fun ByteWriteChannel.streamFrom(input: ByteReadChannel) {
+    while (!input.isClosedForRead) {
+        val packet = input.readRemaining(DEFAULT_BUFFER_SIZE.toLong())
+        while (!packet.isEmpty) {
+            writePacket(packet)
+        }
+        flush()
     }
 }
 

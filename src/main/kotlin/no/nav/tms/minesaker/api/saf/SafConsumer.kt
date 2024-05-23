@@ -10,6 +10,7 @@ import io.ktor.http.HttpHeaders.Authorization
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.ktor.utils.io.*
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
 import no.nav.tms.minesaker.api.exception.CommunicationException
@@ -52,51 +53,46 @@ class SafConsumer(
     }
 
     suspend fun hentDokument(
-        journapostId: String,
+        journalpostId: String,
         dokumentinfoId: String,
-        accessToken: String
-    ): DokumentResponse {
-            val httpResponse = fetchDocument(journapostId, dokumentinfoId, accessToken)
-            return unpackRawResponseBody(httpResponse, journapostId, dokumentinfoId)
-    }
+        accessToken: String,
+        receiver: suspend (DokumentStream) -> Unit
+    ) {
 
-    private suspend fun fetchDocument(
-        journapostId: String,
-        dokumentinfoId: String,
-        accessToken: String
-    ): HttpResponse = withContext(Dispatchers.IO) {
         val callId = UUID.randomUUID()
         log.info { "Sender POST-kall med correlationId=$callId" }
-        val urlToFetch = "$safEndpoint/rest/hentdokument/$journapostId/$dokumentinfoId/ARKIV"
-        log.info { "Skal hente data fra: $urlToFetch" }
-        httpClient.request {
-            url(urlToFetch)
+
+        val statement = httpClient.prepareGet {
+            url("$safEndpoint/rest/hentdokument/$journalpostId/$dokumentinfoId/ARKIV")
             method = HttpMethod.Get
             header(Authorization, "Bearer $accessToken")
             header(safCallIdHeaderName, callId)
             header(navConsumerIdHeaderName, navConsumerId)
         }
-    }
 
-    private suspend fun unpackRawResponseBody(response: HttpResponse, journalpostId: String, dokumentinfoId: String): DokumentResponse {
-        if (response.status == HttpStatusCode.NotFound) {
-            throw DocumentNotFoundException(
-                "Fant ikke dokument hos SAF",
-                journalpostId = journalpostId,
-                dokumentinfoId = dokumentinfoId,
-                sensitiveMessage = "Fant ikke dokument hos SAF for url ${response.request.url}"
-            )
-        } else if (!response.status.isSuccess()) {
-            throw CommunicationException("Klarte ikke å hente dokument fra SAF. Http-status [${response.status}]")
-        }
+        return statement.execute { response ->
+            if (response.status == HttpStatusCode.NotFound) {
+                throw DocumentNotFoundException(
+                    "Fant ikke dokument hos SAF",
+                    journalpostId = journalpostId,
+                    dokumentinfoId = dokumentinfoId,
+                    sensitiveMessage = "Fant ikke dokument hos SAF for url ${response.request.url}"
+                )
+            } else if (!response.status.isSuccess()) {
+                throw CommunicationException("Klarte ikke å hente dokument fra SAF. Http-status [${response.status}]")
+            }
 
-        return try {
-            DokumentResponse(
-                response.readBytes(),
-                response.contentType() ?: ContentType.Application.Pdf
-            )
-        } catch (e: Exception) {
-            throw CommunicationException("Klarte ikke å lese dokument fra SAF.", e)
+            try {
+                DokumentStream(
+                    response.bodyAsChannel(),
+                    response.contentLength()!!,
+                    response.contentType() ?: ContentType.Application.Pdf
+                ).let {
+                    receiver(it)
+                }
+            } catch (e: Exception) {
+                throw CommunicationException("Klarte ikke å lese dokument fra SAF.", e)
+            }
         }
     }
 
@@ -154,7 +150,8 @@ class SafConsumer(
 
 }
 
-class DokumentResponse(
-    val body: ByteArray,
+class DokumentStream(
+    val channel: ByteReadChannel,
+    val size: Long,
     val contentType: ContentType
 )
