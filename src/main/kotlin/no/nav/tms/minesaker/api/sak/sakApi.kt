@@ -114,6 +114,10 @@ fun Route.sakApi(service: SakService) {
             }
         }
     }
+
+    get("debug/token") {
+        call.respond(service.token(idportenUser))
+    }
 }
 
 private suspend fun ByteWriteChannel.streamFrom(input: ByteReadChannel) {
