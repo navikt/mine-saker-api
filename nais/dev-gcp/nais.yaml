@@ -61,7 +61,7 @@ spec:
     - name: DEFAULT_INNSYN_LENKE
       value: https://www.intern.dev.nav.no/dokumentarkiv/tema
     - name: CORS_ALLOWED_ORIGINS
-      value: www.intern.dev.nav.no
+      value: "*.dev.nav.no"
     - name: DIGISOS_API_URL
       value: https://sosialhjelp-soknad-api.dev-fss-pub.nais.io/sosialhjelp/soknad-api
     - name: DIGISOS_CLIENT_ID
