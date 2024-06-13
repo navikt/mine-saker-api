@@ -36,13 +36,13 @@ spec:
   accessPolicy:
     outbound:
       external:
-        - host: "safselvbetjening-q1.dev-fss-pub.nais.io"
+        - host: "safselvbetjening-q2.dev-fss-pub.nais.io"
         - host: "sosialhjelp-soknad-api-intern.dev.nav.no"
         - host: "sosialhjelp-soknad-api.dev-fss-pub.nais.io"
         - host: "pdl-fullmakt.dev-fss-pub.nais.io"
         - host: "pdl-api.dev-fss-pub.nais.io"
       rules:
-        - application: "safselvbetjening-q1"
+        - application: "safselvbetjening-q2"
           namespace: "teamdokumenthandtering"
           cluster: "dev-fss"
   ingresses:
@@ -67,9 +67,9 @@ spec:
     - name: DIGISOS_CLIENT_ID
       value: dev-fss:teamdigisos:sosialhjelp-soknad-api
     - name: SAF_API_URL
-      value: https://safselvbetjening-q1.dev-fss-pub.nais.io
+      value: https://safselvbetjening-q2.dev-fss-pub.nais.io
     - name: SAF_CLIENT_ID
-      value: dev-fss:teamdokumenthandtering:safselvbetjening-q1
+      value: dev-fss:teamdokumenthandtering:safselvbetjening-q2
     - name: MINE_SAKER_URL
       value: https://www.intern.dev.nav.no/dokumentarkiv/
     - name: PDL_FULLMAKT_URL
