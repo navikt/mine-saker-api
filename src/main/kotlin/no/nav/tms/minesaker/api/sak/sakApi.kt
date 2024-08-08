@@ -10,10 +10,10 @@ import io.ktor.utils.io.*
 import io.ktor.utils.io.core.*
 import no.nav.tms.minesaker.api.exception.InvalidRequestException
 import no.nav.tms.minesaker.api.config.idportenUser
-import no.nav.tms.minesaker.api.domain.JournalposterResponse
-import no.nav.tms.minesaker.api.domain.Sakstemakode
+import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktAttribute
 import no.nav.tms.minesaker.api.saf.fullmakt.enableFullmakt
+import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterResponse
 
 const val sakstemakode = "sakstemakode"
 const val dokumentIdParameterName = "dokumentId"
@@ -74,6 +74,20 @@ fun Route.sakApi(service: SakService) {
             }
             call.respond(result.determineHttpCode(), result.resultsSorted())
         }
+
+        get("/v2/sakstema/{$sakstemakode}/journalposter") {
+            val sakstemakode = call.sakstemakodeFromParameters()
+
+            service.hentJournalposterV2(
+                user = idportenUser,
+                sakstema = sakstemakode,
+                representert = call.representert
+            )?.let { result ->
+                call.respond(HttpStatusCode.OK, result)
+            }?: suspend {
+                call.respondText("Fant ikke journalposter med kode $sakstemakode",status = HttpStatusCode.NotFound)
+            }
+        }
     }
 
     get("/sakstema/{$sakstemakode}/journalpost/{$journalpostIdParameterName}") {
@@ -109,6 +123,10 @@ fun Route.sakApi(service: SakService) {
                 streamFrom(stream.channel)
             }
         }
+    }
+
+    get("debug/token") {
+        call.respond(service.token(idportenUser))
     }
 }
 

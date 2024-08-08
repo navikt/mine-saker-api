@@ -1,7 +1,7 @@
 package no.nav.tms.minesaker.api.config
 
 import no.nav.tms.common.util.config.StringEnvVar.getEnvVar
-import no.nav.tms.minesaker.api.domain.Sakstemakode
+import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import java.net.URL
 
 data class Environment(

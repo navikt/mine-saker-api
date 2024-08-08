@@ -1,7 +1,7 @@
 package no.nav.tms.minesaker.api.sak
 
 import no.nav.tms.minesaker.api.config.InnsynsUrlResolver
-import no.nav.tms.minesaker.api.domain.Sakstemakode
+import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import org.intellij.lang.annotations.Language
 import java.time.ZoneId
 import java.time.ZonedDateTime

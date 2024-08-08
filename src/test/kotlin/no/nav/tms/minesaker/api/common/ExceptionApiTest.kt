@@ -7,27 +7,25 @@ import io.ktor.http.*
 import io.ktor.server.application.Application
 import io.ktor.server.auth.*
 import io.ktor.server.testing.*
-import io.ktor.utils.io.*
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.tms.minesaker.api.config.SubstantialAuth
 import no.nav.tms.minesaker.api.exception.CommunicationException
 import no.nav.tms.minesaker.api.exception.DocumentNotFoundException
-import no.nav.tms.minesaker.api.exception.GraphQLResultException
+import no.nav.tms.minesaker.api.exception.SafResultException
 import no.nav.tms.minesaker.api.config.mineSakerApi
 import no.nav.tms.minesaker.api.digisos.DigiSosConsumer
-import no.nav.tms.minesaker.api.domain.ForenkletSakstema
-import no.nav.tms.minesaker.api.domain.Sakstemakode
+import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import no.nav.tms.minesaker.api.saf.SafConsumer
 import no.nav.tms.minesaker.api.config.TokendingsExchange
-import no.nav.tms.minesaker.api.saf.DokumentStream
 import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktService
 import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktSessionStore
 import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktTestSessionStore
-import no.nav.tms.minesaker.api.sak.Kildetype
+import no.nav.tms.minesaker.api.saf.sakstemaer.ForenkletSakstema
+import no.nav.tms.minesaker.api.saf.sakstemaer.Kildetype
 import no.nav.tms.minesaker.api.sak.SakService
-import no.nav.tms.minesaker.api.sak.SakstemaResult
+import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaResult
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.idPortenMock
 import org.junit.jupiter.api.Test
@@ -79,7 +77,7 @@ internal class ExceptionApiTest {
             val sakserviceMock = createSakService(safConsumer = mockk<SafConsumer>().also {
                 coEvery {
                     it.hentJournalposter(any(), any(), any())
-                } throws GraphQLResultException("Ingen data i resultatet fra SAF.", listOf(), mapOf())
+                } throws SafResultException("Ingen data i resultatet fra SAF.", listOf(), mapOf())
             })
 
             val (fullmaktService, fullmaktRedisService) = mockFullmakt()
@@ -109,7 +107,7 @@ internal class ExceptionApiTest {
     @Test
     fun sakstema() = testApplication {
         val safConsumerMock = mockk<SafConsumer>().also {
-            coEvery { it.hentSakstemaer(any(), any()) } returns SakstemaResult(errors = listOf(Kildetype.SAF))
+            coEvery { it.hentSakstemaer(any(), any()) } returns SakstemaResult.withErrors(listOf(Kildetype.SAF))
         }
 
         val (fullmaktService, fullmaktRedisService) = mockFullmakt()
@@ -143,7 +141,7 @@ internal class ExceptionApiTest {
         client.get("/sakstemaer").apply {
             status shouldBe HttpStatusCode.OK
         }
-        coEvery { digiSosConsumerMockk.hentSakstemaer(any()) } returns SakstemaResult(errors = listOf(Kildetype.DIGISOS))
+        coEvery { digiSosConsumerMockk.hentSakstemaer(any()) } returns SakstemaResult.withErrors(listOf(Kildetype.DIGISOS))
 
         client.get("/sakstemaer").apply {
             status shouldBe HttpStatusCode.ServiceUnavailable

@@ -1,6 +1,6 @@
 package no.nav.tms.minesaker.api.config
 
-import no.nav.tms.minesaker.api.domain.Sakstemakode
+import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 
 class InnsynsUrlResolver(
     private val temaspesifikkeLenker: Map<Sakstemakode, String>,

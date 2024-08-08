@@ -1,14 +1,14 @@
-package no.nav.tms.minesaker.api.saf.journalposter
+package no.nav.tms.minesaker.api.saf.journalposterv2
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
 
 import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
-import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterRequest
+import no.nav.tms.minesaker.api.saf.journalposter.v2.HentJournalposterV2Request
 import org.junit.jupiter.api.Test
 
-internal class JournalposterRequestTest {
+internal class JournalposterRequestV2Test {
 
     private val objectMapper = jacksonObjectMapper()
 
@@ -17,12 +17,12 @@ internal class JournalposterRequestTest {
     @Test
     fun `Skal bygge opp en korrekt sporring`() {
         val expectedSakstema = Sakstemakode.valueOf("FOR")
-        val expectedFirstJournalpostFields = """journalposter{ tittel journalpostId journalposttype"""
+        val expectedFirstJournalpostFields = """journalposter { tittel journalpostId journalposttype"""
         val identAsQueryVarible = "\$ident : String!"
-        val sakstemaAsQueryVarible = "\$temaetSomSkalHentes : Tema"
-        val expectedSakstemaAsInputVariable = """"temaetSomSkalHentes":"$expectedSakstema""""
+        val sakstemaAsQueryVarible = "\$sakstema : Tema"
+        val expectedSakstemaAsInputVariable = """"sakstema":"$expectedSakstema""""
 
-        val request = JournalposterRequest.create(dummyIdent, expectedSakstema)
+        val request = HentJournalposterV2Request.create(dummyIdent, expectedSakstema)
 
         val requestAsJson = objectMapper.writeValueAsString(request)
 
@@ -35,7 +35,7 @@ internal class JournalposterRequestTest {
 
     @Test
     fun `Sporringen skal vare formatert til kompakt JSON`() {
-        val request = JournalposterRequest.create(dummyIdent, Sakstemakode.valueOf("FOR"))
+        val request = HentJournalposterV2Request.create(dummyIdent, Sakstemakode.valueOf("FOR"))
 
         val requestAsJson = objectMapper.writeValueAsString(request)
 

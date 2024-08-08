@@ -18,8 +18,8 @@ import kotlinx.coroutines.runBlocking
 import no.nav.tms.minesaker.api.config.InnsynsUrlResolver
 import no.nav.tms.minesaker.api.config.jsonConfig
 
-import no.nav.tms.minesaker.api.domain.ForenkletSakstema
 import no.nav.tms.minesaker.api.exception.CommunicationException
+import no.nav.tms.minesaker.api.saf.sakstemaer.ForenkletSakstema
 import org.junit.jupiter.api.Test
 
 import java.net.URL

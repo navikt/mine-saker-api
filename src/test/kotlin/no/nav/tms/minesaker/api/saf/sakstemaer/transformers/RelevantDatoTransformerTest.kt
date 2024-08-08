@@ -3,6 +3,7 @@ package no.nav.tms.minesaker.api.saf.sakstemaer.transformers
 import io.kotest.matchers.shouldBe
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaTestData
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaTestData.datoForUtgaaendeDokument
+import no.nav.tms.minesaker.api.saf.sakstemaer.toInternal
 import org.junit.jupiter.api.Test
 
 internal class RelevantDatoTransformerTest {

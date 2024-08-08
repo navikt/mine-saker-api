@@ -36,7 +36,7 @@ class DocumentNotFoundException(
 class InvalidRequestException(message: String, cause: Throwable? = null, sensitiveMessage: String? = null) :
     MineSakerException(message, cause, sensitiveMessage)
 
-class GraphQLResultException(
+class SafResultException(
     message: String,
     val errors: List<GraphQLClientError>?,
     val extensions: Map<String, Any?>?

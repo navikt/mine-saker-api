@@ -3,6 +3,7 @@ package no.nav.tms.minesaker.api.saf.journalposter.transformers
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import no.nav.tms.minesaker.api.exception.TransformationException
+import no.nav.tms.minesaker.api.saf.sakstemaer.toInternalSaktemakode
 import org.junit.jupiter.api.Test
 
 internal class SakstemakodeTransformerTest {

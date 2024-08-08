@@ -1,5 +1,6 @@
 package no.nav.tms.minesaker.api.domain
 
+import no.nav.tms.minesaker.api.saf.journalposter.v1.*
 import java.time.ZonedDateTime
 
 object DomainTestData {

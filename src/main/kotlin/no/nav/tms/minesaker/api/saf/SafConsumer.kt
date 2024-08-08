@@ -12,16 +12,22 @@ import kotlinx.coroutines.withContext
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.utils.io.*
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
+import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposterV2
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
 import no.nav.tms.minesaker.api.exception.CommunicationException
 import no.nav.tms.minesaker.api.exception.DocumentNotFoundException
-import no.nav.tms.minesaker.api.exception.GraphQLResultException
+import no.nav.tms.minesaker.api.exception.SafResultException
 import no.nav.tms.minesaker.api.config.InnsynsUrlResolver
-import no.nav.tms.minesaker.api.domain.JournalposterResponse
-import no.nav.tms.minesaker.api.saf.common.GraphQLResponse
-import no.nav.tms.minesaker.api.saf.journalposter.JournalposterRequest
+import no.nav.tms.minesaker.api.saf.journalposter.v2.HentJournalposterResponseV2
+import no.nav.tms.minesaker.api.saf.journalposter.v2.toInternal
+import no.nav.tms.minesaker.api.saf.common.SafResponse
+import no.nav.tms.minesaker.api.saf.journalposter.v2.HentJournalposterV2Request
+import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterRequest
+import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterResponse
+import no.nav.tms.minesaker.api.saf.journalposter.v1.toInternal
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaerRequest
-import no.nav.tms.minesaker.api.sak.SakstemaResult
+import no.nav.tms.minesaker.api.saf.sakstemaer.toInternal
+import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaResult
 import java.net.URL
 import java.util.*
 
@@ -39,7 +45,7 @@ class SafConsumer(
     private val navConsumerId = "mine-saker-api"
 
     suspend fun hentSakstemaer(request: SakstemaerRequest, accessToken: String): SakstemaResult {
-        return unwrapGraphQLResponse<HentSakstemaer.Result>(sendQuery(request, accessToken))
+        return unwrapSafResponse<HentSakstemaer.Result>(sendQuery(request, accessToken))
             .toInternal(innsynsUrlResolver)
     }
 
@@ -48,7 +54,16 @@ class SafConsumer(
         request: JournalposterRequest,
         accessToken: String
     ): JournalposterResponse? {
-        val result: HentJournalposter.Result = unwrapGraphQLResponse(sendQuery(request, accessToken))
+        val result: HentJournalposter.Result = unwrapSafResponse(sendQuery(request, accessToken))
+        return result.toInternal(innloggetBruker)
+    }
+
+    suspend fun hentJournalposterV2(
+        innloggetBruker: String,
+        request: HentJournalposterV2Request,
+        accessToken: String
+    ): HentJournalposterResponseV2? {
+        val result: HentJournalposterV2.Result = unwrapSafResponse(sendQuery(request, accessToken))
         return result.toInternal(innloggetBruker)
     }
 
@@ -116,22 +131,22 @@ class SafConsumer(
             }
         }
 
-    private suspend inline fun <reified T> unwrapGraphQLResponse(response: HttpResponse): T {
+    private suspend inline fun <reified T> unwrapSafResponse(response: HttpResponse): T {
         if (!response.status.isSuccess()) {
             throw CommunicationException("Fikk http-status [${response.status}] fra SAF.")
         }
-        val graphqlResponse = parseBody<T>(response)
+        val SafResponse = parseBody<T>(response)
 
-        return graphqlResponse.data
-            ?: throw GraphQLResultException(
+        return SafResponse.data
+            ?: throw SafResultException(
                 "Ingen data i resultatet fra SAF.",
-                graphqlResponse.errors,
-                graphqlResponse.extensions
+                SafResponse.errors,
+                SafResponse.extensions
             )
     }
 
-    private suspend inline fun <reified T> parseBody(response: HttpResponse): GraphQLResponse<T> = try {
-        response.body<GraphQLResponse<T>>()
+    private suspend inline fun <reified T> parseBody(response: HttpResponse): SafResponse<T> = try {
+        response.body<SafResponse<T>>()
             .also {
                 if (it.containsData() && it.containsErrors()) {
                     val baseMsg = "Resultatet inneholdt data og feil, dataene returneres til bruker."
@@ -145,8 +160,8 @@ class SafConsumer(
         throw CommunicationException("Klarte ikke tolke respons fra SAF", e)
     }
 
-    private fun GraphQLResponse<*>.containsData() = data != null
-    private fun GraphQLResponse<*>.containsErrors() = errors?.isNotEmpty() == true
+    private fun SafResponse<*>.containsData() = data != null
+    private fun SafResponse<*>.containsErrors() = errors?.isNotEmpty() == true
 
 }
 
