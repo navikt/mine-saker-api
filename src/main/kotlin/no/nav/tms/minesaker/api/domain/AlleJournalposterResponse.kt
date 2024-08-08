@@ -1,5 +1,6 @@
 package no.nav.tms.minesaker.api.domain
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.dokument.saf.selvbetjening.generated.dto.AlleJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.allejournalposter.AvsenderMottaker
 import no.nav.dokument.saf.selvbetjening.generated.dto.allejournalposter.DokumentInfo
@@ -51,6 +52,8 @@ enum class DokumenttypeV2 {
 fun AlleJournalposter.Result.toInternal(innloggetBruker: String): List<JournalpostV2> {
     val sakstemaer = dokumentoversiktSelvbetjening.tema
 
+    KotlinLogging.logger {}.info { "Sakstemaer: ${sakstemaer.map { it.kode to it.navn }}" }
+
     return dokumentoversiktSelvbetjening.journalposter.map {
         JournalpostV2(
             journalpostId = it.journalpostId,
@@ -69,7 +72,7 @@ fun AlleJournalposter.Result.toInternal(innloggetBruker: String): List<Journalpo
     }
 }
 
-private fun List<SafSakstema>.navn(kode: String) = this.firstOrNull { it.kode == kode }?.navn ?: throw IllegalStateException("Fant ikke navn på sakstema ")
+private fun List<SafSakstema>.navn(kode: String) = this.firstOrNull { it.kode == kode }?.navn ?: throw IllegalStateException("Fant ikke navn på sakstema $kode")
 
 private fun SafJournalposttype.mapToInternal() = when(this) {
     SafJournalposttype.I -> JournalposttypeV2.Inn
