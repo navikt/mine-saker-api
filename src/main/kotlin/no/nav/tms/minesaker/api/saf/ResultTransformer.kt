@@ -1,8 +1,10 @@
 package no.nav.tms.minesaker.api.saf
 
+import no.nav.dokument.saf.selvbetjening.generated.dto.AlleJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
 import no.nav.tms.minesaker.api.config.InnsynsUrlResolver
+import no.nav.tms.minesaker.api.domain.JournalpostV2
 import no.nav.tms.minesaker.api.domain.JournalposterResponse
 import no.nav.tms.minesaker.api.saf.journalposter.transformers.toInternal
 import no.nav.tms.minesaker.api.saf.sakstemaer.transformers.toInternal

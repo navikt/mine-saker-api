@@ -4,12 +4,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.dokument.saf.selvbetjening.generated.dto.AlleJournalposter
 import no.nav.tms.minesaker.api.digisos.DigiSosConsumer
 import no.nav.tms.minesaker.api.domain.JournalposterResponse
 import no.nav.tms.minesaker.api.domain.Sakstemakode
 import no.nav.tms.minesaker.api.saf.SafConsumer
 import no.nav.tms.minesaker.api.config.TokendingsExchange
+import no.nav.tms.minesaker.api.domain.JournalpostV2
 import no.nav.tms.minesaker.api.saf.DokumentStream
+import no.nav.tms.minesaker.api.saf.journalposter.AlleJournalposterRequest
 import no.nav.tms.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
@@ -90,6 +93,34 @@ class SakService(
         log.info { "Henter dokument $dokumentinfoId fra journalposten $journapostId" }
         val exchangedToken = tokendingsExchange.safToken(user)
         safConsumer.hentDokument(journapostId, dokumentinfoId, exchangedToken, receiver)
+    }
+
+    suspend fun hentAlleJournalposter(user: IdportenUser, representert: String?): List<JournalpostV2> {
+        return if (representert != null) {
+            hentAlleJournalposterForRepresentert(user, representert)
+        } else {
+            hentAlleJournalposterForBruker(user)
+        }
+    }
+
+    suspend fun hentAlleJournalposterForBruker(user: IdportenUser): List<JournalpostV2> {
+        log.info { "Henter alle journalposter for bruker fra SAF" }
+
+        return safConsumer.hentAlleJournalposter(
+            innloggetBruker = user.ident,
+            request = AlleJournalposterRequest.create(user.ident),
+            accessToken = tokendingsExchange.safToken(user)
+        )
+    }
+
+    suspend fun hentAlleJournalposterForRepresentert(user: IdportenUser, representert: String): List<JournalpostV2> {
+        log.info { "Henter alle journalposter for representert fra SAF" }
+
+        return safConsumer.hentAlleJournalposter(
+            innloggetBruker = representert,
+            request = AlleJournalposterRequest.create(representert),
+            accessToken = tokendingsExchange.safToken(user)
+        )
     }
 
 }

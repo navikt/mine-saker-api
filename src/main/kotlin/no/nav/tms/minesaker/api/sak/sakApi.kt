@@ -74,6 +74,10 @@ fun Route.sakApi(service: SakService) {
             }
             call.respond(result.determineHttpCode(), result.resultsSorted())
         }
+        get("/v2/journalposter/alle") {
+
+            call.respond(HttpStatusCode.OK, service.hentAlleJournalposter(idportenUser, call.representert))
+        }
     }
 
     get("/sakstema/{$sakstemakode}/journalpost/{$journalpostIdParameterName}") {

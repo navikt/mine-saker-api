@@ -11,14 +11,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.utils.io.*
+import no.nav.dokument.saf.selvbetjening.generated.dto.AlleJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
 import no.nav.tms.minesaker.api.exception.CommunicationException
 import no.nav.tms.minesaker.api.exception.DocumentNotFoundException
 import no.nav.tms.minesaker.api.exception.GraphQLResultException
 import no.nav.tms.minesaker.api.config.InnsynsUrlResolver
+import no.nav.tms.minesaker.api.domain.JournalpostV2
 import no.nav.tms.minesaker.api.domain.JournalposterResponse
+import no.nav.tms.minesaker.api.domain.toInternal
 import no.nav.tms.minesaker.api.saf.common.GraphQLResponse
+import no.nav.tms.minesaker.api.saf.journalposter.AlleJournalposterRequest
 import no.nav.tms.minesaker.api.saf.journalposter.JournalposterRequest
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.tms.minesaker.api.sak.SakstemaResult
@@ -49,6 +53,15 @@ class SafConsumer(
         accessToken: String
     ): JournalposterResponse? {
         val result: HentJournalposter.Result = unwrapGraphQLResponse(sendQuery(request, accessToken))
+        return result.toInternal(innloggetBruker)
+    }
+
+    suspend fun hentAlleJournalposter(
+        innloggetBruker: String,
+        request: AlleJournalposterRequest,
+        accessToken: String
+    ): List<JournalpostV2> {
+        val result: AlleJournalposter.Result = unwrapGraphQLResponse(sendQuery(request, accessToken))
         return result.toInternal(innloggetBruker)
     }
 
