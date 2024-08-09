@@ -1,6 +1,6 @@
 package no.nav.tms.minesaker.api.domain
 
-import io.github.oshai.kotlinlogging.KotlinLogging
+import com.fasterxml.jackson.annotation.JsonIgnore
 import no.nav.dokument.saf.selvbetjening.generated.dto.AlleJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.allejournalposter.AvsenderMottaker
 import no.nav.dokument.saf.selvbetjening.generated.dto.allejournalposter.DokumentInfo
@@ -18,15 +18,19 @@ data class JournalpostV2(
     val tittel: String,
     val journalposttype: JournalposttypeV2,
     val journalstatus: String,
-    val temakode: Sakstemakode,
-    val temanavn: String,
-    val avsendertype: AvsenderMottakerTypeV2?,
-    val avsender: String?,
-    val mottakertype: AvsenderMottakerTypeV2?,
-    val mottaker: String?,
+    @JsonIgnore val sakstema: Sakstema,
+    @JsonIgnore val avsender: AvsenderMottakerV2?,
+    @JsonIgnore val mottaker: AvsenderMottakerV2?,
     val opprettet: ZonedDateTime,
     val dokumenter: List<DokumentHeaderV2>
-)
+) {
+    val temakode = sakstema.name
+    val temanavn = sakstema.navn
+    val avsendertype = avsender?.type
+    val avsendernavn = avsender?.navn
+    val mottakertype = mottaker?.type
+    val mottakernavn = mottaker?.navn
+}
 
 data class DokumentHeaderV2(
     val dokumentInfoId: String,
@@ -35,6 +39,11 @@ data class DokumentHeaderV2(
     val filtype: String,
     val brukerHarTilgang: Boolean,
     val sladdet: Boolean
+)
+
+data class AvsenderMottakerV2(
+    val type: AvsenderMottakerTypeV2,
+    val navn: String
 )
 
 enum class AvsenderMottakerTypeV2 {
@@ -50,9 +59,6 @@ enum class DokumenttypeV2 {
 }
 
 fun AlleJournalposter.Result.toInternal(innloggetBruker: String): List<JournalpostV2> {
-    val sakstemaer = dokumentoversiktSelvbetjening.tema
-
-    KotlinLogging.logger {}.info { "Sakstemaer: ${sakstemaer.map { it.kode to it.navn }}" }
 
     return dokumentoversiktSelvbetjening.journalposter.map {
         JournalpostV2(
@@ -60,25 +66,20 @@ fun AlleJournalposter.Result.toInternal(innloggetBruker: String): List<Journalpo
             tittel = it.tittel ?: "---",
             journalposttype = it.journalposttype.mapToInternal(),
             journalstatus = it.journalstatus?.format() ?: "---",
-            temakode = Sakstemakode.valueOf(it.tema!!),
-            temanavn = sakstemaer.navn(it.tema),
-            avsendertype = avsenderMottakerType(it.avsender, innloggetBruker),
-            avsender = it.avsender?.navn,
-            mottakertype = avsenderMottakerType(it.mottaker, innloggetBruker),
-            mottaker = it.mottaker?.navn,
+            sakstema = Sakstema.fromExternal(it.tema!!),
+            avsender = avsenderMottaker(it.avsender, innloggetBruker),
+            mottaker = avsenderMottaker(it.mottaker, innloggetBruker),
             opprettet = opprettet(it.relevanteDatoer),
             dokumenter = dokumenter(it.dokumenter)
         )
     }
 }
 
-private fun List<SafSakstema>.navn(kode: String) = this.firstOrNull { it.kode == kode }?.navn ?: throw IllegalStateException("Fant ikke navn på sakstema $kode")
-
-private fun SafJournalposttype.mapToInternal() = when(this) {
+private fun SafJournalposttype.mapToInternal() = when (this) {
     SafJournalposttype.I -> JournalposttypeV2.Inn
     SafJournalposttype.U -> JournalposttypeV2.Ut
     SafJournalposttype.N -> JournalposttypeV2.Notat
-    else -> throw  IllegalArgumentException("Kjenner ikke igjen journalposttype $this")
+    else -> throw IllegalArgumentException("Kjenner ikke igjen journalposttype $this")
 }
 
 private fun SafJournalstatus.format() = this.name.lowercase()
@@ -89,19 +90,22 @@ private fun SafJournalstatus.format() = this.name.lowercase()
         it.destructured.let { (c) -> c.uppercase() }
     }
 
-fun avsenderMottakerType(avsenderMottaker: AvsenderMottaker?, innloggetBruker: String) = when (avsenderMottaker?.type) {
+fun avsenderMottaker(avsenderMottaker: AvsenderMottaker?, innloggetBruker: String) = when (avsenderMottaker?.type) {
     null -> null
     AvsenderMottakerIdType.FNR -> if (avsenderMottaker.id == innloggetBruker) {
         AvsenderMottakerTypeV2.Bruker
     } else {
         AvsenderMottakerTypeV2.Person
     }
+
     AvsenderMottakerIdType.ORGNR -> AvsenderMottakerTypeV2.Organisasjon
     AvsenderMottakerIdType.HPRNR -> AvsenderMottakerTypeV2.Helsepersonell
     AvsenderMottakerIdType.UTL_ORG -> AvsenderMottakerTypeV2.Internasjonal
     AvsenderMottakerIdType.NULL -> AvsenderMottakerTypeV2.Null
     AvsenderMottakerIdType.UKJENT -> AvsenderMottakerTypeV2.Ukjent
     else -> throw IllegalArgumentException("Fant ikke mapping for AvsenderMottakerIdType ${avsenderMottaker.type}")
+}?.let {
+    AvsenderMottakerV2(type = it, navn = avsenderMottaker?.navn ?: "Ukjent")
 }
 
 fun opprettet(datoer: List<RelevantDato?>): ZonedDateTime {
@@ -156,6 +160,7 @@ private class DecayingToggle<T>(private val initial: T, private val fallback: T)
         }
 }
 
+
+
 typealias SafJournalposttype = no.nav.dokument.saf.selvbetjening.generated.dto.enums.Journalposttype
 typealias SafJournalstatus = no.nav.dokument.saf.selvbetjening.generated.dto.enums.Journalstatus
-typealias SafSakstema = no.nav.dokument.saf.selvbetjening.generated.dto.allejournalposter.Sakstema
