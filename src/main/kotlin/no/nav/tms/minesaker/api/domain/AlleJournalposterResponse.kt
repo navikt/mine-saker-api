@@ -1,6 +1,7 @@
 package no.nav.tms.minesaker.api.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.dokument.saf.selvbetjening.generated.dto.AlleJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.allejournalposter.AvsenderMottaker
 import no.nav.dokument.saf.selvbetjening.generated.dto.allejournalposter.DokumentInfo
@@ -12,6 +13,8 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.*
+
+private val log = KotlinLogging.logger {}
 
 data class JournalpostV2(
     val journalpostId: String,
@@ -124,25 +127,28 @@ fun dokumenter(dokumenter: List<DokumentInfo?>?): List<DokumentHeaderV2> {
 
     return dokumenter
         ?.filterNotNull()
-        ?.map {
-            val variant = it.dokumentvarianter
+        ?.mapNotNull { info ->
+            info.dokumentvarianter
                 .filterNotNull()
                 .let { varianter ->
                     varianter.firstOrNull { variant ->
                         variant.variantformat == Variantformat.SLADDET
-                    }?: varianter.firstOrNull { variant ->
+                    } ?: varianter.firstOrNull { variant ->
                         variant.variantformat == Variantformat.ARKIV
                     }
-                } ?: throw IllegalArgumentException("Dokumentet med dokumentInfoId={} har ingen varianter som kan vises for bruker.")
-
-            DokumentHeaderV2(
-                dokumentInfoId = it.dokumentInfoId,
-                tittel = it.tittel ?: "---",
-                dokumenttype = dokumentType.value,
-                filtype = variant.filtype,
-                brukerHarTilgang = variant.brukerHarTilgang,
-                sladdet = variant.variantformat == Variantformat.SLADDET
-            )
+                }?.let { variant ->
+                    DokumentHeaderV2(
+                        dokumentInfoId = info.dokumentInfoId,
+                        tittel = info.tittel ?: "---",
+                        dokumenttype = dokumentType.value,
+                        filtype = variant.filtype,
+                        brukerHarTilgang = variant.brukerHarTilgang,
+                        sladdet = variant.variantformat == Variantformat.SLADDET
+                    )
+                } ?: run {
+                log.warn { "Dokumentet med dokumentInfoId=${info.dokumentInfoId} har ingen varianter som kan vises for bruker." }
+                null
+            }
         } ?: emptyList()
 }
 

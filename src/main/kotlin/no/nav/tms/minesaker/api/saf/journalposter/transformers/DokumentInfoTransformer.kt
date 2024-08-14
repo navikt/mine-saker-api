@@ -19,8 +19,7 @@ fun List<GraphQLDokumentInfo?>.toInternal(): List<Dokumentinfo> {
                 internals.add(internal)
 
             } else {
-                val msg = "Dokumentet med dokumentInfoId={} har ingen dokumenttype som kan vises for sluttbruker."
-                log.warn { "$msg, ${externalDokument.dokumentInfoId}" }
+                log.warn { "Dokumentet med dokumentInfoId=${externalDokument.dokumentInfoId} har ingen dokumenttype som kan vises for sluttbruker." }
             }
         }
     return internals
