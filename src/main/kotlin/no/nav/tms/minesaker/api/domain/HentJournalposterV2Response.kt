@@ -28,14 +28,11 @@ data class JournalpostV2(
     val tittel: String,
     val journalposttype: JournalposttypeV2,
     val journalstatus: String,
-    @JsonIgnore val sakstema: Sakstema,
     @JsonIgnore val avsender: AvsenderMottakerV2?,
     @JsonIgnore val mottaker: AvsenderMottakerV2?,
     val opprettet: ZonedDateTime,
     val dokumenter: List<DokumentHeaderV2>
 ) {
-    val temakode = sakstema.name
-    val temanavn = sakstema.navn
     val avsendertype = avsender?.type
     val avsendernavn = avsender?.navn
     val mottakertype = mottaker?.type
@@ -78,7 +75,6 @@ fun HentJournalposterV2.Result.toInternal(innloggetBruker: String): HentJournalp
                 tittel = it.tittel ?: "---",
                 journalposttype = it.journalposttype.mapToInternal(),
                 journalstatus = it.journalstatus?.format() ?: "---",
-                sakstema = Sakstema.fromExternal(it.tema!!),
                 avsender = avsenderMottaker(it.avsender, innloggetBruker),
                 mottaker = avsenderMottaker(it.mottaker, innloggetBruker),
                 opprettet = opprettet(it.relevanteDatoer),
