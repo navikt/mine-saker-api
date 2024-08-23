@@ -28,15 +28,15 @@ data class JournalpostV2(
     val tittel: String,
     val journalposttype: JournalposttypeV2,
     val journalstatus: String,
-    @JsonIgnore val avsender: AvsenderMottakerV2?,
-    @JsonIgnore val mottaker: AvsenderMottakerV2?,
+    @JsonIgnore val avsender: AvsenderMottakerV2,
+    @JsonIgnore val mottaker: AvsenderMottakerV2,
     val opprettet: ZonedDateTime,
     val dokumenter: List<DokumentHeaderV2>
 ) {
-    val avsendertype = avsender?.type
-    val avsendernavn = avsender?.navn
-    val mottakertype = mottaker?.type
-    val mottakernavn = mottaker?.navn
+    val avsendertype = avsender.type
+    val avsendernavn = avsender.navn
+    val mottakertype = mottaker.type
+    val mottakernavn = mottaker.navn
 }
 
 data class DokumentHeaderV2(
@@ -55,7 +55,7 @@ data class AvsenderMottakerV2(
 )
 
 enum class AvsenderMottakerTypeV2 {
-    Bruker, Person, Organisasjon, Helsepersonell, Internasjonal, Null, Ukjent
+    NAV, Bruker, Person, Organisasjon, Helsepersonell, Internasjonal, Null, Ukjent
 }
 
 enum class JournalposttypeV2 {
@@ -107,7 +107,7 @@ private fun SafJournalstatus.format() = this.name.lowercase()
     }
 
 fun avsenderMottaker(avsenderMottaker: AvsenderMottaker?, innloggetBruker: String) = when (avsenderMottaker?.type) {
-    null -> null
+    null -> AvsenderMottakerTypeV2.NAV
     AvsenderMottakerIdType.FNR -> if (avsenderMottaker.id == innloggetBruker) {
         AvsenderMottakerTypeV2.Bruker
     } else {
@@ -120,8 +120,11 @@ fun avsenderMottaker(avsenderMottaker: AvsenderMottaker?, innloggetBruker: Strin
     AvsenderMottakerIdType.NULL -> AvsenderMottakerTypeV2.Null
     AvsenderMottakerIdType.UKJENT -> AvsenderMottakerTypeV2.Ukjent
     else -> throw IllegalArgumentException("Fant ikke mapping for AvsenderMottakerIdType ${avsenderMottaker.type}")
-}?.let {
-    AvsenderMottakerV2(type = it, navn = avsenderMottaker?.navn ?: "Ukjent")
+}.let {
+    when (it) {
+        AvsenderMottakerTypeV2.NAV -> AvsenderMottakerV2(type = it, navn = "NAV")
+        else -> AvsenderMottakerV2(type = it, navn = avsenderMottaker?.navn ?: "---")
+    }
 }
 
 fun opprettet(datoer: List<RelevantDato?>): ZonedDateTime {
