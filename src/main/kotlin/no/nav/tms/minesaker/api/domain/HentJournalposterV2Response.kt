@@ -2,19 +2,26 @@ package no.nav.tms.minesaker.api.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.dokument.saf.selvbetjening.generated.dto.AlleJournalposter
-import no.nav.dokument.saf.selvbetjening.generated.dto.allejournalposter.AvsenderMottaker
-import no.nav.dokument.saf.selvbetjening.generated.dto.allejournalposter.DokumentInfo
-import no.nav.dokument.saf.selvbetjening.generated.dto.allejournalposter.RelevantDato
+import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposterV2
 import no.nav.dokument.saf.selvbetjening.generated.dto.enums.AvsenderMottakerIdType
 import no.nav.dokument.saf.selvbetjening.generated.dto.enums.Datotype
 import no.nav.dokument.saf.selvbetjening.generated.dto.enums.Variantformat
+import no.nav.dokument.saf.selvbetjening.generated.dto.hentjournalposterv2.AvsenderMottaker
+import no.nav.dokument.saf.selvbetjening.generated.dto.hentjournalposterv2.DokumentInfo
+import no.nav.dokument.saf.selvbetjening.generated.dto.hentjournalposterv2.RelevantDato
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.*
 
 private val log = KotlinLogging.logger {}
+
+data class HentJournalposterV2Response(
+    val kode: String,
+    val navn: String,
+
+    val journalposter: List<JournalpostV2>
+)
 
 data class JournalpostV2(
     val journalpostId: String,
@@ -40,6 +47,7 @@ data class DokumentHeaderV2(
     val tittel: String,
     val dokumenttype: DokumenttypeV2,
     val filtype: String,
+    val filstorrelse: Int,
     val brukerHarTilgang: Boolean,
     val sladdet: Boolean
 )
@@ -61,21 +69,30 @@ enum class DokumenttypeV2 {
     Hoved, Vedlegg
 }
 
-fun AlleJournalposter.Result.toInternal(innloggetBruker: String): List<JournalpostV2> {
+fun HentJournalposterV2.Result.toInternal(innloggetBruker: String): HentJournalposterV2Response? {
 
-    return dokumentoversiktSelvbetjening.journalposter.map {
-        JournalpostV2(
-            journalpostId = it.journalpostId,
-            tittel = it.tittel ?: "---",
-            journalposttype = it.journalposttype.mapToInternal(),
-            journalstatus = it.journalstatus?.format() ?: "---",
-            sakstema = Sakstema.fromExternal(it.tema!!),
-            avsender = avsenderMottaker(it.avsender, innloggetBruker),
-            mottaker = avsenderMottaker(it.mottaker, innloggetBruker),
-            opprettet = opprettet(it.relevanteDatoer),
-            dokumenter = dokumenter(it.dokumenter)
+    return dokumentoversiktSelvbetjening.tema.firstOrNull()?.let { tema ->
+        val journalposter = tema.journalposter.filterNotNull().map {
+            JournalpostV2(
+                journalpostId = it.journalpostId,
+                tittel = it.tittel ?: "---",
+                journalposttype = it.journalposttype.mapToInternal(),
+                journalstatus = it.journalstatus?.format() ?: "---",
+                sakstema = Sakstema.fromExternal(it.tema!!),
+                avsender = avsenderMottaker(it.avsender, innloggetBruker),
+                mottaker = avsenderMottaker(it.mottaker, innloggetBruker),
+                opprettet = opprettet(it.relevanteDatoer),
+                dokumenter = dokumenter(it.dokumenter)
+            )
+        }
+
+        HentJournalposterV2Response(
+            tema.kode,
+            tema.navn,
+            journalposter
         )
     }
+
 }
 
 private fun SafJournalposttype.mapToInternal() = when (this) {
@@ -142,6 +159,7 @@ fun dokumenter(dokumenter: List<DokumentInfo?>?): List<DokumentHeaderV2> {
                         tittel = info.tittel ?: "---",
                         dokumenttype = dokumentType.value,
                         filtype = variant.filtype,
+                        filstorrelse = variant.filstorrelse,
                         brukerHarTilgang = variant.brukerHarTilgang,
                         sladdet = variant.variantformat == Variantformat.SLADDET
                     )

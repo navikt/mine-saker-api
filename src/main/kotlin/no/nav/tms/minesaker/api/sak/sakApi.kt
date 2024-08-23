@@ -74,9 +74,19 @@ fun Route.sakApi(service: SakService) {
             }
             call.respond(result.determineHttpCode(), result.resultsSorted())
         }
-        get("/v2/journalposter/alle") {
 
-            call.respond(HttpStatusCode.OK, service.hentAlleJournalposter(idportenUser, call.representert))
+        get("/v2/sakstema/{$sakstemakode}/journalposter") {
+            val sakstemakode = call.sakstemakodeFromParameters()
+
+            service.hentJournalposterV2(
+                user = idportenUser,
+                sakstema = sakstemakode,
+                representert = call.representert
+            )?.let { result ->
+                call.respond(HttpStatusCode.OK, result)
+            }?: suspend {
+                call.respondText("Fant ikke journalposter med kode $sakstemakode",status = HttpStatusCode.NotFound)
+            }
         }
     }
 
