@@ -1,4 +1,4 @@
-package no.nav.tms.minesaker.api.saf.journalposter
+package no.nav.tms.minesaker.api.saf.journalposterv2
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.tms.minesaker.api.saf.common.SafError

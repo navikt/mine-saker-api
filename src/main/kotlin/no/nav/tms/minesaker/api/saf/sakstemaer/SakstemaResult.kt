@@ -1,17 +1,15 @@
-package no.nav.tms.minesaker.api.sak
+package no.nav.tms.minesaker.api.saf.sakstemaer
 
 import io.ktor.http.*
-import no.nav.tms.minesaker.api.domain.ForenkletSakstema
-import no.nav.tms.minesaker.api.domain.SakstemaerResponse
-import no.nav.tms.minesaker.api.domain.Sakstemakode
-import no.nav.tms.minesaker.api.domain.SistEndredeSakstemaer
 
 data class SakstemaResult(
     private val results: List<ForenkletSakstema>,
     private val errors: List<Kildetype> = emptyList(),
 ) {
 
-    constructor(errors: List<Kildetype>) : this(emptyList(), errors)
+    companion object {
+        fun withErrors(errors: List<Kildetype>) = SakstemaResult(emptyList(), errors)
+    }
 
     operator fun plus(result: SakstemaResult): SakstemaResult =
         SakstemaResult(

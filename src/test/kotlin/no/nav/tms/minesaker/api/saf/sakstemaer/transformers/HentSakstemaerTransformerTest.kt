@@ -5,6 +5,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import no.nav.tms.minesaker.api.config.InnsynsUrlResolver
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaTestData
+import no.nav.tms.minesaker.api.saf.sakstemaer.toInternal
 import org.junit.jupiter.api.Test
 
 internal class HentSakstemaerTransformerTest {

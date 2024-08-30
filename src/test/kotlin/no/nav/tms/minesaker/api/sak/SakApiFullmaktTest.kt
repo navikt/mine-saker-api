@@ -18,9 +18,13 @@ import kotlinx.coroutines.runBlocking
 import no.nav.tms.minesaker.api.config.SubstantialAuth
 import no.nav.tms.minesaker.api.config.jsonConfig
 import no.nav.tms.minesaker.api.config.mineSakerApi
-import no.nav.tms.minesaker.api.domain.*
-import no.nav.tms.minesaker.api.exception.GraphQLResultException
+import no.nav.tms.minesaker.api.exception.SafResultException
 import no.nav.tms.minesaker.api.saf.fullmakt.*
+import no.nav.tms.minesaker.api.saf.journalposter.v1.*
+import no.nav.tms.minesaker.api.saf.sakstemaer.ForenkletSakstema
+import no.nav.tms.minesaker.api.saf.sakstemaer.Kildetype
+import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaResult
+import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.idPortenMock
 import org.junit.jupiter.api.AfterEach
@@ -133,7 +137,7 @@ class SakApiFullmaktTest {
 
         coEvery {
             sakService.hentSakstemaer(any(), fullmaktGiver1.ident)
-        } throws GraphQLResultException("Error", emptyList(), emptyMap())
+        } throws SafResultException("Error", emptyList(), emptyMap())
 
         val firstResponse = client.get("sakstemaer")
         val secondResponse = client.get("sakstemaer")
@@ -159,7 +163,7 @@ class SakApiFullmaktTest {
 
         coEvery {
             sakService.hentJournalposterForSakstema(any(), Sakstemakode.AAP, fullmaktGiver1.ident)
-        } throws GraphQLResultException("Error", emptyList(), emptyMap())
+        } throws SafResultException("Error", emptyList(), emptyMap())
 
         val firstResponse = client.get("journalposter/AAP")
         val secondResponse = client.get("journalposter/AAP")

@@ -5,6 +5,8 @@ import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.ktor.http.*
+import no.nav.tms.minesaker.api.saf.sakstemaer.Kildetype
+import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaResult
 import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
 

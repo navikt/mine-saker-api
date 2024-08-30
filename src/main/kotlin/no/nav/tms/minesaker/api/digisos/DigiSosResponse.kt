@@ -1,8 +1,8 @@
 package no.nav.tms.minesaker.api.digisos
 
 import no.nav.tms.minesaker.api.config.InnsynsUrlResolver
-import no.nav.tms.minesaker.api.domain.ForenkletSakstema
-import no.nav.tms.minesaker.api.domain.Sakstemakode
+import no.nav.tms.minesaker.api.saf.sakstemaer.ForenkletSakstema
+import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime

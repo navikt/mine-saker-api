@@ -10,10 +10,10 @@ import io.ktor.utils.io.*
 import io.ktor.utils.io.core.*
 import no.nav.tms.minesaker.api.exception.InvalidRequestException
 import no.nav.tms.minesaker.api.config.idportenUser
-import no.nav.tms.minesaker.api.domain.JournalposterResponse
-import no.nav.tms.minesaker.api.domain.Sakstemakode
+import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktAttribute
 import no.nav.tms.minesaker.api.saf.fullmakt.enableFullmakt
+import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterResponse
 
 const val sakstemakode = "sakstemakode"
 const val dokumentIdParameterName = "dokumentId"

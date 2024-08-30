@@ -7,6 +7,7 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 import no.nav.tms.minesaker.api.exception.TransformationException
 
 import no.nav.tms.minesaker.api.saf.journalposter.JournalpostTestData
+import no.nav.tms.minesaker.api.saf.journalposter.v1.toInternal
 import org.junit.jupiter.api.Test
 
 internal class JournalpostTransformerTest {

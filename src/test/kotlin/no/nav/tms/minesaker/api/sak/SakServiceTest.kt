@@ -9,10 +9,11 @@ import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import no.nav.tms.minesaker.api.exception.CommunicationException
 import no.nav.tms.minesaker.api.digisos.DigiSosConsumer
-import no.nav.tms.minesaker.api.domain.Sakstemakode
+import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import no.nav.tms.minesaker.api.saf.SafConsumer
 import no.nav.tms.minesaker.api.config.TokendingsExchange
-import no.nav.tms.minesaker.api.saf.journalposter.JournalposterRequest
+import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterRequest
+import no.nav.tms.minesaker.api.saf.sakstemaer.Kildetype
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaerRequest
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 import org.junit.jupiter.api.Test

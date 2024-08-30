@@ -1,4 +1,4 @@
-package no.nav.tms.minesaker.api.domain
+package no.nav.tms.minesaker.api.saf.journalposter.v2
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -16,7 +16,7 @@ import java.util.*
 
 private val log = KotlinLogging.logger {}
 
-data class HentJournalposterV2Response(
+data class HentJournalposterResponseV2(
     val kode: String,
     val navn: String,
 
@@ -66,7 +66,7 @@ enum class DokumenttypeV2 {
     Hoved, Vedlegg
 }
 
-fun HentJournalposterV2.Result.toInternal(innloggetBruker: String): HentJournalposterV2Response? {
+fun HentJournalposterV2.Result.toInternal(innloggetBruker: String): HentJournalposterResponseV2? {
 
     return dokumentoversiktSelvbetjening.tema.firstOrNull()?.let { tema ->
         val journalposter = tema.journalposter.filterNotNull().map {
@@ -82,7 +82,7 @@ fun HentJournalposterV2.Result.toInternal(innloggetBruker: String): HentJournalp
             )
         }
 
-        HentJournalposterV2Response(
+        HentJournalposterResponseV2(
             tema.kode,
             tema.navn,
             journalposter
@@ -91,14 +91,14 @@ fun HentJournalposterV2.Result.toInternal(innloggetBruker: String): HentJournalp
 
 }
 
-private fun SafJournalposttype.mapToInternal() = when (this) {
-    SafJournalposttype.I -> JournalposttypeV2.Inn
-    SafJournalposttype.U -> JournalposttypeV2.Ut
-    SafJournalposttype.N -> JournalposttypeV2.Notat
+private fun SafJournalposttypeV2.mapToInternal() = when (this) {
+    SafJournalposttypeV2.I -> JournalposttypeV2.Inn
+    SafJournalposttypeV2.U -> JournalposttypeV2.Ut
+    SafJournalposttypeV2.N -> JournalposttypeV2.Notat
     else -> throw IllegalArgumentException("Kjenner ikke igjen journalposttype $this")
 }
 
-private fun SafJournalstatus.format() = this.name.lowercase()
+private fun SafJournalstatusV2.format() = this.name.lowercase()
     .replaceFirstChar {
         if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
     }
@@ -182,8 +182,3 @@ private class DecayingToggle<T>(private val initial: T, private val fallback: T)
             fallback
         }
 }
-
-
-
-typealias SafJournalposttype = no.nav.dokument.saf.selvbetjening.generated.dto.enums.Journalposttype
-typealias SafJournalstatus = no.nav.dokument.saf.selvbetjening.generated.dto.enums.Journalstatus

@@ -24,7 +24,7 @@ import io.ktor.server.auth.*
 import no.nav.tms.common.metrics.installTmsMicrometerMetrics
 import no.nav.tms.minesaker.api.exception.CommunicationException
 import no.nav.tms.minesaker.api.exception.DocumentNotFoundException
-import no.nav.tms.minesaker.api.exception.GraphQLResultException
+import no.nav.tms.minesaker.api.exception.SafResultException
 import no.nav.tms.minesaker.api.exception.InvalidRequestException
 import no.nav.tms.minesaker.api.exception.TransformationException
 import no.nav.tms.minesaker.api.health.healthApi
@@ -70,7 +70,7 @@ fun Application.mineSakerApi(
                     call.respond(HttpStatusCode.ServiceUnavailable)
                 }
 
-                is GraphQLResultException -> {
+                is SafResultException -> {
                     log.warn { "Feil i resultat fra SAF." }
                     secureLog.warn(cause) {
                         "Feil i graphql resultat for kall til ${call.request.uri}: \n${

@@ -17,14 +17,16 @@ import kotlinx.coroutines.runBlocking
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
 import no.nav.tms.minesaker.api.exception.CommunicationException
 import no.nav.tms.minesaker.api.exception.DocumentNotFoundException
-import no.nav.tms.minesaker.api.exception.GraphQLResultException
+import no.nav.tms.minesaker.api.exception.SafResultException
 import no.nav.tms.minesaker.api.config.InnsynsUrlResolver
 import no.nav.tms.minesaker.api.config.jsonConfig
-import no.nav.tms.minesaker.api.domain.*
-import no.nav.tms.minesaker.api.saf.common.GraphQLError
-import no.nav.tms.minesaker.api.saf.common.GraphQLResponse
-import no.nav.tms.minesaker.api.saf.journalposter.JournalposterRequest
+import no.nav.tms.minesaker.api.saf.common.SafError
+import no.nav.tms.minesaker.api.saf.common.SafResponse
+import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterRequest
 import no.nav.tms.minesaker.api.saf.journalposter.HentJournalposterResultTestData
+import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterResponse
+import no.nav.tms.minesaker.api.saf.sakstemaer.ForenkletSakstema
+import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import no.nav.tms.minesaker.api.saf.sakstemaer.HentSakstemaResultTestData
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaerRequest
 
@@ -86,7 +88,7 @@ internal class SafConsumerTest {
     }
 
     @Test
-    fun `Hvis henting av sakstema returnerer resultat uten data, skal det kastes GraphQLException`() {
+    fun `Hvis henting av sakstema returnerer resultat uten data, skal det kastes SafException`() {
         val feilrespons =  """{ "data": null }"""
         val mockHttpClient = createMockHttpClient {
             respond(
@@ -98,7 +100,7 @@ internal class SafConsumerTest {
 
         val request = SakstemaerRequest.create(dummyIdent)
 
-        shouldThrow<GraphQLResultException> {
+        shouldThrow<SafResultException> {
             runBlocking {
                 consumer.hentSakstemaer(request, dummyToken)
             }
@@ -107,7 +109,7 @@ internal class SafConsumerTest {
 
     @Test
     fun `Skal kunne hente journalposter`() {
-        val externalResponse = GraphQLResponse(HentJournalposterResultTestData.journalposterResult())
+        val externalResponse = SafResponse(HentJournalposterResultTestData.journalposterResult())
         val safResponseAsJson = objectMapper.writeValueAsString(externalResponse)
         val mockHttpClient = createMockHttpClient {
             respond(
@@ -173,7 +175,7 @@ internal class SafConsumerTest {
 
         result.isFailure shouldBe true
         val exception = result.exceptionOrNull()
-        exception.shouldBeInstanceOf<GraphQLResultException>()
+        exception.shouldBeInstanceOf<SafResultException>()
         exception.errors?.size shouldBe externalErrorResponse.errors?.size
         exception.extensions?.size shouldBe externalErrorResponse.extensions?.size
     }
@@ -203,7 +205,7 @@ internal class SafConsumerTest {
 
     @Test
     fun `Skal kaste intern feil videre ved tomt data-felt, selv om graphQL ikke har feil i feillisten`() {
-        val externalErrorResponse = GraphQLResponse<Unit>()
+        val externalErrorResponse = SafResponse<Unit>()
         val safErrorResponseAsJson = objectMapper.writeValueAsString(externalErrorResponse)
         val mockHttpClient = createMockHttpClient {
             respond(
@@ -223,7 +225,7 @@ internal class SafConsumerTest {
 
         result.isFailure shouldBe true
         val exception = result.exceptionOrNull()
-        exception.shouldBeInstanceOf<GraphQLResultException>()
+        exception.shouldBeInstanceOf<SafResultException>()
     }
 
     @Test
@@ -357,13 +359,13 @@ private suspend fun DokumentStream.receiveBody(): ByteArray {
     return buffer
 }
 
-private fun response(): GraphQLResponse<HentSakstemaer.Result> {
+private fun response(): SafResponse<HentSakstemaer.Result> {
     val data = HentSakstemaResultTestData.result()
-    return GraphQLResponse(data)
+    return SafResponse(data)
 }
 
-private fun responseWithError(data: HentSakstemaer.Result? = null): GraphQLResponse<HentSakstemaer.Result> {
-    val error = GraphQLError("Feilet ved henting av data for bruker.")
+private fun responseWithError(data: HentSakstemaer.Result? = null): SafResponse<HentSakstemaer.Result> {
+    val error = SafError("Feilet ved henting av data for bruker.")
 
-    return GraphQLResponse(data, listOf(error))
+    return SafResponse(data, listOf(error))
 }

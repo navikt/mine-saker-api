@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import no.nav.tms.minesaker.api.saf.journalposter.v1.Dokumenttype
 import org.junit.jupiter.api.Test
 
 internal class JournalpostTest {
