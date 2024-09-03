@@ -15,10 +15,10 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import kotlinx.coroutines.runBlocking
-import no.nav.tms.minesaker.api.config.InnsynsUrlResolver
-import no.nav.tms.minesaker.api.config.jsonConfig
+import no.nav.tms.minesaker.api.saf.InnsynsUrlResolver
+import no.nav.tms.minesaker.api.setup.jsonConfig
 
-import no.nav.tms.minesaker.api.exception.CommunicationException
+import no.nav.tms.minesaker.api.setup.CommunicationException
 import no.nav.tms.minesaker.api.saf.sakstemaer.ForenkletSakstema
 import org.junit.jupiter.api.Test
 

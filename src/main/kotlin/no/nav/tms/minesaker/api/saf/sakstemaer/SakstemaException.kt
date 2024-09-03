@@ -1,6 +1,8 @@
-package no.nav.tms.minesaker.api.exception
+package no.nav.tms.minesaker.api.saf.sakstemaer
 
-class TransformationException(
+import no.nav.tms.minesaker.api.setup.MineSakerException
+
+class SakstemaException(
     message: String,
     val type: ErrorType,
     cause: Throwable?
@@ -21,9 +23,9 @@ class TransformationException(
     companion object {
         const val feltnavnKey = "feltnavn"
 
-        fun withMissingFieldName(fieldName: String): TransformationException {
+        fun withMissingFieldName(fieldName: String): SakstemaException {
             val msg = "Et etterspurt felt ble ikke sendt med"
-            val te = TransformationException(msg, ErrorType.MISSING_FIELD)
+            val te = SakstemaException(msg, ErrorType.MISSING_FIELD)
 
             te.addContext(feltnavnKey, fieldName)
             return te

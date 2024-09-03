@@ -1,4 +1,4 @@
-package no.nav.tms.minesaker.api.sak
+package no.nav.tms.minesaker.api
 
 
 import io.ktor.http.*
@@ -8,8 +8,7 @@ import io.ktor.server.routing.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.utils.io.*
 import io.ktor.utils.io.core.*
-import no.nav.tms.minesaker.api.exception.InvalidRequestException
-import no.nav.tms.minesaker.api.config.idportenUser
+import no.nav.tms.minesaker.api.setup.InvalidRequestException
 import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktAttribute
 import no.nav.tms.minesaker.api.saf.fullmakt.enableFullmakt
@@ -19,7 +18,7 @@ const val sakstemakode = "sakstemakode"
 const val dokumentIdParameterName = "dokumentId"
 const val journalpostIdParameterName = "journalpostId"
 
-fun Route.sakApi(service: SakService) {
+fun Route.mineSakerRoute(service: SakService) {
 
     val log = KotlinLogging.logger { }
     val secureLog = KotlinLogging.logger("secureLog")

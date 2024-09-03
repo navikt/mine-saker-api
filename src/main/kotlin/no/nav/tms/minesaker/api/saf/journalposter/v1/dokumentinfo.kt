@@ -2,7 +2,7 @@ package no.nav.tms.minesaker.api.saf.journalposter.v1
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.dokument.saf.selvbetjening.generated.dto.enums.Variantformat
-import no.nav.tms.minesaker.api.exception.TransformationException
+import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaException
 
 data class Dokumentinfo(
     val tittel: String,
@@ -67,7 +67,7 @@ fun SafDokumentInfo.velgSladdetVariantOverArkivertVariant(): SafDokumentvariant?
 
 fun SafDokumentInfo.kastFeilHvisManglerVarianter() {
     if (dokumentvarianter.isEmpty()) {
-        throw TransformationException.withMissingFieldName("dokumentvarianter")
+        throw SakstemaException.withMissingFieldName("dokumentvarianter")
     }
 }
 
@@ -103,7 +103,7 @@ fun Variantformat.toInternal(): Dokumentvariant {
         Variantformat.SLADDET -> Dokumentvariant.SLADDET
         else -> {
             val msg = "Klarte ikke å konvertere dokumentvariant"
-            val exception = TransformationException(msg, TransformationException.ErrorType.INVALID_STATE)
+            val exception = SakstemaException(msg, SakstemaException.ErrorType.INVALID_STATE)
             exception.addContext("funnetVariantformat", this)
             throw exception
         }

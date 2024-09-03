@@ -1,4 +1,4 @@
-package no.nav.tms.minesaker.api.exception
+package no.nav.tms.minesaker.api.setup
 
 import com.expediagroup.graphql.client.types.GraphQLClientError
 

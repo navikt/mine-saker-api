@@ -8,7 +8,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import no.nav.tms.minesaker.api.config.TokendingsExchange
+import no.nav.tms.minesaker.api.setup.TokendingsExchange
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 import java.time.Duration
 

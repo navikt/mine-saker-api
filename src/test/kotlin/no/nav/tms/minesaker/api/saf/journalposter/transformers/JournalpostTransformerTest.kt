@@ -4,7 +4,7 @@ import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
-import no.nav.tms.minesaker.api.exception.TransformationException
+import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaException
 
 import no.nav.tms.minesaker.api.saf.journalposter.JournalpostTestData
 import no.nav.tms.minesaker.api.saf.journalposter.v1.toInternal
@@ -49,9 +49,9 @@ internal class JournalpostTransformerTest {
         }
 
         result.isFailure shouldBe true
-        result.exceptionOrNull().shouldBeInstanceOf<TransformationException>()
-        val exception = result.exceptionOrNull() as TransformationException
-        exception.context[TransformationException.feltnavnKey] shouldBe "dokumenter"
+        result.exceptionOrNull().shouldBeInstanceOf<SakstemaException>()
+        val exception = result.exceptionOrNull() as SakstemaException
+        exception.context[SakstemaException.feltnavnKey] shouldBe "dokumenter"
     }
 
 }

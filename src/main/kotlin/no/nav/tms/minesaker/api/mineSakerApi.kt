@@ -1,4 +1,4 @@
-package no.nav.tms.minesaker.api.config
+package no.nav.tms.minesaker.api
 
 import io.github.oshai.kotlinlogging.KLogger
 import io.ktor.client.HttpClient
@@ -22,26 +22,25 @@ import io.prometheus.client.hotspot.DefaultExports
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.server.auth.*
 import no.nav.tms.common.metrics.installTmsMicrometerMetrics
-import no.nav.tms.minesaker.api.exception.CommunicationException
-import no.nav.tms.minesaker.api.exception.DocumentNotFoundException
-import no.nav.tms.minesaker.api.exception.SafResultException
-import no.nav.tms.minesaker.api.exception.InvalidRequestException
-import no.nav.tms.minesaker.api.exception.TransformationException
-import no.nav.tms.minesaker.api.health.healthApi
+import no.nav.tms.minesaker.api.setup.CommunicationException
+import no.nav.tms.minesaker.api.setup.DocumentNotFoundException
+import no.nav.tms.minesaker.api.setup.SafResultException
+import no.nav.tms.minesaker.api.setup.InvalidRequestException
+import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaException
+import no.nav.tms.minesaker.api.setup.healthApi
 import no.nav.tms.minesaker.api.saf.fullmakt.*
-import no.nav.tms.minesaker.api.sak.*
 import no.nav.tms.token.support.idporten.sidecar.IdPortenLogin
 import no.nav.tms.token.support.idporten.sidecar.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.idPorten
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUserFactory
 import no.nav.tms.common.observability.ApiMdc
+import no.nav.tms.minesaker.api.setup.jsonConfig
 
 
 fun Application.mineSakerApi(
     sakService: SakService,
     httpClient: HttpClient,
     corsAllowedOrigins: String,
-    corsAllowedSchemes: String,
     sakerUrl: String,
     fullmaktService: FullmaktService,
     fullmaktSessionStore: FullmaktSessionStore,
@@ -87,7 +86,7 @@ fun Application.mineSakerApi(
                     call.respond(HttpStatusCode.NotFound)
                 }
 
-                is TransformationException -> {
+                is SakstemaException -> {
                     log.warn { "Feil ved transformering av data." }
                     secureLog.warn(cause) { "Feil ved transformering av data." }
                     call.respond(HttpStatusCode.InternalServerError)
@@ -110,7 +109,7 @@ fun Application.mineSakerApi(
     }
 
     install(CORS) {
-        allowHost(corsAllowedOrigins, schemes = listOf(corsAllowedSchemes))
+        allowHost(corsAllowedOrigins)
         allowCredentials = true
         allowHeader(HttpHeaders.ContentType)
     }
@@ -136,7 +135,7 @@ fun Application.mineSakerApi(
         healthApi()
 
         authenticate {
-            sakApi(sakService)
+            mineSakerRoute(sakService)
             fullmaktApi(fullmaktService, fullmaktSessionStore)
         }
 

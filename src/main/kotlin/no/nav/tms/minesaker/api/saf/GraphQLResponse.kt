@@ -1,21 +1,21 @@
-package no.nav.tms.minesaker.api.saf.common
+package no.nav.tms.minesaker.api.saf
 
 import com.expediagroup.graphql.client.types.*
 
-data class SafResponse<T>(
+data class GraphQLResponse<T>(
     override val data: T? = null,
-    override val errors: List<SafError>? = null,
+    override val errors: List<GraphQLError>? = null,
     override val extensions: Map<String, Any?>? = null
 ): GraphQLClientResponse<T>
 
-data class SafError(
+data class GraphQLError(
     override val message: String,
-    override val locations: List<SafSourceLocation>? = null,
+    override val locations: List<GraphQLSourceLocation>? = null,
     override val extensions: Map<String, Any?>? = null,
     override val path: List<Any>? = null
 ): GraphQLClientError
 
-data class SafSourceLocation(
+data class GraphQLSourceLocation(
     override val line: Int,
     override val column: Int
 ): GraphQLClientSourceLocation

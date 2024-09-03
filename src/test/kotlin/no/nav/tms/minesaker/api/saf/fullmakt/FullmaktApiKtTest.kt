@@ -17,9 +17,9 @@ import io.ktor.util.*
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import no.nav.tms.minesaker.api.config.SubstantialAuth
-import no.nav.tms.minesaker.api.config.jsonConfig
-import no.nav.tms.minesaker.api.config.mineSakerApi
+import no.nav.tms.minesaker.api.SubstantialAuth
+import no.nav.tms.minesaker.api.setup.jsonConfig
+import no.nav.tms.minesaker.api.mineSakerApi
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.idPortenMock
 import org.junit.jupiter.api.AfterEach
@@ -149,7 +149,6 @@ class FullmaktApiKtTest {
                 sakService = mockk(),
                 httpClient = testClient,
                 corsAllowedOrigins = "*",
-                corsAllowedSchemes = "*",
                 sakerUrl = "N/A",
                 fullmaktService = fullmaktService,
                 fullmaktSessionStore = sessionStore,

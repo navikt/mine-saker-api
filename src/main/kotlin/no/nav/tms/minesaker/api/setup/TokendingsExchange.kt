@@ -1,4 +1,4 @@
-package no.nav.tms.minesaker.api.config
+package no.nav.tms.minesaker.api.setup
 
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 import no.nav.tms.token.support.tokendings.exchange.TokendingsService

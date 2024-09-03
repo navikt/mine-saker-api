@@ -9,8 +9,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.serialization.*
-import no.nav.tms.minesaker.api.exception.CommunicationException
-import no.nav.tms.minesaker.api.config.InnsynsUrlResolver
+import no.nav.tms.minesaker.api.setup.CommunicationException
+import no.nav.tms.minesaker.api.saf.InnsynsUrlResolver
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaResult
 import java.net.URL
 import java.util.*

@@ -1,4 +1,4 @@
-package no.nav.tms.minesaker.api.config
+package no.nav.tms.minesaker.api.setup
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper

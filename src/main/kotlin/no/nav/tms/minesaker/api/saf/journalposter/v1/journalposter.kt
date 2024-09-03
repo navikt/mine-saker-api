@@ -1,6 +1,6 @@
 package no.nav.tms.minesaker.api.saf.journalposter.v1
 
-import no.nav.tms.minesaker.api.exception.TransformationException
+import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaException
 import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import no.nav.tms.minesaker.api.saf.sakstemaer.toInternalSaktemakode
 import java.time.ZonedDateTime
@@ -48,7 +48,7 @@ fun SafJournalpost.toInternal(innloggetBruker: String) = Journalpost(
     avsender?.toInternal(innloggetBruker),
     mottaker?.toInternal(innloggetBruker),
     relevanteDatoer.toInternal(),
-    dokumenter?.toInternal() ?: throw TransformationException.withMissingFieldName("dokumenter")
+    dokumenter?.toInternal() ?: throw SakstemaException.withMissingFieldName("dokumenter")
 )
 
 fun SafJournalposttype.toInternal(): Journalposttype {
@@ -60,7 +60,7 @@ fun SafJournalposttype.toInternal(): Journalposttype {
     }
 }
 
-private fun buildException(): TransformationException {
+private fun buildException(): SakstemaException {
     val message = "Mottok ukjent verdi for feltet 'journalposttype'."
-    return TransformationException(message, TransformationException.ErrorType.UNKNOWN_VALUE)
+    return SakstemaException(message, SakstemaException.ErrorType.UNKNOWN_VALUE)
 }

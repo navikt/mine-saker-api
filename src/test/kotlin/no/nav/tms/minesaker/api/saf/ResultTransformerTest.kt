@@ -3,8 +3,7 @@ package no.nav.tms.minesaker.api.saf
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.types.shouldBeInstanceOf
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
-import no.nav.tms.minesaker.api.exception.TransformationException
-import no.nav.tms.minesaker.api.config.InnsynsUrlResolver
+import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaException
 import no.nav.tms.minesaker.api.saf.journalposter.JournalpostTestData.listOfSakstemaer
 import no.nav.tms.minesaker.api.saf.journalposter.JournalpostTestData.sakstemaWithUtgaaendeDokument
 import no.nav.tms.minesaker.api.saf.journalposter.v1.SafDokumentoversikt
@@ -46,7 +45,7 @@ internal class ResultTransformerTest {
             eksternalMedValideringsfeil.toInternal(dummyResolver)
 
         }.onFailure { exception ->
-            exception.shouldBeInstanceOf<TransformationException>()
+            exception.shouldBeInstanceOf<SakstemaException>()
         }.onSuccess {
             fail("Denne testen skal kaste en feil")
         }
@@ -63,7 +62,7 @@ internal class ResultTransformerTest {
             eksternalMedValideringsfeil.toInternal(dummyInnloggetBruker)
 
         }.onFailure { exception ->
-            exception.shouldBeInstanceOf<TransformationException>()
+            exception.shouldBeInstanceOf<SakstemaException>()
 
         }.onSuccess {
             fail("Denne testen skal kaste en feil")

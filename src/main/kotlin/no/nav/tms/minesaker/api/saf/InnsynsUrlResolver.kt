@@ -1,4 +1,4 @@
-package no.nav.tms.minesaker.api.config
+package no.nav.tms.minesaker.api.saf
 
 import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 
@@ -8,6 +8,4 @@ class InnsynsUrlResolver(
 ) {
     fun urlFor(kode: Sakstemakode): String =
         temaspesifikkeLenker.getOrDefault(kode, "$generellLenke/$kode")
-
 }
-

@@ -1,6 +1,6 @@
 package no.nav.tms.minesaker.api.saf.sakstemaer
 
-import no.nav.tms.minesaker.api.config.InnsynsUrlResolver
+import no.nav.tms.minesaker.api.saf.InnsynsUrlResolver
 import java.time.ZonedDateTime
 
 data class SistEndredeSakstemaer(

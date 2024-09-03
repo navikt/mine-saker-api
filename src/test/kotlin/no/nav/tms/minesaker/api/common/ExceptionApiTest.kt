@@ -10,21 +10,21 @@ import io.ktor.server.testing.*
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
-import no.nav.tms.minesaker.api.config.SubstantialAuth
-import no.nav.tms.minesaker.api.exception.CommunicationException
-import no.nav.tms.minesaker.api.exception.DocumentNotFoundException
-import no.nav.tms.minesaker.api.exception.SafResultException
-import no.nav.tms.minesaker.api.config.mineSakerApi
+import no.nav.tms.minesaker.api.SubstantialAuth
+import no.nav.tms.minesaker.api.setup.CommunicationException
+import no.nav.tms.minesaker.api.setup.DocumentNotFoundException
+import no.nav.tms.minesaker.api.setup.SafResultException
+import no.nav.tms.minesaker.api.mineSakerApi
 import no.nav.tms.minesaker.api.digisos.DigiSosConsumer
 import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import no.nav.tms.minesaker.api.saf.SafConsumer
-import no.nav.tms.minesaker.api.config.TokendingsExchange
+import no.nav.tms.minesaker.api.setup.TokendingsExchange
 import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktService
 import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktSessionStore
 import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktTestSessionStore
 import no.nav.tms.minesaker.api.saf.sakstemaer.ForenkletSakstema
 import no.nav.tms.minesaker.api.saf.sakstemaer.Kildetype
-import no.nav.tms.minesaker.api.sak.SakService
+import no.nav.tms.minesaker.api.SakService
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaResult
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.idPortenMock
@@ -49,7 +49,6 @@ internal class ExceptionApiTest {
                 sakService = sakserviceMock,
                 httpClient = mockk(),
                 corsAllowedOrigins = "*",
-                corsAllowedSchemes = "*",
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev",
                 fullmaktService = fullmaktService,
@@ -86,7 +85,6 @@ internal class ExceptionApiTest {
                 sakService = sakserviceMock,
                 httpClient = mockk(),
                 corsAllowedOrigins = "*",
-                corsAllowedSchemes = "*",
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev",
                 fullmaktService = fullmaktService,
@@ -130,7 +128,6 @@ internal class ExceptionApiTest {
                 sakService = sakserviceMock,
                 httpClient = mockk(),
                 corsAllowedOrigins = "*",
-                corsAllowedSchemes = "*",
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev",
                 fullmaktService = fullmaktService,
@@ -166,7 +163,6 @@ internal class ExceptionApiTest {
                 sakService = sakserviceMock,
                 httpClient = mockk(),
                 corsAllowedOrigins = "*",
-                corsAllowedSchemes = "*",
                 authConfig = { defaultAuthConfig() },
                 sakerUrl = "http://minesaker.dev",
                 fullmaktService = fullmaktService,

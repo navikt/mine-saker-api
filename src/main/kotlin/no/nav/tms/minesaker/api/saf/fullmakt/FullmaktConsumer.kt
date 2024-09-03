@@ -7,7 +7,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import no.nav.tms.minesaker.api.config.TokendingsExchange
+import no.nav.tms.minesaker.api.setup.TokendingsExchange
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 
 class FullmaktConsumer(
