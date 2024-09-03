@@ -1,7 +1,7 @@
 package no.nav.tms.minesaker.api.saf.journalposter.transformers
 
 import io.kotest.matchers.shouldBe
-import no.nav.tms.minesaker.api.exception.TransformationException
+import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaException
 import no.nav.tms.minesaker.api.saf.journalposter.v1.Journalposttype
 import no.nav.tms.minesaker.api.saf.journalposter.v1.SafJournalposttype
 import no.nav.tms.minesaker.api.saf.journalposter.v1.toInternal
@@ -22,8 +22,8 @@ class JournalposttypeTransformerTest {
             SafJournalposttype.__UNKNOWN_VALUE.toInternal()
         }
         result.isFailure shouldBe true
-        val exception = result.exceptionOrNull() as TransformationException
-        exception.type shouldBe TransformationException.ErrorType.UNKNOWN_VALUE
+        val exception = result.exceptionOrNull() as SakstemaException
+        exception.type shouldBe SakstemaException.ErrorType.UNKNOWN_VALUE
     }
 
 }

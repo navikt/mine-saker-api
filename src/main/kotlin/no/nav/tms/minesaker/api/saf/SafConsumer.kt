@@ -14,13 +14,11 @@ import io.ktor.utils.io.*
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposterV2
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
-import no.nav.tms.minesaker.api.exception.CommunicationException
-import no.nav.tms.minesaker.api.exception.DocumentNotFoundException
-import no.nav.tms.minesaker.api.exception.SafResultException
-import no.nav.tms.minesaker.api.config.InnsynsUrlResolver
+import no.nav.tms.minesaker.api.setup.CommunicationException
+import no.nav.tms.minesaker.api.setup.DocumentNotFoundException
+import no.nav.tms.minesaker.api.setup.SafResultException
 import no.nav.tms.minesaker.api.saf.journalposter.v2.HentJournalposterResponseV2
 import no.nav.tms.minesaker.api.saf.journalposter.v2.toInternal
-import no.nav.tms.minesaker.api.saf.common.SafResponse
 import no.nav.tms.minesaker.api.saf.journalposter.v2.HentJournalposterV2Request
 import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterRequest
 import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterResponse
@@ -145,8 +143,8 @@ class SafConsumer(
             )
     }
 
-    private suspend inline fun <reified T> parseBody(response: HttpResponse): SafResponse<T> = try {
-        response.body<SafResponse<T>>()
+    private suspend inline fun <reified T> parseBody(response: HttpResponse): GraphQLResponse<T> = try {
+        response.body<GraphQLResponse<T>>()
             .also {
                 if (it.containsData() && it.containsErrors()) {
                     val baseMsg = "Resultatet inneholdt data og feil, dataene returneres til bruker."
@@ -160,8 +158,8 @@ class SafConsumer(
         throw CommunicationException("Klarte ikke tolke respons fra SAF", e)
     }
 
-    private fun SafResponse<*>.containsData() = data != null
-    private fun SafResponse<*>.containsErrors() = errors?.isNotEmpty() == true
+    private fun GraphQLResponse<*>.containsData() = data != null
+    private fun GraphQLResponse<*>.containsErrors() = errors?.isNotEmpty() == true
 
 }
 

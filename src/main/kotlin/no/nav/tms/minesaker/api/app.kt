@@ -1,4 +1,4 @@
-package no.nav.tms.minesaker.api.config
+package no.nav.tms.minesaker.api
 
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -8,7 +8,10 @@ import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktConsumer
 import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktRedis
 import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktService
 import no.nav.tms.minesaker.api.saf.fullmakt.NavnFetcher
-import no.nav.tms.minesaker.api.sak.SakService
+import no.nav.tms.minesaker.api.setup.Environment
+import no.nav.tms.minesaker.api.setup.HttpClientBuilder
+import no.nav.tms.minesaker.api.saf.InnsynsUrlResolver
+import no.nav.tms.minesaker.api.setup.TokendingsExchange
 import no.nav.tms.token.support.tokendings.exchange.TokendingsServiceBuilder
 
 fun main() {
@@ -47,7 +50,6 @@ fun main() {
                     sakerUrl = environment.sakerUrl,
                     httpClient = httpClient,
                     corsAllowedOrigins = environment.corsAllowedOrigins,
-                    corsAllowedSchemes = environment.corsAllowedSchemes,
                     authConfig = authConfig(),
                     fullmaktService = fullmaktService,
                     fullmaktSessionStore = fullmaktSessionStore

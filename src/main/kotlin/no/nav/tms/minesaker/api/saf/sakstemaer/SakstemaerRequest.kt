@@ -2,7 +2,7 @@ package no.nav.tms.minesaker.api.saf.sakstemaer
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HENT_SAKSTEMAER
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
-import no.nav.tms.minesaker.api.config.InnsynsUrlResolver
+import no.nav.tms.minesaker.api.saf.InnsynsUrlResolver
 import no.nav.tms.minesaker.api.saf.GraphQLRequest
 import no.nav.tms.minesaker.api.saf.compactJson
 

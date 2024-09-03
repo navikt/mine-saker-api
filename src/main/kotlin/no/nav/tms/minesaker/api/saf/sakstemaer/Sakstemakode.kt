@@ -1,7 +1,5 @@
 package no.nav.tms.minesaker.api.saf.sakstemaer
 
-import no.nav.tms.minesaker.api.exception.TransformationException
-
 enum class Sakstemakode {
 
     AAP,
@@ -74,6 +72,6 @@ enum class Sakstemakode {
 fun String.toInternalSaktemakode() = try {
     Sakstemakode.valueOf(this)
 } catch (e: Exception) {
-    throw TransformationException("Ukjent sakstemakode", TransformationException.ErrorType.UNKNOWN_VALUE, e)
+    throw SakstemaException("Ukjent sakstemakode", SakstemaException.ErrorType.UNKNOWN_VALUE, e)
         .addContext("ukjentVerdi", this)
 }

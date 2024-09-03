@@ -15,10 +15,11 @@ import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import no.nav.tms.minesaker.api.config.SubstantialAuth
-import no.nav.tms.minesaker.api.config.jsonConfig
-import no.nav.tms.minesaker.api.config.mineSakerApi
-import no.nav.tms.minesaker.api.exception.SafResultException
+import no.nav.tms.minesaker.api.SakService
+import no.nav.tms.minesaker.api.SubstantialAuth
+import no.nav.tms.minesaker.api.setup.jsonConfig
+import no.nav.tms.minesaker.api.mineSakerApi
+import no.nav.tms.minesaker.api.setup.SafResultException
 import no.nav.tms.minesaker.api.saf.fullmakt.*
 import no.nav.tms.minesaker.api.saf.journalposter.v1.*
 import no.nav.tms.minesaker.api.saf.sakstemaer.ForenkletSakstema
@@ -192,7 +193,6 @@ class SakApiFullmaktTest {
                 sakService = sakService,
                 httpClient = testClient,
                 corsAllowedOrigins = "*",
-                corsAllowedSchemes = "*",
                 sakerUrl = "N/A",
                 fullmaktService = fullmaktService,
                 fullmaktSessionStore = sessionStore,

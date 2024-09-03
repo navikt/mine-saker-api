@@ -1,6 +1,5 @@
 package no.nav.tms.minesaker.api.saf.sakstemaer
 
-import no.nav.tms.minesaker.api.exception.TransformationException
 import java.time.ZonedDateTime
 
 fun List<SafRelevantDato?>.toInternal(): ZonedDateTime {
@@ -10,7 +9,7 @@ fun List<SafRelevantDato?>.toInternal(): ZonedDateTime {
 
 fun List<ZonedDateTime>.finnSistEndret(): ZonedDateTime {
     return maxByOrNull { it }
-        ?: throw TransformationException("Ingen datoer å sammenligne, listen er tom.", TransformationException.ErrorType.MISSING_FIELD)
+        ?: throw SakstemaException("Ingen datoer å sammenligne, listen er tom.", SakstemaException.ErrorType.MISSING_FIELD)
 }
 
 

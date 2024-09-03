@@ -1,4 +1,4 @@
-package no.nav.tms.minesaker.api.config
+package no.nav.tms.minesaker.api.setup
 
 import no.nav.tms.common.util.config.StringEnvVar.getEnvVar
 import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode

@@ -1,4 +1,4 @@
-package no.nav.tms.minesaker.api.sak
+package no.nav.tms.minesaker.api
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -7,7 +7,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tms.minesaker.api.digisos.DigiSosConsumer
 import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import no.nav.tms.minesaker.api.saf.SafConsumer
-import no.nav.tms.minesaker.api.config.TokendingsExchange
+import no.nav.tms.minesaker.api.setup.TokendingsExchange
 import no.nav.tms.minesaker.api.saf.journalposter.v2.HentJournalposterResponseV2
 import no.nav.tms.minesaker.api.saf.DokumentStream
 import no.nav.tms.minesaker.api.saf.journalposter.v2.HentJournalposterV2Request

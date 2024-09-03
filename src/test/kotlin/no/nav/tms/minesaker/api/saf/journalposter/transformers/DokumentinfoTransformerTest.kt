@@ -3,7 +3,7 @@ package no.nav.tms.minesaker.api.saf.journalposter.transformers
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
-import no.nav.tms.minesaker.api.exception.TransformationException
+import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaException
 import no.nav.tms.minesaker.api.saf.journalposter.v1.Dokumenttype
 import no.nav.tms.minesaker.api.saf.journalposter.v1.Dokumentvariant
 import no.nav.tms.minesaker.api.saf.journalposter.v1.SafDokumentInfo
@@ -45,8 +45,8 @@ internal class DokumentinfoTransformerTest {
         }
 
         result.isFailure shouldBe true
-        result.exceptionOrNull().shouldBeInstanceOf<TransformationException>()
-        val exception = result.exceptionOrNull() as TransformationException
+        result.exceptionOrNull().shouldBeInstanceOf<SakstemaException>()
+        val exception = result.exceptionOrNull() as SakstemaException
         exception.context["feltnavn"] shouldBe "dokumentvarianter"
     }
 

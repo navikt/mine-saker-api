@@ -1,8 +1,8 @@
 package no.nav.tms.minesaker.api.saf.journalposter
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
-import no.nav.tms.minesaker.api.saf.common.SafError
-import no.nav.tms.minesaker.api.saf.common.SafResponse
+import no.nav.tms.minesaker.api.saf.GraphQLError
+import no.nav.tms.minesaker.api.saf.GraphQLResponse
 import no.nav.tms.minesaker.api.saf.journalposter.JournalpostTestData.listOfSakstemaer
 import no.nav.tms.minesaker.api.saf.journalposter.v1.*
 
@@ -72,10 +72,10 @@ object JournalpostTestData {
 
 object HentJournalposterResultTestData {
 
-    fun responseWithDataAndError(): SafResponse<HentJournalposter.Result> {
+    fun responseWithDataAndError(): GraphQLResponse<HentJournalposter.Result> {
         val data = journalposterResult()
-        val error = SafError("Feilet ved henting av data for bruker.")
-        return SafResponse(data, listOf(error))
+        val error = GraphQLError("Feilet ved henting av data for bruker.")
+        return GraphQLResponse(data, listOf(error))
     }
 
     fun journalposterResult(): HentJournalposter.Result {
