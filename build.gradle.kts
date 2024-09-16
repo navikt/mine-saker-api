@@ -71,7 +71,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("no.nav.tms.minesaker.api.config.AppKt")
+    mainClass.set("no.nav.tms.minesaker.api.AppKt")
 }
 
 tasks {

@@ -13,6 +13,8 @@ import no.nav.tms.minesaker.api.saf.DokumentStream
 import no.nav.tms.minesaker.api.saf.journalposter.v2.HentJournalposterV2Request
 import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterRequest
 import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterResponse
+import no.nav.tms.minesaker.api.saf.journalposter.v2.AlleJournalposterRequest
+import no.nav.tms.minesaker.api.saf.journalposter.v2.JournalpostV2
 import no.nav.tms.minesaker.api.saf.sakstemaer.Kildetype
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaResult
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaerRequest
@@ -127,5 +129,24 @@ class SakService(
             accessToken = tokendingsExchange.safToken(user)
         )
     }
+
+    suspend fun alleJournalposter(user: IdportenUser, representert: String?): List<JournalpostV2> =
+        if (representert != null) {
+            log.info { "Henter alle journalposter for representert fra SAF" }
+
+            safConsumer.alleJournalposter(
+                innloggetBruker = representert,
+                request = AlleJournalposterRequest.create(representert),
+                accessToken = tokendingsExchange.safToken(user)
+            )
+        } else {
+            log.info { "Henter alle journalposter for bruker fra SAF" }
+
+            safConsumer.alleJournalposter(
+                innloggetBruker = user.ident,
+                request = AlleJournalposterRequest.create(user.ident),
+                accessToken = tokendingsExchange.safToken(user)
+            )
+        }
 
 }

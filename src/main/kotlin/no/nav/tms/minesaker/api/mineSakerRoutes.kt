@@ -31,7 +31,7 @@ fun Route.mineSakerRoute(service: SakService) {
                 representert = call.representert
             )?.let { result ->
                 call.respond(HttpStatusCode.OK, listOf(result))
-            }?: suspend {
+            }?: run {
                 call.respond(HttpStatusCode.OK, emptyList<JournalposterResponse>())
             }
         }
@@ -43,7 +43,7 @@ fun Route.mineSakerRoute(service: SakService) {
                 representert = call.representert
             )?.let { result ->
                 call.respond(HttpStatusCode.OK, listOf(result))
-            }?: suspend {
+            }?: run {
                 call.respond(HttpStatusCode.OK, emptyList<JournalposterResponse>())
             }
         }
@@ -57,7 +57,7 @@ fun Route.mineSakerRoute(service: SakService) {
                 representert = call.representert
             )?.let { result ->
                 call.respond(HttpStatusCode.OK, result)
-            }?: suspend {
+            }?: run {
                 call.respondText("Fant ikke journalposter med kode $sakstemakode",status = HttpStatusCode.NotFound)
             }
         }
@@ -83,8 +83,17 @@ fun Route.mineSakerRoute(service: SakService) {
                 representert = call.representert
             )?.let { result ->
                 call.respond(HttpStatusCode.OK, result)
-            }?: suspend {
+            }?: run {
                 call.respondText("Fant ikke journalposter med kode $sakstemakode",status = HttpStatusCode.NotFound)
+            }
+        }
+
+        get("/v2/journalposter/alle") {
+            service.alleJournalposter(
+                user = idportenUser,
+                representert = call.representert
+            ).let { result ->
+                call.respond(HttpStatusCode.OK, result)
             }
         }
     }
