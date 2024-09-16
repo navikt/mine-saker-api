@@ -7,7 +7,6 @@ query($ident : String!, $sakstema : Tema) {
                         tittel
                         journalpostId
                         journalposttype
-                        tema
                         journalstatus
                         sak {
                             fagsakId
