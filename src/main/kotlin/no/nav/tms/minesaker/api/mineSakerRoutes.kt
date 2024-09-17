@@ -88,7 +88,7 @@ fun Route.mineSakerRoute(service: SakService) {
             }
         }
 
-        get("/v2/sakstema/journalposter/alle") {
+        get("/v2/journalposter/alle") {
             service.alleJournalposter(
                 user = idportenUser,
                 representert = call.representert
