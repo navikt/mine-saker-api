@@ -1,6 +1,5 @@
 package no.nav.tms.minesaker.api.saf.journalposter.v2
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.ZonedDateTime
 
 data class HentJournalposterResponseV2(
@@ -13,31 +12,32 @@ data class HentJournalposterResponseV2(
 data class JournalpostV2(
     val journalpostId: String,
     val tittel: String,
-    val journalposttype: JournalposttypeV2,
-    val journalstatus: String,
-    @JsonIgnore val avsender: AvsenderMottakerV2?,
-    @JsonIgnore val mottaker: AvsenderMottakerV2?,
+    val avsender: String?,
+    val mottaker: String?,
     val opprettet: ZonedDateTime,
-    val dokumenter: List<DokumentHeaderV2>,
-    @JsonIgnore val sakstema: Sakstema? = null
-) {
-    val temakode = sakstema?.name
-    val temanavn = sakstema?.navn
-    val avsendertype = avsender?.type
-    val avsendernavn = avsender?.navn
-    val mottakertype = mottaker?.type
-    val mottakernavn = mottaker?.navn
-}
+    val dokument: DokumentHeaderV2,
+    val vedlegg: List<DokumentHeaderV2>
+)
 
 data class DokumentHeaderV2(
     val dokumentInfoId: String,
     val tittel: String,
-    val dokumenttype: DokumenttypeV2,
     val filtype: String,
     val filstorrelse: Int,
     val brukerHarTilgang: Boolean,
     val sladdet: Boolean
-)
+) {
+    companion object {
+        fun blank() = DokumentHeaderV2(
+            dokumentInfoId = "",
+            tittel = "",
+            filtype = "",
+            filstorrelse = 0,
+            brukerHarTilgang = true,
+            sladdet = false,
+        )
+    }
+}
 
 data class AvsenderMottakerV2(
     val type: AvsenderMottakerTypeV2,

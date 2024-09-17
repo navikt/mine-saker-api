@@ -36,19 +36,23 @@ data class HentJournalposterV2RequestVariables(
 
 )
 
-fun HentJournalposterV2.Result.toInternal(innloggetBruker: String): HentJournalposterResponseV2? {
+fun HentJournalposterV2.Result.toInternal(): HentJournalposterResponseV2? {
 
     return dokumentoversiktSelvbetjening.tema.firstOrNull()?.let { tema ->
+
         val journalposter = tema.journalposter.filterNotNull().map {
+            val (dokument, vedlegg) = dokumenter(it.dokumenter).let { dokumenter ->
+                dokumenter.first() to dokumenter.drop(1)
+            }
+
             JournalpostV2(
                 journalpostId = it.journalpostId,
                 tittel = it.tittel ?: "---",
-                journalposttype = it.journalposttype.mapToInternal(),
-                journalstatus = it.journalstatus?.format() ?: "---",
-                avsender = mapAvsender(it.avsender, it.mottaker, it.journalposttype, innloggetBruker),
-                mottaker = mapMottaker(it.mottaker, it.avsender, it.journalposttype, innloggetBruker),
+                avsender = mapAvsender(it.avsender, it.mottaker, it.journalposttype),
+                mottaker = mapMottaker(it.mottaker, it.avsender, it.journalposttype),
                 opprettet = opprettet(it.relevanteDatoer),
-                dokumenter = dokumenter(it.dokumenter)
+                dokument = dokument,
+                vedlegg = vedlegg
             )
         }
 
@@ -60,57 +64,20 @@ fun HentJournalposterV2.Result.toInternal(innloggetBruker: String): HentJournalp
     }
 }
 
-private fun SafJournalposttypeV2.mapToInternal() = when (this) {
-    SafJournalposttypeV2.I -> JournalposttypeV2.Inn
-    SafJournalposttypeV2.U -> JournalposttypeV2.Ut
-    SafJournalposttypeV2.N -> JournalposttypeV2.Notat
-    else -> throw IllegalArgumentException("Kjenner ikke igjen journalposttype $this")
-}
-
-private fun SafJournalstatusV2.format() = this.name.lowercase()
-    .replaceFirstChar {
-        if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
-    }
-    .replace("_([a-z])".toRegex()) {
-        it.destructured.let { (c) -> c.uppercase() }
-    }
-
-private fun mapAvsender(avsender: AvsenderMottaker?, mottaker: AvsenderMottaker?, type: SafJournalposttypeV2, innloggetBruker: String): AvsenderMottakerV2? {
-    return when (val it = mapAvsenderMottaker(avsender, innloggetBruker)) {
-        null -> if (mottaker == null && type == SafJournalposttypeV2.U) {
-            AvsenderMottakerV2(type = AvsenderMottakerTypeV2.NAV, navn = "NAV")
-        } else {
-            null
-        }
-        else -> AvsenderMottakerV2(type = it, navn = avsender?.navn ?: "---")
+private fun mapAvsender(avsender: AvsenderMottaker?, mottaker: AvsenderMottaker?, type: SafJournalposttypeV2): String? {
+    return when {
+        avsender == null && mottaker == null && type == SafJournalposttypeV2.U -> "NAV"
+        avsender != null -> avsender.navn
+        else -> null
     }
 }
 
-private fun mapMottaker(mottaker: AvsenderMottaker?, avsender: AvsenderMottaker?, type: SafJournalposttypeV2, innloggetBruker: String): AvsenderMottakerV2? {
-    return when (val it = mapAvsenderMottaker(mottaker, innloggetBruker)) {
-        null -> if (avsender == null && type == SafJournalposttypeV2.I) {
-            AvsenderMottakerV2(type = AvsenderMottakerTypeV2.NAV, navn = "NAV")
-        } else {
-            null
-        }
-        else -> AvsenderMottakerV2(type = it, navn = mottaker?.navn ?: "---")
+private fun mapMottaker(mottaker: AvsenderMottaker?, avsender: AvsenderMottaker?, type: SafJournalposttypeV2): String? {
+    return when {
+        mottaker == null && avsender == null && type == SafJournalposttypeV2.I -> "NAV"
+        mottaker != null -> mottaker.navn
+        else -> null
     }
-}
-
-private fun mapAvsenderMottaker(avsenderMottaker: AvsenderMottaker?, innloggetBruker: String) = when (avsenderMottaker?.type) {
-    null -> null
-    AvsenderMottakerIdType.FNR -> if (avsenderMottaker.id == innloggetBruker) {
-        AvsenderMottakerTypeV2.Bruker
-    } else {
-        AvsenderMottakerTypeV2.Person
-    }
-
-    AvsenderMottakerIdType.ORGNR -> AvsenderMottakerTypeV2.Organisasjon
-    AvsenderMottakerIdType.HPRNR -> AvsenderMottakerTypeV2.Helsepersonell
-    AvsenderMottakerIdType.UTL_ORG -> AvsenderMottakerTypeV2.Internasjonal
-    AvsenderMottakerIdType.NULL -> AvsenderMottakerTypeV2.Null
-    AvsenderMottakerIdType.UKJENT -> AvsenderMottakerTypeV2.Ukjent
-    else -> throw IllegalArgumentException("Fant ikke mapping for AvsenderMottakerIdType ${avsenderMottaker.type}")
 }
 
 private fun opprettet(datoer: List<RelevantDato?>): ZonedDateTime {
@@ -127,8 +94,6 @@ private val log = KotlinLogging.logger {}
 
 private fun dokumenter(dokumenter: List<DokumentInfo?>?): List<DokumentHeaderV2> {
 
-    val dokumentType = DecayingToggle(DokumenttypeV2.Hoved, DokumenttypeV2.Vedlegg)
-
     return dokumenter
         ?.filterNotNull()
         ?.mapNotNull { info ->
@@ -144,7 +109,6 @@ private fun dokumenter(dokumenter: List<DokumentInfo?>?): List<DokumentHeaderV2>
                     DokumentHeaderV2(
                         dokumentInfoId = info.dokumentInfoId,
                         tittel = info.tittel ?: "---",
-                        dokumenttype = dokumentType.value,
                         filtype = variant.filtype,
                         filstorrelse = variant.filstorrelse,
                         brukerHarTilgang = variant.brukerHarTilgang,
@@ -154,5 +118,8 @@ private fun dokumenter(dokumenter: List<DokumentInfo?>?): List<DokumentHeaderV2>
                 log.warn { "Dokumentet med dokumentInfoId=${info.dokumentInfoId} har ingen varianter som kan vises for bruker." }
                 null
             }
-        } ?: emptyList()
+        } ?: run {
+            log.warn { "Mottok journalpost uten dokumenter" }
+            listOf(DokumentHeaderV2.blank())
+    }
 }
