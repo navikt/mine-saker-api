@@ -39,34 +39,4 @@ data class DokumentHeaderV2(
     }
 }
 
-data class AvsenderMottakerV2(
-    val type: AvsenderMottakerTypeV2,
-    val navn: String
-)
-
-enum class AvsenderMottakerTypeV2 {
-    NAV, Bruker, Person, Organisasjon, Helsepersonell, Internasjonal, Null, Ukjent
-}
-
-enum class JournalposttypeV2 {
-    Inn, Ut, Notat
-}
-
-enum class DokumenttypeV2 {
-    Hoved, Vedlegg
-}
-
 typealias SafJournalposttypeV2 = no.nav.dokument.saf.selvbetjening.generated.dto.enums.Journalposttype
-typealias SafJournalstatusV2 = no.nav.dokument.saf.selvbetjening.generated.dto.enums.Journalstatus
-
-class DecayingToggle<T>(private val initial: T, private val fallback: T) {
-    private var isDecayed = false
-
-    val value: T get() =
-        if (!isDecayed) {
-            isDecayed = true
-            initial
-        } else {
-            fallback
-        }
-}
