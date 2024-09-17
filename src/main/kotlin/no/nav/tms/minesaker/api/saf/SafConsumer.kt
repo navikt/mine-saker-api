@@ -56,21 +56,19 @@ class SafConsumer(
     }
 
     suspend fun hentJournalposterV2(
-        innloggetBruker: String,
         request: HentJournalposterV2Request,
         accessToken: String
     ): HentJournalposterResponseV2? {
         val result: HentJournalposterV2.Result = unwrapSafResponse(sendQuery(request, accessToken))
-        return result.toInternal(innloggetBruker)
+        return result.toInternal()
     }
 
     suspend fun alleJournalposter(
-        innloggetBruker: String,
         request: AlleJournalposterRequest,
         accessToken: String
     ): List<JournalpostV2> {
         val result: AlleJournalposter.Result = unwrapSafResponse(sendQuery(request, accessToken))
-        return result.toInternal(innloggetBruker)
+        return result.toInternal()
     }
 
     suspend fun hentDokument(

@@ -114,7 +114,6 @@ class SakService(
         log.info { "Henter alle journalposter for bruker fra SAF" }
 
         return safConsumer.hentJournalposterV2(
-            innloggetBruker = user.ident,
             request = HentJournalposterV2Request.create(user.ident, sakstema),
             accessToken = tokendingsExchange.safToken(user)
         )
@@ -124,7 +123,6 @@ class SakService(
         log.info { "Henter alle journalposter for representert fra SAF" }
 
         return safConsumer.hentJournalposterV2(
-            innloggetBruker = representert,
             request = HentJournalposterV2Request.create(representert, sakstema),
             accessToken = tokendingsExchange.safToken(user)
         )
@@ -135,7 +133,6 @@ class SakService(
             log.info { "Henter alle journalposter for representert fra SAF" }
 
             safConsumer.alleJournalposter(
-                innloggetBruker = representert,
                 request = AlleJournalposterRequest.create(representert),
                 accessToken = tokendingsExchange.safToken(user)
             )
@@ -143,7 +140,6 @@ class SakService(
             log.info { "Henter alle journalposter for bruker fra SAF" }
 
             safConsumer.alleJournalposter(
-                innloggetBruker = user.ident,
                 request = AlleJournalposterRequest.create(user.ident),
                 accessToken = tokendingsExchange.safToken(user)
             )
