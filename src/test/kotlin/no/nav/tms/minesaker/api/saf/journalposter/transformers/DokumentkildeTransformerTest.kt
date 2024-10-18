@@ -3,6 +3,7 @@ package no.nav.tms.minesaker.api.saf.journalposter.transformers
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import no.nav.tms.minesaker.api.saf.journalposter.JournalpostTestData.avsenderMottakerPerson
+import no.nav.tms.minesaker.api.saf.journalposter.v1.toInternal
 
 import org.junit.jupiter.api.Test
 

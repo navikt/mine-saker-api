@@ -5,7 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.request.receive
-import no.nav.tms.minesaker.api.config.idportenUser
+import no.nav.tms.minesaker.api.idportenUser
 
 fun Route.fullmaktApi(fullmaktService: FullmaktService, sessionStore: FullmaktSessionStore) {
 

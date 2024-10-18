@@ -3,9 +3,13 @@ package no.nav.tms.minesaker.api.saf.journalposter.transformers
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
-import no.nav.tms.minesaker.api.exception.TransformationException
-import no.nav.tms.minesaker.api.domain.Dokumenttype
-import no.nav.tms.minesaker.api.domain.Dokumentvariant
+import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaException
+import no.nav.tms.minesaker.api.saf.journalposter.v1.Dokumenttype
+import no.nav.tms.minesaker.api.saf.journalposter.v1.Dokumentvariant
+import no.nav.tms.minesaker.api.saf.journalposter.v1.SafDokumentInfo
+import no.nav.tms.minesaker.api.saf.journalposter.v1.SafDokumentvariant
+import no.nav.tms.minesaker.api.saf.journalposter.v1.SafVariantformat
+import no.nav.tms.minesaker.api.saf.journalposter.v1.toInternal
 import org.junit.jupiter.api.Test
 
 internal class DokumentinfoTransformerTest {
@@ -29,7 +33,7 @@ internal class DokumentinfoTransformerTest {
     @Test
     fun `Kaste feil hvis dokument ikke har varianter`() {
         val externals = listOf(
-            GraphQLDokumentInfo(
+            SafDokumentInfo(
                 tittel = "Dummytittel uten arkiverte varianger",
                 dokumentInfoId = "dummyId004",
                 dokumentvarianter = emptyList()
@@ -41,15 +45,15 @@ internal class DokumentinfoTransformerTest {
         }
 
         result.isFailure shouldBe true
-        result.exceptionOrNull().shouldBeInstanceOf<TransformationException>()
-        val exception = result.exceptionOrNull() as TransformationException
+        result.exceptionOrNull().shouldBeInstanceOf<SakstemaException>()
+        val exception = result.exceptionOrNull() as SakstemaException
         exception.context["feltnavn"] shouldBe "dokumentvarianter"
     }
 
     @Test
     fun `Velg preferer alltid SLADDET-variant hvis den varianten finnes`() {
         val externals = listOf(
-            GraphQLDokumentInfo(
+            SafDokumentInfo(
                 tittel = "Med sladdet og arkivert variant",
                 dokumentInfoId = "dummyId005",
                 dokumentvarianter = listOf(
@@ -70,7 +74,7 @@ internal class DokumentinfoTransformerTest {
     fun `Skal takle at tittel ikke er tilgjengelig i SAF, return dummy tittel til sluttbruker`() {
 
         val externals = listOf(
-            GraphQLDokumentInfo(
+            SafDokumentInfo(
                 tittel = null,
                 dokumentInfoId = "dummyId002",
                 dokumentvarianter = listOf(arkivertVariant())
@@ -82,7 +86,7 @@ internal class DokumentinfoTransformerTest {
 
 }
 
-private fun treGyldigeDokumenter(): List<GraphQLDokumentInfo> {
+private fun treGyldigeDokumenter(): List<SafDokumentInfo> {
     return listOf(
         dokument("Hveddok", "dummyId5", arkivertVariant()),
         dokument("Vedlegg1", "dummyId6", sladdetVariant()),
@@ -93,14 +97,14 @@ private fun treGyldigeDokumenter(): List<GraphQLDokumentInfo> {
 private fun dokument(
     tittel: String = "Dummytittel gyldig dokument 11",
     dokumentInfoId: String = "dummyId011",
-    variant: GraphQLDokumentvariant = arkivertVariant()
-): GraphQLDokumentInfo {
-    return GraphQLDokumentInfo(tittel, dokumentInfoId, listOf(variant))
+    variant: SafDokumentvariant = arkivertVariant()
+): SafDokumentInfo {
+    return SafDokumentInfo(tittel, dokumentInfoId, listOf(variant))
 }
 
 
 private fun arkivertVariant() =
-    GraphQLDokumentvariant(GraphQLVariantformat.ARKIV, true, listOf("ok"), "PDF")
+    SafDokumentvariant(SafVariantformat.ARKIV, true, listOf("ok"), "PDF")
 
 private fun sladdetVariant() =
-    GraphQLDokumentvariant(GraphQLVariantformat.SLADDET, true, listOf("Skannet_dokument"), "PDF")
+    SafDokumentvariant(SafVariantformat.SLADDET, true, listOf("Skannet_dokument"), "PDF")

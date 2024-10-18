@@ -1,6 +1,7 @@
 package no.nav.tms.minesaker.api.saf.common.transformers
 
 import io.kotest.matchers.shouldBe
+import no.nav.tms.minesaker.api.saf.journalposter.v1.finnSistEndret
 import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
 

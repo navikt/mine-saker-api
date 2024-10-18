@@ -8,13 +8,10 @@ import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
-import io.ktor.server.application.call
 import io.ktor.server.auth.*
-import io.ktor.server.response.respondBytes
 import io.ktor.server.routing.*
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
@@ -22,17 +19,19 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.tms.common.testutils.RouteProvider
 import no.nav.tms.common.testutils.initExternalServices
-import no.nav.tms.minesaker.api.config.SubstantialAuth
-import no.nav.tms.minesaker.api.config.jsonConfig
-import no.nav.tms.minesaker.api.config.mineSakerApi
+import no.nav.tms.minesaker.api.SakService
+import no.nav.tms.minesaker.api.SubstantialAuth
+import no.nav.tms.minesaker.api.setup.jsonConfig
+import no.nav.tms.minesaker.api.mineSakerApi
 import no.nav.tms.minesaker.api.digisos.DigiSosConsumer
-import no.nav.tms.minesaker.api.domain.ForenkletSakstema
-import no.nav.tms.minesaker.api.domain.Sakstemakode
+import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import no.nav.tms.minesaker.api.saf.SafConsumer
-import no.nav.tms.minesaker.api.config.TokendingsExchange
+import no.nav.tms.minesaker.api.setup.TokendingsExchange
 import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktService
 import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktSessionStore
 import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktTestSessionStore
+import no.nav.tms.minesaker.api.saf.sakstemaer.ForenkletSakstema
+import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaResult
 import no.nav.tms.minesaker.api.sak.ForventetSakstemaInnhold.Companion.toDigisosResponse
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.idPortenMock
@@ -171,7 +170,6 @@ private fun ApplicationTestBuilder.mockApi(
         sakService = sakService,
         httpClient = httpClient,
         corsAllowedOrigins = corsAllowedOrigins,
-        corsAllowedSchemes = corsAllowedSchemes,
         authConfig = authConfig,
         sakerUrl = sakerUrl,
         fullmaktService = fullmaktService,

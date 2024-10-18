@@ -4,7 +4,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
 
-import no.nav.tms.minesaker.api.domain.Sakstemakode
+import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
+import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterRequest
 import org.junit.jupiter.api.Test
 
 internal class JournalposterRequestTest {

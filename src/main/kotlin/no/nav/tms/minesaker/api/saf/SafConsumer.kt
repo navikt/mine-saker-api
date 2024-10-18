@@ -11,17 +11,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.utils.io.*
+import no.nav.dokument.saf.selvbetjening.generated.dto.AlleJournalposter
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
+import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposterV2
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
-import no.nav.tms.minesaker.api.exception.CommunicationException
-import no.nav.tms.minesaker.api.exception.DocumentNotFoundException
-import no.nav.tms.minesaker.api.exception.GraphQLResultException
-import no.nav.tms.minesaker.api.config.InnsynsUrlResolver
-import no.nav.tms.minesaker.api.domain.JournalposterResponse
-import no.nav.tms.minesaker.api.saf.common.GraphQLResponse
-import no.nav.tms.minesaker.api.saf.journalposter.JournalposterRequest
+import no.nav.tms.minesaker.api.setup.CommunicationException
+import no.nav.tms.minesaker.api.setup.DocumentNotFoundException
+import no.nav.tms.minesaker.api.setup.SafResultException
+import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterRequest
+import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterResponse
+import no.nav.tms.minesaker.api.saf.journalposter.v1.toInternal
+import no.nav.tms.minesaker.api.saf.journalposter.v2.*
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaerRequest
-import no.nav.tms.minesaker.api.sak.SakstemaResult
+import no.nav.tms.minesaker.api.saf.sakstemaer.toInternal
+import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaResult
 import java.net.URL
 import java.util.*
 
@@ -39,7 +42,7 @@ class SafConsumer(
     private val navConsumerId = "mine-saker-api"
 
     suspend fun hentSakstemaer(request: SakstemaerRequest, accessToken: String): SakstemaResult {
-        return unwrapGraphQLResponse<HentSakstemaer.Result>(sendQuery(request, accessToken))
+        return unwrapSafResponse<HentSakstemaer.Result>(sendQuery(request, accessToken))
             .toInternal(innsynsUrlResolver)
     }
 
@@ -48,8 +51,24 @@ class SafConsumer(
         request: JournalposterRequest,
         accessToken: String
     ): JournalposterResponse? {
-        val result: HentJournalposter.Result = unwrapGraphQLResponse(sendQuery(request, accessToken))
+        val result: HentJournalposter.Result = unwrapSafResponse(sendQuery(request, accessToken))
         return result.toInternal(innloggetBruker)
+    }
+
+    suspend fun hentJournalposterV2(
+        request: HentJournalposterV2Request,
+        accessToken: String
+    ): HentJournalposterResponseV2? {
+        val result: HentJournalposterV2.Result = unwrapSafResponse(sendQuery(request, accessToken))
+        return result.toInternal()
+    }
+
+    suspend fun alleJournalposter(
+        request: AlleJournalposterRequest,
+        accessToken: String
+    ): List<JournalpostV2> {
+        val result: AlleJournalposter.Result = unwrapSafResponse(sendQuery(request, accessToken))
+        return result.toInternal()
     }
 
     suspend fun hentDokument(
@@ -116,17 +135,17 @@ class SafConsumer(
             }
         }
 
-    private suspend inline fun <reified T> unwrapGraphQLResponse(response: HttpResponse): T {
+    private suspend inline fun <reified T> unwrapSafResponse(response: HttpResponse): T {
         if (!response.status.isSuccess()) {
             throw CommunicationException("Fikk http-status [${response.status}] fra SAF.")
         }
-        val graphqlResponse = parseBody<T>(response)
+        val SafResponse = parseBody<T>(response)
 
-        return graphqlResponse.data
-            ?: throw GraphQLResultException(
+        return SafResponse.data
+            ?: throw SafResultException(
                 "Ingen data i resultatet fra SAF.",
-                graphqlResponse.errors,
-                graphqlResponse.extensions
+                SafResponse.errors,
+                SafResponse.extensions
             )
     }
 

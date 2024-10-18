@@ -3,12 +3,13 @@ package no.nav.tms.minesaker.api.saf
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.types.shouldBeInstanceOf
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
-import no.nav.tms.minesaker.api.exception.TransformationException
-import no.nav.tms.minesaker.api.config.InnsynsUrlResolver
+import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaException
 import no.nav.tms.minesaker.api.saf.journalposter.JournalpostTestData.listOfSakstemaer
 import no.nav.tms.minesaker.api.saf.journalposter.JournalpostTestData.sakstemaWithUtgaaendeDokument
-import no.nav.tms.minesaker.api.saf.journalposter.transformers.GraphQLDokumentoversikt
+import no.nav.tms.minesaker.api.saf.journalposter.v1.SafDokumentoversikt
+import no.nav.tms.minesaker.api.saf.journalposter.v1.toInternal
 import no.nav.tms.minesaker.api.saf.sakstemaer.HentSakstemaResultTestData
+import no.nav.tms.minesaker.api.saf.sakstemaer.toInternal
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
 
@@ -29,7 +30,7 @@ internal class ResultTransformerTest {
     @Test
     fun `Skal transformere et SAF-resultat for aa hente inn journalposter`() {
         val temaer = listOfSakstemaer()
-        val external = HentJournalposter.Result(GraphQLDokumentoversikt(temaer))
+        val external = HentJournalposter.Result(SafDokumentoversikt(temaer))
 
         val internal = external.toInternal(dummyInnloggetBruker)
 
@@ -44,7 +45,7 @@ internal class ResultTransformerTest {
             eksternalMedValideringsfeil.toInternal(dummyResolver)
 
         }.onFailure { exception ->
-            exception.shouldBeInstanceOf<TransformationException>()
+            exception.shouldBeInstanceOf<SakstemaException>()
         }.onSuccess {
             fail("Denne testen skal kaste en feil")
         }
@@ -55,13 +56,13 @@ internal class ResultTransformerTest {
         val sakstemaUtenKodeSatt = sakstemaWithUtgaaendeDokument(kode = "UGYLDIG_VERDI")
 
         val eksternalMedValideringsfeil =
-            HentJournalposter.Result(GraphQLDokumentoversikt(listOf(sakstemaUtenKodeSatt)))
+            HentJournalposter.Result(SafDokumentoversikt(listOf(sakstemaUtenKodeSatt)))
 
         runCatching {
             eksternalMedValideringsfeil.toInternal(dummyInnloggetBruker)
 
         }.onFailure { exception ->
-            exception.shouldBeInstanceOf<TransformationException>()
+            exception.shouldBeInstanceOf<SakstemaException>()
 
         }.onSuccess {
             fail("Denne testen skal kaste en feil")

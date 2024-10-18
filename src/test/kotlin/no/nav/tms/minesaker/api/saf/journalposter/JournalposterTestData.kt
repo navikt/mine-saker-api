@@ -1,34 +1,34 @@
 package no.nav.tms.minesaker.api.saf.journalposter
 
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
-import no.nav.tms.minesaker.api.saf.common.GraphQLError
-import no.nav.tms.minesaker.api.saf.common.GraphQLResponse
+import no.nav.tms.minesaker.api.saf.GraphQLError
+import no.nav.tms.minesaker.api.saf.GraphQLResponse
 import no.nav.tms.minesaker.api.saf.journalposter.JournalpostTestData.listOfSakstemaer
-import no.nav.tms.minesaker.api.saf.journalposter.transformers.*
+import no.nav.tms.minesaker.api.saf.journalposter.v1.*
 
 object JournalpostTestData {
 
     fun inngaaendeDokument(
         tittel: String? = "Dummytittel Inngående",
         journalpostId: String = "dummyId-Inngående",
-        journalposttype: GraphQLJournalposttype = GraphQLJournalposttype.I,
-        avsender: GraphQLAvsenderMottaker? = avsenderMottakerPerson("123"),
-        mottaker: GraphQLAvsenderMottaker? = avsenderMottakerOrganisasjon("654"),
-        relevanteDatoer: List<GraphQLRelevantDato?> = listOf(
+        journalposttype: SafJournalposttype = SafJournalposttype.I,
+        avsender: SafAvsenderMottaker? = avsenderMottakerPerson("123"),
+        mottaker: SafAvsenderMottaker? = avsenderMottakerOrganisasjon("654"),
+        relevanteDatoer: List<SafRelevantDato?> = listOf(
             RelevantDatoTestData.datoForInngaaendeDokument(),
             RelevantDatoTestData.datoForUtgaaendeDokument()
         ),
-        dokumenter: List<GraphQLDokumentInfo?>? = listOf(
-            GraphQLDokumentInfo(
+        dokumenter: List<SafDokumentInfo?>? = listOf(
+            SafDokumentInfo(
                 "Dummytittel med arkivert",
                 "dummyId001",
                 listOf(
-                    GraphQLDokumentvariant(GraphQLVariantformat.SLADDET, true, listOf("Skannet_dokument"), "PDF"),
-                    GraphQLDokumentvariant(GraphQLVariantformat.ARKIV, true, listOf("ok"), "PDF")
+                    SafDokumentvariant(SafVariantformat.SLADDET, true, listOf("Skannet_dokument"), "PDF"),
+                    SafDokumentvariant(SafVariantformat.ARKIV, true, listOf("ok"), "PDF")
                 )
             )
         )
-    ) = GraphQLJournalpost(
+    ) = SafJournalpost(
         tittel,
         journalpostId,
         journalposttype,
@@ -41,17 +41,17 @@ object JournalpostTestData {
 
     fun avsenderMottakerPerson(
         ident: String = "123",
-        idType: GraphQLAvsenderMottakerIdType = GraphQLAvsenderMottakerIdType.FNR
+        idType: SafAvsenderMottakerIdType = SafAvsenderMottakerIdType.FNR
     ) =
-        GraphQLAvsenderMottaker(ident, idType)
+        SafAvsenderMottaker(ident, idType)
 
     fun avsenderMottakerOrganisasjon(
         ident: String = "987654",
-        idType: GraphQLAvsenderMottakerIdType = GraphQLAvsenderMottakerIdType.ORGNR
+        idType: SafAvsenderMottakerIdType = SafAvsenderMottakerIdType.ORGNR
     ) =
-        GraphQLAvsenderMottaker(ident, idType)
+        SafAvsenderMottaker(ident, idType)
 
-    fun listOfSakstemaer(): List<GraphQLSakstema> {
+    fun listOfSakstemaer(): List<SafSakstema> {
         return listOf(
             sakstemaWithUtgaaendeDokument(),
             sakstemaWithInngaaendeDokument()
@@ -59,13 +59,13 @@ object JournalpostTestData {
     }
 
     fun sakstemaWithUtgaaendeDokument(navn: String = "navn1", kode: String = "AAP") =
-        GraphQLSakstema(navn, kode, listOf(inngaaendeDokument()))
+        SafSakstema(navn, kode, listOf(inngaaendeDokument()))
 
     fun sakstemaWithInngaaendeDokument(navn: String = "navn2", kode: String = "KON") =
-        GraphQLSakstema(
+        SafSakstema(
             navn,
             kode,
-            listOf(inngaaendeDokument(journalposttype = GraphQLJournalposttype.U))
+            listOf(inngaaendeDokument(journalposttype = SafJournalposttype.U))
         )
 }
 
@@ -80,7 +80,7 @@ object HentJournalposterResultTestData {
 
     fun journalposterResult(): HentJournalposter.Result {
         val temaer = listOfSakstemaer()
-        val dokumentoversikt = GraphQLDokumentoversikt(temaer)
+        val dokumentoversikt = SafDokumentoversikt(temaer)
         return HentJournalposter.Result(dokumentoversikt)
     }
 
@@ -88,15 +88,15 @@ object HentJournalposterResultTestData {
 
 object RelevantDatoTestData {
 
-    fun datoForUtgaaendeDokument(): GraphQLRelevantDato {
-        return GraphQLRelevantDato("2018-01-01T12:00:00", GraphQLDatotype.DATO_EKSPEDERT)
+    fun datoForUtgaaendeDokument(): SafRelevantDato {
+        return SafRelevantDato("2018-01-01T12:00:00", SafDatotype.DATO_EKSPEDERT)
     }
 
-    fun datoForInngaaendeDokument(): GraphQLRelevantDato {
-        return GraphQLRelevantDato("2018-02-02T12:00:00", GraphQLDatotype.DATO_REGISTRERT)
+    fun datoForInngaaendeDokument(): SafRelevantDato {
+        return SafRelevantDato("2018-02-02T12:00:00", SafDatotype.DATO_REGISTRERT)
     }
 
-    fun datoForNotat(): GraphQLRelevantDato {
-        return GraphQLRelevantDato("2018-03-03T12:00:00", GraphQLDatotype.DATO_OPPRETTET)
+    fun datoForNotat(): SafRelevantDato {
+        return SafRelevantDato("2018-03-03T12:00:00", SafDatotype.DATO_OPPRETTET)
     }
 }

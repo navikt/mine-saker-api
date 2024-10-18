@@ -1,7 +1,7 @@
 package no.nav.tms.minesaker.api.sak
 
-import no.nav.tms.minesaker.api.domain.ForenkletSakstema
-import no.nav.tms.minesaker.api.domain.Sakstemakode
+import no.nav.tms.minesaker.api.saf.sakstemaer.ForenkletSakstema
+import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import java.time.ZonedDateTime
 
 object ForenkletSakstemaTestData {
