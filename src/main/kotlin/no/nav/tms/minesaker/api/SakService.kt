@@ -156,4 +156,6 @@ class SakService(
         }
     }
 
+    suspend fun token(user: IdportenUser) = tokendingsExchange.safToken(user)
+
 }
