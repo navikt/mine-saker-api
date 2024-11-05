@@ -12,8 +12,11 @@ data class HentJournalposterResponseV2(
 data class JournalpostV2(
     val journalpostId: String,
     val tittel: String,
+    val temakode: String,
+    val temanavn: String,
     val avsender: String?,
     val mottaker: String?,
+    val journalposttype: String,
     val opprettet: ZonedDateTime,
     val dokument: DokumentHeaderV2,
     val vedlegg: List<DokumentHeaderV2>
@@ -24,8 +27,7 @@ data class DokumentHeaderV2(
     val tittel: String,
     val filtype: String,
     val filstorrelse: Int,
-    val brukerHarTilgang: Boolean,
-    val sladdet: Boolean
+    val brukerHarTilgang: Boolean
 ) {
     companion object {
         fun blank() = DokumentHeaderV2(
@@ -33,8 +35,7 @@ data class DokumentHeaderV2(
             tittel = "",
             filtype = "",
             filstorrelse = 0,
-            brukerHarTilgang = true,
-            sladdet = false,
+            brukerHarTilgang = true
         )
     }
 }

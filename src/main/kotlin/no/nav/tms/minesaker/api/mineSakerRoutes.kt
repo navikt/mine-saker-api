@@ -96,6 +96,20 @@ fun Route.mineSakerRoute(service: SakService) {
                 call.respond(HttpStatusCode.OK, result)
             }
         }
+
+        get("/v2/journalposter/journalpost/{$journalpostIdParameterName}") {
+            val journalpostId = call.journalpostId()
+
+            service.hentJournalpost(
+                user = idportenUser,
+                journapostId = journalpostId,
+                representert = call.representert
+            )?.let { result ->
+                call.respond(HttpStatusCode.OK, result)
+            } ?: run {
+                call.respondText("Fant ikke journalpost med id $journalpostId", status = HttpStatusCode.NotFound)
+            }
+        }
     }
 
     get("/sakstema/{$sakstemakode}/journalpost/{$journalpostIdParameterName}") {

@@ -1,52 +1,65 @@
 package no.nav.tms.minesaker.api.saf.journalposter.v2
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.dokument.saf.selvbetjening.generated.dto.ALLE_JOURNALPOSTER
-import no.nav.dokument.saf.selvbetjening.generated.dto.AlleJournalposter
-import no.nav.dokument.saf.selvbetjening.generated.dto.allejournalposter.AvsenderMottaker
-import no.nav.dokument.saf.selvbetjening.generated.dto.allejournalposter.DokumentInfo
+import no.nav.dokument.saf.selvbetjening.generated.dto.HENT_JOURNALPOST_V2
+import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalpostV2
 import no.nav.dokument.saf.selvbetjening.generated.dto.enums.Datotype
 import no.nav.dokument.saf.selvbetjening.generated.dto.enums.Variantformat
-import no.nav.dokument.saf.selvbetjening.generated.dto.allejournalposter.RelevantDato
+import no.nav.dokument.saf.selvbetjening.generated.dto.hentjournalpostv2.AvsenderMottaker
+import no.nav.dokument.saf.selvbetjening.generated.dto.hentjournalpostv2.DokumentInfo
+import no.nav.dokument.saf.selvbetjening.generated.dto.hentjournalpostv2.RelevantDato
 import no.nav.tms.minesaker.api.saf.GraphQLRequest
 import no.nav.tms.minesaker.api.saf.compactJson
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-class AlleJournalposterRequest(override val variables: AlleJournalposterRequestVariables) : GraphQLRequest {
+class HentJournalpostV2Request(override val variables: HentJournalpostV2RequestVariables) : GraphQLRequest {
 
     override val query: String get() = queryString
 
     companion object {
-        val queryString = compactJson(ALLE_JOURNALPOSTER)
+        val queryString = compactJson(HENT_JOURNALPOST_V2)
 
-        fun create(ident: String) = AlleJournalposterRequest(
-            AlleJournalposterRequestVariables(ident)
+        fun create(journalpostId: String) = HentJournalpostV2Request(
+            HentJournalpostV2RequestVariables(journalpostId)
         )
     }
 }
 
-data class AlleJournalposterRequestVariables(
-    val ident: String
+data class HentJournalpostV2RequestVariables(
+    val journalpostId: String
 )
 
-fun AlleJournalposter.Result.toInternal(): List<JournalpostV2> {
-    return dokumentoversiktSelvbetjening.journalposter.map {
+fun HentJournalpostV2.Result.toInternal(): JournalpostV2? {
+    val journalpost = this.journalpostById
+
+    return journalpost?.let {
         val (dokument, vedlegg) = dokumenter(it.dokumenter).let { dokumenter ->
             dokumenter.first() to dokumenter.drop(1)
         }
 
-        JournalpostV2(
+        val sakstema = Sakstema.fromExternal(it.tema!!)
+
+        return JournalpostV2(
             journalpostId = it.journalpostId,
             tittel = it.tittel ?: "---",
+            temakode = sakstema.name,
+            temanavn = sakstema.navn,
             avsender = mapAvsender(it.avsender, it.mottaker, it.journalposttype),
             mottaker = mapMottaker(it.mottaker, it.avsender, it.journalposttype),
+            journalposttype = mapJournalpostType(it.journalposttype),
             opprettet = opprettet(it.relevanteDatoer),
             dokument = dokument,
             vedlegg = vedlegg
         )
     }
+}
+
+private fun mapJournalpostType(type: SafJournalposttypeV2) = when(type) {
+    SafJournalposttypeV2.I -> "Inn"
+    SafJournalposttypeV2.U -> "Ut"
+    else -> "Notat"
 }
 
 private fun mapAvsender(avsender: AvsenderMottaker?, mottaker: AvsenderMottaker?, type: SafJournalposttypeV2): String? {
@@ -86,8 +99,7 @@ private fun dokumenter(dokumenter: List<DokumentInfo?>?): List<DokumentHeaderV2>
                         tittel = info.tittel ?: "---",
                         filtype = variant.filtype,
                         filstorrelse = variant.filstorrelse,
-                        brukerHarTilgang = variant.brukerHarTilgang,
-                        sladdet = variant.variantformat == Variantformat.SLADDET
+                        brukerHarTilgang = variant.brukerHarTilgang
                     )
                 } ?: run {
                 log.warn { "Dokumentet med dokumentInfoId=${info.dokumentInfoId} har ingen varianter som kan vises for bruker." }
