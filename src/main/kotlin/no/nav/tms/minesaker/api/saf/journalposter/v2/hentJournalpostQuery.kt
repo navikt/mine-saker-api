@@ -32,9 +32,7 @@ data class HentJournalpostV2RequestVariables(
 )
 
 fun HentJournalpostV2.Result.toInternal(): JournalpostV2? {
-    val journalpost = this.journalpostById
-
-    return journalpost?.let {
+    return journalpostById?.let {
         val (dokument, vedlegg) = dokumenter(it.dokumenter).let { dokumenter ->
             dokumenter.first() to dokumenter.drop(1)
         }
