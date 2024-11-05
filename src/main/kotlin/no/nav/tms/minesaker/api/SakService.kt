@@ -139,21 +139,16 @@ class SakService(
         }
 
     suspend fun hentJournalpost(user: IdportenUser, journapostId: String, representert: String?): JournalpostV2? {
-        return if (representert != null) {
+        if (representert != null) {
             log.info { "Henter enkelt journalpost for representert fra SAF" }
-
-            safConsumer.hentJournalpostV2(
-                request = HentJournalpostV2Request.create(representert),
-                accessToken = tokendingsExchange.safToken(user)
-            )
         } else {
             log.info { "Henter enkelt journalpost for bruker fra SAF" }
-
-            safConsumer.hentJournalpostV2(
-                request = HentJournalpostV2Request.create(user.ident),
-                accessToken = tokendingsExchange.safToken(user)
-            )
         }
+
+        return safConsumer.hentJournalpostV2(
+            request = HentJournalpostV2Request.create(journapostId),
+            accessToken = tokendingsExchange.safToken(user)
+        )
     }
 
     suspend fun token(user: IdportenUser) = tokendingsExchange.safToken(user)
