@@ -97,11 +97,18 @@ private fun dokumenter(dokumenter: List<DokumentInfo?>?): List<DokumentHeaderV2>
                         tittel = info.tittel ?: "---",
                         filtype = variant.filtype,
                         filstorrelse = variant.filstorrelse,
-                        brukerHarTilgang = variant.brukerHarTilgang
+                        brukerHarTilgang = variant.brukerHarTilgang,
+                        tilgangssperre = if (variant.brukerHarTilgang) {
+                            null
+                        } else {
+                            variant.code
+                                .filterNotNull()
+                                .minOfOrNull { Tilgangssperre.parse(it) }
+                        }
                     )
                 } ?: run {
-                log.warn { "Dokumentet med dokumentInfoId=${info.dokumentInfoId} har ingen varianter som kan vises for bruker." }
-                null
+                    log.warn { "Dokumentet med dokumentInfoId=${info.dokumentInfoId} har ingen varianter som kan vises for bruker." }
+                    null
             }
         } ?: run {
             log.warn { "Mottok journalpost uten dokumenter" }
