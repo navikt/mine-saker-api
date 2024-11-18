@@ -27,7 +27,8 @@ data class DokumentHeaderV2(
     val tittel: String,
     val filtype: String,
     val filstorrelse: Int,
-    val brukerHarTilgang: Boolean
+    val brukerHarTilgang: Boolean,
+    val tilgangssperre: Tilgangssperre?
 ) {
     companion object {
         fun blank() = DokumentHeaderV2(
@@ -35,8 +36,21 @@ data class DokumentHeaderV2(
             tittel = "",
             filtype = "",
             filstorrelse = 0,
-            brukerHarTilgang = true
+            brukerHarTilgang = true,
+            tilgangssperre = null
         )
+    }
+}
+
+enum class Tilgangssperre {
+    Tredjepart, SkannetDokument, Annet;
+
+    companion object {
+        fun parse(kode: String) = when(kode.lowercase()) {
+            "annen_part" -> Tredjepart
+            "skannet_dokument" -> SkannetDokument
+            else -> Annet
+        }
     }
 }
 
