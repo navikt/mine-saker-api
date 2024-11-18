@@ -34,9 +34,6 @@ data class HentJournalposterV2RequestVariables(
 
 )
 
-
-
-
 fun HentJournalposterV2.Result.toInternal(): HentJournalposterResponseV2? {
 
     return dokumentoversiktSelvbetjening.tema.firstOrNull()?.let { tema ->
