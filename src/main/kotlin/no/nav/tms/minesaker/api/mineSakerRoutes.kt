@@ -160,10 +160,6 @@ fun Route.mineSakerRoute(service: SakService) {
             }
         }
     }
-
-    get("/tokenx") {
-        call.respondText(service.token(idportenUser))
-    }
 }
 
 private suspend fun ByteWriteChannel.streamFrom(input: ByteReadChannel) {
