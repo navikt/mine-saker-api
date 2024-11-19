@@ -126,6 +126,10 @@ fun Route.mineSakerRoute(service: SakService) {
         }
     }
 
+    get("/digisos/sakstema") {
+        call.respond(service.digisos(idportenUser))
+    }
+
     get("/sakstema/{$sakstemakode}/journalpost/{$journalpostIdParameterName}") {
         val sakstemakode = call.sakstemakodeFromParameters()
         val journalpostId = call.journalpostId()

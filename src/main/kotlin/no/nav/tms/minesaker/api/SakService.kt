@@ -150,4 +150,9 @@ class SakService(
             accessToken = tokendingsExchange.safToken(user)
         )
     }
+
+    suspend fun digisos(user: IdportenUser): SakstemaResult {
+        log.info { "Henter kun info fra digisos" }
+        return hentSakstemaerFraDigiSos(user)
+    }
 }
