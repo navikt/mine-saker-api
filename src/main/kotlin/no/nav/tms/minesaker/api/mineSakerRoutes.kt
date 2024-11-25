@@ -196,6 +196,12 @@ fun Route.sakApiExternal(
         }
         call.respond(result.determineHttpCode(), result.recentlyModified(sakerUrl))
     }
+
+    get("/v2/journalposter/siste") {
+        val antall = call.antallFromParameters() ?: 3
+
+        call.respond(service.sisteJournalposter(idportenUser, antall))
+    }
 }
 
 
@@ -211,6 +217,11 @@ private fun ApplicationCall.sakstemakodeFromParameters(): Sakstemakode =
     parameters[sakstemakode]
         ?.let { resolveSakstemakode(it) }
         ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$sakstemakode' er spesifisert.")
+
+private fun ApplicationCall.antallFromParameters(): Int? =
+    parameters["antall"]
+        ?.runCatching { toInt() }
+        ?.getOrElse { throw InvalidRequestException("Ugyildig antall i parameter") }
 
 private fun resolveSakstemakode(sakstemakode: String): Sakstemakode =
     try {

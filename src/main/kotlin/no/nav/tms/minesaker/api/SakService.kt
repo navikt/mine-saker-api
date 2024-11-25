@@ -150,4 +150,29 @@ class SakService(
             accessToken = tokendingsExchange.safToken(user)
         )
     }
+
+    suspend fun sisteJournalposter(user: IdportenUser, antall: Int): List<ForenkletJournalpostV2> {
+
+        val journalposter = safConsumer.alleJournalposter(
+            request = AlleJournalposterRequest.create(user.ident),
+            accessToken = tokendingsExchange.safToken(user)
+        ).sortedByDescending { it.opprettet }
+            .map {
+                ForenkletJournalpostV2(
+                    journalpostId = it.journalpostId,
+                    tittel = it.tittel,
+                    temakode = it.temakode,
+                    avsender = it.avsender,
+                    mottaker = it.mottaker,
+                    opprettet = it.opprettet,
+                    dokumentInfoId = it.dokument.dokumentInfoId,
+                )
+            }
+
+        return if (journalposter.isEmpty()) {
+            emptyList()
+        } else {
+            journalposter.take(antall)
+        }
+    }
 }

@@ -22,6 +22,16 @@ data class JournalpostV2(
     val vedlegg: List<DokumentHeaderV2>
 )
 
+data class ForenkletJournalpostV2(
+    val journalpostId: String,
+    val tittel: String,
+    val temakode: String,
+    val avsender: String?,
+    val mottaker: String?,
+    val opprettet: ZonedDateTime,
+    val dokumentInfoId: String?
+)
+
 data class DokumentHeaderV2(
     val dokumentInfoId: String,
     val tittel: String,
