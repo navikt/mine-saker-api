@@ -62,7 +62,7 @@ class SakService(
         return safConsumer.hentSakstemaer(SakstemaerRequest.create(representert), exchangedToken)
     }
 
-    private suspend fun hentSakstemaerFraDigiSos(user: IdportenUser): SakstemaResult = try {
+    suspend fun hentSakstemaerFraDigiSos(user: IdportenUser): SakstemaResult = try {
         val exchangedToken = tokendingsExchange.digisosToken(user)
         digiSosConsumer.hentSakstemaer(exchangedToken)
     } catch (e: Exception) {

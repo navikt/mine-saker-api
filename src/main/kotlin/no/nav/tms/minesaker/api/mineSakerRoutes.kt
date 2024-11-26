@@ -126,6 +126,19 @@ fun Route.mineSakerRoute(service: SakService) {
         }
     }
 
+    get("/v2/sosialhjelp/har_innsendte") {
+        val result = service.hentSakstemaerFraDigiSos(idportenUser)
+        if (result.hasErrors()) {
+            log.warn { "Kall til digisos feilet" }
+        }
+
+        if (result.resultsSorted().isEmpty()) {
+            call.respond(false)
+        } else {
+            call.respond(true)
+        }
+    }
+
     get("/sakstema/{$sakstemakode}/journalpost/{$journalpostIdParameterName}") {
         val sakstemakode = call.sakstemakodeFromParameters()
         val journalpostId = call.journalpostId()
@@ -136,7 +149,7 @@ fun Route.mineSakerRoute(service: SakService) {
             ?.find { it.journalpostId == journalpostId }
             ?.let {
                 call.respond(journalposter.copy(journalposter = listOf(it)))
-            }?: suspend {
+            }?: run {
                 call.respondText(
                     "Fant ikke journalpost med tema $sakstemakode og journalpostId $journalpostId",
                     status = HttpStatusCode.NotFound
