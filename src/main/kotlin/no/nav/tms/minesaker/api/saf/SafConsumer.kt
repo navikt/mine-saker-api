@@ -11,10 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.utils.io.*
-import no.nav.dokument.saf.selvbetjening.generated.dto.AlleJournalposter
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposterV2
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
+import no.nav.dokument.saf.selvbetjening.generated.dto.*
 import no.nav.tms.minesaker.api.setup.CommunicationException
 import no.nav.tms.minesaker.api.setup.DocumentNotFoundException
 import no.nav.tms.minesaker.api.setup.SafResultException
@@ -68,6 +65,14 @@ class SafConsumer(
         accessToken: String
     ): List<JournalpostV2> {
         val result: AlleJournalposter.Result = unwrapSafResponse(sendQuery(request, accessToken))
+        return result.toInternal()
+    }
+
+    suspend fun hentJournalpostV2(
+        request: HentJournalpostV2Request,
+        accessToken: String
+    ): JournalpostV2? {
+        val result: HentJournalpostV2.Result = unwrapSafResponse(sendQuery(request, accessToken))
         return result.toInternal()
     }
 

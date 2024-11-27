@@ -96,6 +96,47 @@ fun Route.mineSakerRoute(service: SakService) {
                 call.respond(HttpStatusCode.OK, result)
             }
         }
+
+        get("/v2/journalposter/journalpost/{$journalpostIdParameterName}") {
+            val journalpostId = call.journalpostId()
+
+//            service.hentJournalpost(
+//                user = idportenUser,
+//                journapostId = journalpostId,
+//                representert = call.representert
+//            )?.let { result ->
+//                call.respond(HttpStatusCode.OK, result)
+//            } ?: run {
+//                call.respondText("Fant ikke journalpost med id $journalpostId", status = HttpStatusCode.NotFound)
+//            }
+
+            service.alleJournalposter(
+                user = idportenUser,
+                representert = call.representert
+            ).firstOrNull{
+                it.journalpostId == journalpostId
+            }?.let { result ->
+                call.respond(HttpStatusCode.OK, result)
+            }?: run {
+                call.respondText(
+                    "Fant ikke journalpost med journalpostId $journalpostId",
+                    status = HttpStatusCode.NotFound
+                )
+            }
+        }
+    }
+
+    get("/v2/sosialhjelp/har_innsendte") {
+        val result = service.hentSakstemaerFraDigiSos(idportenUser)
+        if (result.hasErrors()) {
+            log.warn { "Kall til digisos feilet" }
+        }
+
+        if (result.resultsSorted().isEmpty()) {
+            call.respond(false)
+        } else {
+            call.respond(true)
+        }
     }
 
     get("/sakstema/{$sakstemakode}/journalpost/{$journalpostIdParameterName}") {
@@ -108,7 +149,7 @@ fun Route.mineSakerRoute(service: SakService) {
             ?.find { it.journalpostId == journalpostId }
             ?.let {
                 call.respond(journalposter.copy(journalposter = listOf(it)))
-            }?: suspend {
+            }?: run {
                 call.respondText(
                     "Fant ikke journalpost med tema $sakstemakode og journalpostId $journalpostId",
                     status = HttpStatusCode.NotFound
@@ -168,6 +209,12 @@ fun Route.sakApiExternal(
         }
         call.respond(result.determineHttpCode(), result.recentlyModified(sakerUrl))
     }
+
+    get("/v2/journalposter/siste") {
+        val antall = call.antallFromParameters() ?: 3
+
+        call.respond(service.sisteJournalposter(idportenUser, antall))
+    }
 }
 
 
@@ -183,6 +230,11 @@ private fun ApplicationCall.sakstemakodeFromParameters(): Sakstemakode =
     parameters[sakstemakode]
         ?.let { resolveSakstemakode(it) }
         ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$sakstemakode' er spesifisert.")
+
+private fun ApplicationCall.antallFromParameters(): Int? =
+    parameters["antall"]
+        ?.runCatching { toInt() }
+        ?.getOrElse { throw InvalidRequestException("Ugyildig antall i parameter") }
 
 private fun resolveSakstemakode(sakstemakode: String): Sakstemakode =
     try {

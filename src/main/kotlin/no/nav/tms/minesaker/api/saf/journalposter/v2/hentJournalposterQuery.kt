@@ -3,7 +3,6 @@ package no.nav.tms.minesaker.api.saf.journalposter.v2
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.dokument.saf.selvbetjening.generated.dto.HENT_JOURNALPOSTER_V2
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposterV2
-import no.nav.dokument.saf.selvbetjening.generated.dto.enums.AvsenderMottakerIdType
 import no.nav.dokument.saf.selvbetjening.generated.dto.enums.Datotype
 import no.nav.dokument.saf.selvbetjening.generated.dto.enums.Variantformat
 import no.nav.dokument.saf.selvbetjening.generated.dto.hentjournalposterv2.AvsenderMottaker
@@ -15,7 +14,6 @@ import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.*
 
 class HentJournalposterV2Request(override val variables: HentJournalposterV2RequestVariables) : GraphQLRequest {
 
@@ -45,9 +43,14 @@ fun HentJournalposterV2.Result.toInternal(): HentJournalposterResponseV2? {
                 dokumenter.first() to dokumenter.drop(1)
             }
 
+            val sakstema = Sakstema.fromExternal(it.tema!!)
+
             JournalpostV2(
                 journalpostId = it.journalpostId,
                 tittel = it.tittel ?: "---",
+                temakode = sakstema.name,
+                temanavn = sakstema.navn,
+                journalposttype = mapJournalpostType(it.journalposttype),
                 avsender = mapAvsender(it.avsender, it.mottaker, it.journalposttype),
                 mottaker = mapMottaker(it.mottaker, it.avsender, it.journalposttype),
                 opprettet = opprettet(it.relevanteDatoer),
@@ -63,6 +66,13 @@ fun HentJournalposterV2.Result.toInternal(): HentJournalposterResponseV2? {
         )
     }
 }
+
+private fun mapJournalpostType(type: SafJournalposttypeV2) = when(type) {
+    SafJournalposttypeV2.I -> "Inn"
+    SafJournalposttypeV2.U -> "Ut"
+    else -> "Notat"
+}
+
 
 private fun mapAvsender(avsender: AvsenderMottaker?, mottaker: AvsenderMottaker?, type: SafJournalposttypeV2): String? {
     return when {
@@ -112,7 +122,13 @@ private fun dokumenter(dokumenter: List<DokumentInfo?>?): List<DokumentHeaderV2>
                         filtype = variant.filtype,
                         filstorrelse = variant.filstorrelse,
                         brukerHarTilgang = variant.brukerHarTilgang,
-                        sladdet = variant.variantformat == Variantformat.SLADDET
+                        tilgangssperre = if (variant.brukerHarTilgang) {
+                            null
+                        } else {
+                            variant.code
+                                .filterNotNull()
+                                .minOfOrNull { Tilgangssperre.parse(it) }
+                        }
                     )
                 } ?: run {
                 log.warn { "Dokumentet med dokumentInfoId=${info.dokumentInfoId} har ingen varianter som kan vises for bruker." }

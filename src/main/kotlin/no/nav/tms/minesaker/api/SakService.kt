@@ -8,13 +8,10 @@ import no.nav.tms.minesaker.api.digisos.DigiSosConsumer
 import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import no.nav.tms.minesaker.api.saf.SafConsumer
 import no.nav.tms.minesaker.api.setup.TokendingsExchange
-import no.nav.tms.minesaker.api.saf.journalposter.v2.HentJournalposterResponseV2
 import no.nav.tms.minesaker.api.saf.DokumentStream
-import no.nav.tms.minesaker.api.saf.journalposter.v2.HentJournalposterV2Request
 import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterRequest
 import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterResponse
-import no.nav.tms.minesaker.api.saf.journalposter.v2.AlleJournalposterRequest
-import no.nav.tms.minesaker.api.saf.journalposter.v2.JournalpostV2
+import no.nav.tms.minesaker.api.saf.journalposter.v2.*
 import no.nav.tms.minesaker.api.saf.sakstemaer.Kildetype
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaResult
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaerRequest
@@ -65,7 +62,7 @@ class SakService(
         return safConsumer.hentSakstemaer(SakstemaerRequest.create(representert), exchangedToken)
     }
 
-    private suspend fun hentSakstemaerFraDigiSos(user: IdportenUser): SakstemaResult = try {
+    suspend fun hentSakstemaerFraDigiSos(user: IdportenUser): SakstemaResult = try {
         val exchangedToken = tokendingsExchange.digisosToken(user)
         digiSosConsumer.hentSakstemaer(exchangedToken)
     } catch (e: Exception) {
@@ -141,4 +138,41 @@ class SakService(
             )
         }
 
+    suspend fun hentJournalpost(user: IdportenUser, journapostId: String, representert: String?): JournalpostV2? {
+        if (representert != null) {
+            log.info { "Henter enkelt journalpost for representert fra SAF" }
+        } else {
+            log.info { "Henter enkelt journalpost for bruker fra SAF" }
+        }
+
+        return safConsumer.hentJournalpostV2(
+            request = HentJournalpostV2Request.create(journapostId),
+            accessToken = tokendingsExchange.safToken(user)
+        )
+    }
+
+    suspend fun sisteJournalposter(user: IdportenUser, antall: Int): List<ForenkletJournalpostV2> {
+
+        val journalposter = safConsumer.alleJournalposter(
+            request = AlleJournalposterRequest.create(user.ident),
+            accessToken = tokendingsExchange.safToken(user)
+        ).sortedByDescending { it.opprettet }
+            .map {
+                ForenkletJournalpostV2(
+                    journalpostId = it.journalpostId,
+                    tittel = it.tittel,
+                    temakode = it.temakode,
+                    avsender = it.avsender,
+                    mottaker = it.mottaker,
+                    opprettet = it.opprettet,
+                    dokumentInfoId = it.dokument.dokumentInfoId,
+                )
+            }
+
+        return if (journalposter.isEmpty()) {
+            emptyList()
+        } else {
+            journalposter.take(antall)
+        }
+    }
 }

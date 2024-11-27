@@ -45,6 +45,8 @@ spec:
         - application: "safselvbetjening"
           namespace: "teamdokumenthandtering"
           cluster: "prod-fss"
+        - application: "repr-api"
+          namespace: "repr"
   ingresses:
     - "https://person.nav.no/mine-saker-api"
   resources:
@@ -70,10 +72,10 @@ spec:
       value: prod-fss:teamdokumenthandtering:safselvbetjening
     - name: MINE_SAKER_URL
       value: https://person.nav.no/dokumentarkiv
-    - name: PDL_FULLMAKT_URL
-      value: "https://pdl-fullmakt.prod-fss-pub.nais.io"
-    - name: PDL_FULLMAKT_CLIENT_ID
-      value: "prod-fss:pdl:pdl-fullmakt"
+    - name: REPR_FULLMAKT_URL
+      value: "http://repr-api.repr"
+    - name: REPR_FULLMAKT_CLIENT_ID
+      value: "prod-gcp:repr:repr-api"
     - name: PDL_API_URL
       value: "https://pdl-api.prod-fss-pub.nais.io/graphql"
     - name: PDL_API_CLIENT_ID

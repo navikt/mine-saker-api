@@ -28,7 +28,7 @@ class FullmaktConsumer(
     private suspend fun getFullmaktList(accessToken: String): FullmaktResponse =
         withContext(Dispatchers.IO) {
             httpClient.get {
-                url("$pdlFullmaktUrl/api/fullmektig/tema")
+                url("$pdlFullmaktUrl/api/eksternbruker/fullmakt/fullmektig/tema")
                 method = HttpMethod.Get
                 header(HttpHeaders.Authorization, "Bearer $accessToken")
                 accept(ContentType.Application.Json)
