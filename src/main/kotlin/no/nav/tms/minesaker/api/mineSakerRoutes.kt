@@ -110,9 +110,15 @@ fun Route.mineSakerRoute(service: SakService) {
 //                call.respondText("Fant ikke journalpost med id $journalpostId", status = HttpStatusCode.NotFound)
 //            }
 
+            val representert = if (call.enableRepr()) {
+                call.representert
+            } else {
+                null
+            }
+
             service.alleJournalposter(
                 user = idportenUser,
-                representert = call.representert
+                representert = representert
             ).firstOrNull{
                 it.journalpostId == journalpostId
             }?.let { result ->
@@ -242,6 +248,14 @@ private fun resolveSakstemakode(sakstemakode: String): Sakstemakode =
     } catch (cause: Exception) {
         throw InvalidRequestException("Ugyldig verdi for sakstemakode", cause)
     }
+
+
+private fun ApplicationCall.enableRepr(): Boolean {
+    return parameters["enable_repr"]
+        ?.runCatching { toBoolean() }
+        ?.getOrElse { throw InvalidRequestException("Feilaktig verdi for boolean-parameter 'enable_repr'") }
+        ?: false
+}
 
 private fun ApplicationCall.journalpostId(): String = parameters[journalpostIdParameterName]
     ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$journalpostIdParameterName' er spesifisert.")
