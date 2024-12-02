@@ -49,6 +49,7 @@ spec:
           namespace: "repr"
   ingresses:
     - "https://person.nav.no/mine-saker-api"
+    - "https://www.nav.no/mine-saker-api"
   resources:
     limits:
       memory: 1280Mi
