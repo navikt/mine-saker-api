@@ -8,7 +8,6 @@ import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.ApplicationStopping
-import io.ktor.server.application.call
 import io.ktor.server.application.install
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.routing.CORS
@@ -16,11 +15,9 @@ import io.ktor.server.plugins.defaultheaders.DefaultHeaders
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.uri
 import io.ktor.server.response.respond
-import io.ktor.server.routing.routing
-import io.ktor.util.pipeline.PipelineContext
-import io.prometheus.client.hotspot.DefaultExports
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.server.auth.*
+import io.ktor.server.routing.*
 import no.nav.tms.common.metrics.installTmsMicrometerMetrics
 import no.nav.tms.minesaker.api.setup.CommunicationException
 import no.nav.tms.minesaker.api.setup.DocumentNotFoundException
@@ -46,7 +43,6 @@ fun Application.mineSakerApi(
     fullmaktSessionStore: FullmaktSessionStore,
     authConfig: Application.() -> Unit
 ) {
-    DefaultExports.initialize()
     val log = KotlinLogging.logger { }
     val secureLog = KotlinLogging.logger("secureLog")
 
@@ -181,8 +177,8 @@ fun authConfig(): Application.() -> Unit = {
 const val SubstantialAuth = "substantial_auth"
 
 private fun Application.configureShutdownHook(httpClient: HttpClient) {
-    environment.monitor.subscribe(ApplicationStopping) {
+    monitor.subscribe(ApplicationStopping) {
         httpClient.close()
     }
 }
-val PipelineContext<*, ApplicationCall>.idportenUser get() = IdportenUserFactory.createIdportenUser(call)
+val RoutingContext.idportenUser get() = IdportenUserFactory.createIdportenUser(call)

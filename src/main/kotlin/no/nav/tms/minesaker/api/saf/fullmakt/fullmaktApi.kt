@@ -12,7 +12,7 @@ fun Route.fullmaktApi(fullmaktService: FullmaktService, sessionStore: FullmaktSe
     enableFullmakt {
 
         get("/fullmakt/info") {
-            val fullmaktGiver = call.fullmaktGiver
+            val fullmaktGiver = fullmaktGiver
 
             if (fullmaktGiver == null) {
                 call.respond(FullmaktInfo(false))
@@ -48,8 +48,8 @@ fun Route.fullmaktApi(fullmaktService: FullmaktService, sessionStore: FullmaktSe
     }
 }
 
-private val ApplicationCall.fullmaktGiver get() =
-    attributes.getOrNull(FullmaktAttribute)
+private val RoutingContext.fullmaktGiver get() =
+    call.attributes.getOrNull(FullmaktAttribute)
 
 private suspend fun ApplicationCall.represertIdent() = receive<Representert>().ident
 
