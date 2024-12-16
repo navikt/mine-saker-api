@@ -60,7 +60,7 @@ private val FullmaktInterceptor = createRouteScopedPlugin(name = "fullmakt-inter
 }
 
 private class FullmaktRouteSelector : RouteSelector() {
-    override fun evaluate(context: RoutingResolveContext, segmentIndex: Int): RouteSelectorEvaluation {
+    override suspend fun evaluate(context: RoutingResolveContext, segmentIndex: Int): RouteSelectorEvaluation {
         return RouteSelectorEvaluation.Transparent
     }
 

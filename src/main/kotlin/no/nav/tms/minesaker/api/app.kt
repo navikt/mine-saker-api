@@ -41,20 +41,20 @@ fun main() {
 
     embeddedServer(
         factory = Netty,
-        environment = applicationEngineEnvironment {
+        module =  {
             rootPath = "mine-saker-api"
 
-            module {
-                mineSakerApi(
-                    sakService = sakService,
-                    sakerUrl = environment.sakerUrl,
-                    httpClient = httpClient,
-                    corsAllowedOrigins = environment.corsAllowedOrigins,
-                    authConfig = authConfig(),
-                    fullmaktService = fullmaktService,
-                    fullmaktSessionStore = fullmaktSessionStore
-                )
-            }
+            mineSakerApi(
+                sakService = sakService,
+                sakerUrl = environment.sakerUrl,
+                httpClient = httpClient,
+                corsAllowedOrigins = environment.corsAllowedOrigins,
+                authConfig = authConfig(),
+                fullmaktService = fullmaktService,
+                fullmaktSessionStore = fullmaktSessionStore
+            )
+        },
+        configure = {
             connector {
                 port = 8080
             }
