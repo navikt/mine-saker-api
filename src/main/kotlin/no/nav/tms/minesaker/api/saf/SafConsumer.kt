@@ -115,6 +115,7 @@ class SafConsumer(
                     receiver(it)
                 }
             } catch (e: Exception) {
+                secureLog.error(e) { "Feil ved streaming av dokument fra SAF [journalpostId: $journalpostId,  type: ${response.contentType()}, størrelse: ${response.contentLength()}]" }
                 throw CommunicationException("Klarte ikke å lese dokument fra SAF.", e)
             }
         }
