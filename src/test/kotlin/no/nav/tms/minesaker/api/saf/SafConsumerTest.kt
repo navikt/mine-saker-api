@@ -15,10 +15,6 @@ import io.ktor.serialization.jackson.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.runBlocking
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
-import no.nav.tms.minesaker.api.setup.CommunicationException
-import no.nav.tms.minesaker.api.setup.DocumentNotFoundException
-import no.nav.tms.minesaker.api.setup.SafResultException
-import no.nav.tms.minesaker.api.setup.jsonConfig
 import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterRequest
 import no.nav.tms.minesaker.api.saf.journalposter.HentJournalposterResultTestData
 import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterResponse
@@ -26,14 +22,14 @@ import no.nav.tms.minesaker.api.saf.sakstemaer.ForenkletSakstema
 import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import no.nav.tms.minesaker.api.saf.sakstemaer.HentSakstemaResultTestData
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaerRequest
+import no.nav.tms.minesaker.api.setup.*
 
 import org.junit.jupiter.api.Test
-import java.net.URL
 
 internal class SafConsumerTest {
 
     private val objectMapper = jacksonObjectMapper()
-    private val safDummyEndpoint = URL("https://www.dummy.no")
+    private val safDummyEndpoint = createUrl("https://www.dummy.no")
     private val dummyToken = "<access_token>"
     private val dummyIdent = "123"
     private val dummyUrlResolver = InnsynsUrlResolver(mapOf(), "http://dummy.innsyn.no")

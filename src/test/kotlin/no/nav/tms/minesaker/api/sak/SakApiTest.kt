@@ -33,6 +33,7 @@ import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktTestSessionStore
 import no.nav.tms.minesaker.api.saf.sakstemaer.ForenkletSakstema
 import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaResult
 import no.nav.tms.minesaker.api.sak.ForventetSakstemaInnhold.Companion.toDigisosResponse
+import no.nav.tms.minesaker.api.setup.createUrl
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.idPortenMock
 import org.junit.jupiter.api.Test
@@ -74,7 +75,7 @@ class SakApiTest {
         }
         val digisosConsumer = DigiSosConsumer(
             httpClient = appClient,
-            digiSosEndpoint = URL(testBaseUrl), innsynsUrlResolver = testInnsynsUrlResolver
+            digiSosEndpoint = createUrl(testBaseUrl), innsynsUrlResolver = testInnsynsUrlResolver
         )
 
         val fullmaktService = mockk<FullmaktService>()

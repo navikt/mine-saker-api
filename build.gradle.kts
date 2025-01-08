@@ -6,7 +6,8 @@ plugins {
     kotlin("jvm").version(Kotlin.version)
 
     id(GraphQL.pluginId) version GraphQL.version
-    id(Shadow.pluginId) version Shadow.version
+
+    id(TmsJarBundling.plugin)
 
     // Apply the application plugin to add support for building a CLI application.
     application
@@ -14,7 +15,7 @@ plugins {
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 

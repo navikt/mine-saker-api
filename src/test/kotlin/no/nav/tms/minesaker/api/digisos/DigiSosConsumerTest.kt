@@ -20,9 +20,9 @@ import no.nav.tms.minesaker.api.setup.jsonConfig
 
 import no.nav.tms.minesaker.api.setup.CommunicationException
 import no.nav.tms.minesaker.api.saf.sakstemaer.ForenkletSakstema
+import no.nav.tms.minesaker.api.setup.createUrl
 import org.junit.jupiter.api.Test
 
-import java.net.URL
 import java.time.LocalDateTime
 
 internal class DigiSosConsumerTest {
@@ -32,7 +32,7 @@ internal class DigiSosConsumerTest {
         registerModule(JavaTimeModule())
         disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
     }
-    private val digiSosDummyEndpoint = URL("https://www.dummy.no")
+    private val digiSosDummyEndpoint = createUrl("https://www.dummy.no")
     private val dummyToken = "<access_token>"
     private val dummyResolver = InnsynsUrlResolver(mapOf(), "http://dummy.innsyn.no")
 
