@@ -1,10 +1,5 @@
-FROM gcr.io/distroless/java17-debian11
-COPY build/libs/mine-saker-api-all.jar app/app.jar
+FROM ghcr.io/navikt/baseimages/temurin:21
 
-ARG MAX_HEAP="-XX:MaxRAMPercentage=50"
-ENV JDK_JAVA_OPTIONS="$MAX_HEAP"
+ENV JAVA_OPTS='-XX:MaxRAMPercentage=75'
 
-ENV PORT=8080
-EXPOSE $PORT
-WORKDIR app
-CMD ["app.jar"]
+COPY build/libs/*.jar ./
