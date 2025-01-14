@@ -55,7 +55,8 @@ dependencies {
     implementation(TmsKtorTokenSupport.idportenSidecar)
     implementation(TmsKtorTokenSupport.tokendingsExchange)
 
-    testImplementation(Junit.api)
+    testImplementation(JunitPlatform.launcher)
+    testImplementation(JunitJupiter.api)
     testImplementation(Ktor.Test.clientMock)
     testImplementation(Ktor.Test.serverTestHost)
     testImplementation(TmsKtorTokenSupport.idportenSidecarMock)
@@ -66,7 +67,6 @@ dependencies {
 
     testRuntimeOnly(Jjwt.impl)
     testRuntimeOnly(Jjwt.jackson)
-    testRuntimeOnly(Junit.engine)
 }
 
 application {
