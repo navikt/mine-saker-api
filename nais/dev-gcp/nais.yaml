@@ -34,6 +34,9 @@ spec:
   tokenx:
     enabled: true
   accessPolicy:
+    inbound:
+      rules:
+        - application: tms-min-side
     outbound:
       external:
         - host: "safselvbetjening.dev-fss-pub.nais.io"
