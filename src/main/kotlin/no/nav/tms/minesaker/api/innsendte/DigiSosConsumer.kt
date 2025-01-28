@@ -5,10 +5,9 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.serialization.*
+import kotlinx.coroutines.*
 import no.nav.tms.minesaker.api.setup.CommunicationException
 import no.nav.tms.minesaker.api.setup.TokendingsExchange
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
@@ -20,20 +19,26 @@ class DigiSosConsumer(
     private val httpClient: HttpClient,
     private val tokendingsExchange: TokendingsExchange,
     private val digiSosEndpoint: URL,
+    private val legacyDigiSosEndpoint: URL,
 ) {
 
     private val log = KotlinLogging.logger {}
     private val callIdHeaderName = "Nav-Callid"
 
-    suspend fun harInnsendte(user: IdportenUser): Boolean {
-        val accessToken = tokendingsExchange.digisosToken(user)
+    suspend fun harInnsendte(user: IdportenUser): Boolean = withContext(Dispatchers.IO) {
+        val harInnsendte = harInnsendte(digiSosEndpoint, tokendingsExchange.digisosToken(user))
+        val harInnsendteLegacy = harInnsendte(legacyDigiSosEndpoint, tokendingsExchange.legacyDigisosToken(user))
 
-        hent(accessToken).let { response ->
+        harInnsendte.await() || harInnsendteLegacy.await()
+    }
+
+    private fun CoroutineScope.harInnsendte(baseUrl: URL, accessToken: String): Deferred<Boolean> = async {
+        hentInnsendte(baseUrl, accessToken).let { response ->
             if (!response.status.isSuccess()) {
                 throw CommunicationException("Klarte ikke hente data fra digisos. Http-status [${response.status}]")
             }
 
-            return unpackResponse(response)
+            unpackResponse(response)
                 .isNotEmpty()
         }
     }
@@ -44,11 +49,11 @@ class DigiSosConsumer(
         throw CommunicationException("Uventet form på json i svar fra Digisos.", e)
     }
 
-    private suspend fun hent(accessToken: String): HttpResponse = withContext(Dispatchers.IO) {
+    private suspend fun hentInnsendte(baseUrl: URL, accessToken: String): HttpResponse = withContext(Dispatchers.IO) {
         val callId = UUID.randomUUID()
-        log.info { "Gjør kall mot DígiSos med correlationId=$callId" }
+        log.info { "Gjør kall mot DigiSos ($baseUrl) med callId: $callId" }
         httpClient.get {
-            url("$digiSosEndpoint/minesaker/innsendte")
+            url("$baseUrl/minesaker/innsendte")
             method = HttpMethod.Get
             header(callIdHeaderName, callId)
             header(HttpHeaders.Authorization, "Bearer $accessToken")

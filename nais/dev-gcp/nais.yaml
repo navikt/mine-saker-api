@@ -58,16 +58,8 @@ spec:
       cpu: "20m"
       memory: 256Mi
   env:
-    - name: SOSIALHJELP_INNSYN
-      value: https://www-q0.dev.nav.no/sosialhjelp/innsyn
-    - name: DEFAULT_INNSYN_LENKE
-      value: https://www.intern.dev.nav.no/dokumentarkiv/tema
     - name: CORS_ALLOWED_ORIGINS
       value: "*.dev.nav.no"
-    - name: DIGISOS_API_URL
-      value: https://sosialhjelp-soknad-api.dev-fss-pub.nais.io/sosialhjelp/soknad-api
-    - name: DIGISOS_CLIENT_ID
-      value: dev-fss:teamdigisos:sosialhjelp-soknad-api
     - name: SAF_API_URL
       value: https://safselvbetjening.dev-fss-pub.nais.io
     - name: SAF_CLIENT_ID
@@ -84,3 +76,11 @@ spec:
       value: "dev-fss:pdl:pdl-api"
     - name: PDL_BEHANDLINGSNUMMER
       value: "B499"
+    - name: DIGISOS_API_URL
+      value: http://sosialhjelp-soknad-api.teamdigisos/sosialhjelp/soknad-api
+    - name: DIGISOS_CLIENT_ID
+      value: dev-gcp:teamdigisos:sosialhjelp-soknad-api
+    - name: LEGACY_DIGISOS_API_URL
+      value: https://sosialhjelp-soknad-api.dev-fss-pub.nais.io/sosialhjelp/soknad-api
+    - name: LEGACY_DIGISOS_CLIENT_ID
+      value: dev-fss:teamdigisos:sosialhjelp-soknad-api

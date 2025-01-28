@@ -11,6 +11,8 @@ data class Environment(
     val safClientId: String = getEnvVar("SAF_CLIENT_ID"),
     val digiSosEndpoint: URL = createUrl(getEnvVar("DIGISOS_API_URL")),
     val digiSosClientId: String = getEnvVar("DIGISOS_CLIENT_ID"),
+    val legacyDigisosUrl: URL = createUrl(getEnvVar("LEGACY_DIGISOS_API_URL")),
+    val legacyDigisosClientId: String = getEnvVar("LEGACY_DIGISOS_CLIENT_ID"),
     val reprFullmaktUrl: String = getEnvVar("REPR_FULLMAKT_URL"),
     val reprFullmaktClientId: String = getEnvVar("REPR_FULLMAKT_CLIENT_ID"),
     val pdlApiUrl: String = getEnvVar("PDL_API_URL"),
