@@ -10,7 +10,6 @@ import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.auth.*
 import io.ktor.server.testing.*
-import io.ktor.util.*
 import io.ktor.utils.io.*
 import io.mockk.clearMocks
 import io.mockk.coEvery
@@ -22,16 +21,13 @@ import no.nav.tms.minesaker.api.setup.jsonConfig
 import no.nav.tms.minesaker.api.mineSakerApi
 import no.nav.tms.minesaker.api.setup.SafResultException
 import no.nav.tms.minesaker.api.saf.fullmakt.*
-import no.nav.tms.minesaker.api.saf.journalposter.v1.*
-import no.nav.tms.minesaker.api.saf.sakstemaer.ForenkletSakstema
-import no.nav.tms.minesaker.api.saf.sakstemaer.Kildetype
-import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaResult
-import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
+import no.nav.tms.minesaker.api.saf.journalposter.DokumentHeaderV2
+import no.nav.tms.minesaker.api.saf.journalposter.JournalpostV2
+import no.nav.tms.minesaker.api.saf.journalposter.Sakstema
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.idPortenMock
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
-import java.time.ZonedDateTime
 
 class SakApiFullmaktTest {
     private val sakService: SakService = mockk()
@@ -53,58 +49,22 @@ class SakApiFullmaktTest {
     }
 
     @Test
-    fun `henter sakstema for innlogget bruker hvis fullmaktsgiver ikke er satt`() = sakApiFullmaktTest { client ->
-
-        coEvery {
-            sakService.hentSakstemaer(any())
-        } returns sakstemaResponse(Sakstemakode.AAP)
-
-        coEvery {
-            sakService.hentSakstemaer(any(), fullmaktGiver1.ident)
-        } returns sakstemaResponse(Sakstemakode.YRK)
-
-        val response: List<ForenkletSakstema> = client.get("sakstemaer").body()
-
-        response.first().kode shouldBe Sakstemakode.AAP
-    }
-
-    @Test
-    fun `henter sakstema for fullmaktsgiver hvis den er satt for session`() = sakApiFullmaktTest { client ->
-
-        sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
-
-        coEvery {
-            sakService.hentSakstemaer(any())
-        } returns sakstemaResponse(Sakstemakode.AAP)
-
-        coEvery {
-            sakService.hentSakstemaer(any(), fullmaktGiver1.ident)
-        } returns sakstemaResponse(Sakstemakode.YRK)
-
-        val response: List<ForenkletSakstema> = client.get("sakstemaer").body()
-
-        response.first().kode shouldBe Sakstemakode.YRK
-    }
-
-    @Test
     fun `henter journalposter for innlogget bruker hvis fullmaktsgiver ikke er satt`() = sakApiFullmaktTest { client ->
 
         val navnForBruker = "Tilhører bruker"
         val navnForRepresentert = "Tilhører representert"
 
         coEvery {
-            sakService.hentJournalposterForSakstema(any(), Sakstemakode.AAP)
+            sakService.alleJournalposter(any(), null)
         } returns journalpostResponse(navnForBruker)
 
         coEvery {
-            sakService.hentJournalposterForSakstema(any(), Sakstemakode.AAP, fullmaktGiver1.ident)
+            sakService.alleJournalposter(any(), fullmaktGiver1.ident)
         } returns journalpostResponse(navnForRepresentert)
 
-        val responseForQuery: List<JournalposterResponse> = client.get("journalposter?sakstemakode=AAP").body()
-        val responseForPathParam: List<JournalposterResponse> = client.get("journalposter/AAP").body()
+        val responseForQuery: List<JournalpostV2> = client.get("v2/journalposter/alle").body()
 
-        responseForQuery.first().navn shouldBe navnForBruker
-        responseForPathParam.first().navn shouldBe navnForBruker
+        responseForQuery.first().temanavn shouldBe navnForBruker
     }
 
     @Test
@@ -115,41 +75,16 @@ class SakApiFullmaktTest {
         sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
 
         coEvery {
-            sakService.hentJournalposterForSakstema(any(), Sakstemakode.AAP)
+            sakService.alleJournalposter(any(), null)
         } returns journalpostResponse(navnForBruker)
 
         coEvery {
-            sakService.hentJournalposterForSakstema(any(), Sakstemakode.AAP, fullmaktGiver1.ident)
+            sakService.alleJournalposter(any(), fullmaktGiver1.ident)
         } returns journalpostResponse(navnForRepresentert)
 
-        val responseForQuery: List<JournalposterResponse> = client.get("journalposter?sakstemakode=AAP").body()
-        val responseForPathParam: List<JournalposterResponse> = client.get("journalposter/AAP").body()
+        val responseForQuery: List<JournalpostV2> = client.get("v2/journalposter/alle").body()
 
-        responseForQuery.first().navn shouldBe navnForRepresentert
-        responseForPathParam.first().navn shouldBe navnForRepresentert
-    }
-
-    @Test
-    fun `nullstiller fullmakt-sesjon dersom saf returnerer feil for sakstemaer`() = sakApiFullmaktTest { client ->
-        sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
-
-        coEvery {
-            sakService.hentSakstemaer(any())
-        } returns sakstemaResponse(Sakstemakode.AAP)
-
-        coEvery {
-            sakService.hentSakstemaer(any(), fullmaktGiver1.ident)
-        } throws SafResultException("Error", emptyList(), emptyMap())
-
-        val firstResponse = client.get("sakstemaer")
-        val secondResponse = client.get("sakstemaer")
-
-        firstResponse.status shouldBe HttpStatusCode.InternalServerError
-        secondResponse.status shouldBe HttpStatusCode.OK
-
-        secondResponse.body<List<ForenkletSakstema>>().first().kode shouldBe Sakstemakode.AAP
-
-        sessionStore.getCurrentFullmaktGiver(ident) shouldBe null
+        responseForQuery.first().temanavn shouldBe navnForRepresentert
     }
 
 
@@ -160,20 +95,20 @@ class SakApiFullmaktTest {
         sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
 
         coEvery {
-            sakService.hentJournalposterForSakstema(any(), Sakstemakode.AAP)
+            sakService.alleJournalposter(any(), null)
         } returns journalpostResponse(navnForBruker)
 
         coEvery {
-            sakService.hentJournalposterForSakstema(any(), Sakstemakode.AAP, fullmaktGiver1.ident)
+            sakService.alleJournalposter(any(), fullmaktGiver1.ident)
         } throws SafResultException("Error", emptyList(), emptyMap())
 
-        val firstResponse = client.get("journalposter/AAP")
-        val secondResponse = client.get("journalposter/AAP")
+        val firstResponse = client.get("v2/journalposter/alle")
+        val secondResponse = client.get("v2/journalposter/alle")
 
         firstResponse.status shouldBe HttpStatusCode.InternalServerError
         secondResponse.status shouldBe HttpStatusCode.OK
 
-        secondResponse.body<List<JournalposterResponse>>().first().navn shouldBe navnForBruker
+        secondResponse.body<List<JournalpostV2>>().first().temanavn shouldBe navnForBruker
 
         sessionStore.getCurrentFullmaktGiver(ident) shouldBe null
     }
@@ -194,7 +129,6 @@ class SakApiFullmaktTest {
                 sakService = sakService,
                 httpClient = testClient,
                 corsAllowedOrigins = "*",
-                sakerUrl = "N/A",
                 fullmaktService = fullmaktService,
                 fullmaktSessionStore = sessionStore,
                 authConfig = {
@@ -221,33 +155,19 @@ class SakApiFullmaktTest {
         testBlock(testClient)
     }
 
-    private fun sakstemaResponse(sakstema: Sakstemakode) = SakstemaResult(
+    private fun journalpostResponse(navn: String, temakode: Sakstema = Sakstema.AAP) =
         listOf(
-            ForenkletSakstema(
-                navn = sakstema.name,
-                kode = sakstema,
-                sistEndret = ZonedDateTime.now(),
-                detaljvisningUrl = "https://link",
-            )
-        ),
-        listOf(Kildetype.SAF)
-    )
-
-    private fun journalpostResponse(navn: String, temakode: Sakstemakode = Sakstemakode.AAP) =
-        JournalposterResponse(
-            temanavn = navn,
-            temakode = temakode,
-            journalposter = listOf(
-                Journalpost(
-                    tittel = "Tittel",
-                    journalpostId = "123",
-                    journalposttype = Journalposttype.NOTAT,
-                    avsender = null,
-                    mottaker = null,
-                    sisteEndret = ZonedDateTime.now(),
-                    dokumenter = emptyList(),
-                    harVedlegg = false,
-                )
+            JournalpostV2(
+                temanavn = navn,
+                temakode = temakode.name,
+                tittel = "Tittel",
+                journalpostId = "123",
+                journalposttype = "Notat",
+                avsender = null,
+                mottaker = null,
+                dokument = DokumentHeaderV2.blank(),
+                vedlegg = emptyList(),
+                opprettet = nowAtUtc()
             )
         )
 

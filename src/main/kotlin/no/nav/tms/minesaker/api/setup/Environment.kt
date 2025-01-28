@@ -1,7 +1,6 @@
 package no.nav.tms.minesaker.api.setup
 
 import no.nav.tms.common.util.config.StringEnvVar.getEnvVar
-import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
 import java.net.URI
 import java.net.URL
 
@@ -14,9 +13,6 @@ data class Environment(
     val digiSosClientId: String = getEnvVar("DIGISOS_CLIENT_ID"),
     val sakerUrl: String = getEnvVar("MINE_SAKER_URL"),
     val defaultInnsynLenke: String = getEnvVar("DEFAULT_INNSYN_LENKE"),
-    val innsynsLenker: Map<Sakstemakode, String> = mapOf(
-        Sakstemakode.KOM to getEnvVar("SOSIALHJELP_INNSYN")
-    ),
     val pdlFullmaktUrl: String = getEnvVar("REPR_FULLMAKT_URL"),
     val pdlFullmaktClientId: String = getEnvVar("REPR_FULLMAKT_CLIENT_ID"),
     val pdlApiUrl: String = getEnvVar("PDL_API_URL"),

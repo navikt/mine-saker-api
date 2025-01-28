@@ -1,19 +1,18 @@
 package no.nav.tms.minesaker.api.sak
 
-import no.nav.tms.minesaker.api.saf.InnsynsUrlResolver
-import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
+import no.nav.tms.minesaker.api.saf.journalposter.Sakstema
 import org.intellij.lang.annotations.Language
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
 const val defaultInnsynsLenke = "http://default.innsyn"
-val innsynsTestLenker: Map<Sakstemakode, String> = mapOf(
-    Sakstemakode.DAG to "http://dag.innsyn",
-    Sakstemakode.HJE to "http://hje.innsyn",
-    Sakstemakode.KOM to "http://kom.innsyn",
-    Sakstemakode.AAP to "http://aap.innsyn",
-    Sakstemakode.SYK to "http://syk.innsyn",
-    Sakstemakode.SYM to "http://syk.innsyn",
+val innsynsTestLenker: Map<Sakstema, String> = mapOf(
+    Sakstema.DAG to "http://dag.innsyn",
+    Sakstema.HJE to "http://hje.innsyn",
+    Sakstema.KOM to "http://kom.innsyn",
+    Sakstema.AAP to "http://aap.innsyn",
+    Sakstema.SYK to "http://syk.innsyn",
+    Sakstema.SYM to "http://syk.innsyn",
 )
 
 
@@ -21,14 +20,14 @@ val aapSak = ForventetSakstemaInnhold(
     navn = "Arbeidsavklaring",
     kode = "AAP",
     sistEndret = nowAtUtc().minusDays(2),
-    detaljvisningUrl = innsynsTestLenker.getOrDefault(Sakstemakode.AAP, defaultInnsynsLenke)
+    detaljvisningUrl = innsynsTestLenker.getOrDefault(Sakstema.AAP, defaultInnsynsLenke)
 )
 val dagSak =
     ForventetSakstemaInnhold(
         navn = "Dagpenger",
         kode = "DAG",
         sistEndret = nowAtUtc().minusDays(8),
-        detaljvisningUrl = innsynsTestLenker.getOrDefault(Sakstemakode.DAG, defaultInnsynsLenke)
+        detaljvisningUrl = innsynsTestLenker.getOrDefault(Sakstema.DAG, defaultInnsynsLenke)
     )
 val hjeSak = ForventetSakstemaInnhold(
     navn = "Sak uten kjent kode",
@@ -41,21 +40,15 @@ val sykSak =
         navn = "Annen sak",
         kode = "SYK",
         sistEndret = nowAtUtc().minusDays(1),
-        detaljvisningUrl = innsynsTestLenker.getOrDefault(Sakstemakode.SYK, defaultInnsynsLenke)
+        detaljvisningUrl = innsynsTestLenker.getOrDefault(Sakstema.SYK, defaultInnsynsLenke)
     )
 val komSak =
     ForventetSakstemaInnhold(
         navn = "Enda en sak",
         kode = "KOM",
         sistEndret = nowAtUtc().minusDays(302),
-        detaljvisningUrl = innsynsTestLenker.getOrDefault(Sakstemakode.KOM, defaultInnsynsLenke)
+        detaljvisningUrl = innsynsTestLenker.getOrDefault(Sakstema.KOM, defaultInnsynsLenke)
     )
-
-val testInnsynsUrlResolver = InnsynsUrlResolver(
-    innsynsTestLenker,
-    defaultInnsynsLenke
-)
-
 
 /**
  *

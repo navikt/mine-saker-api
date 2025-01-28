@@ -10,29 +10,26 @@ import kotlinx.coroutines.withContext
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.serialization.*
 import no.nav.tms.minesaker.api.setup.CommunicationException
-import no.nav.tms.minesaker.api.saf.InnsynsUrlResolver
-import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaResult
 import java.net.URL
+import java.time.LocalDateTime
 import java.util.*
 
 class DigiSosConsumer(
     private val httpClient: HttpClient,
     private val digiSosEndpoint: URL,
-    private val innsynsUrlResolver: InnsynsUrlResolver
 ) {
 
     private val log = KotlinLogging.logger {}
     private val callIdHeaderName = "Nav-Callid"
 
-    suspend fun hentSakstemaer(accessToken: String): SakstemaResult {
+    suspend fun harInnsendte(accessToken: String): Boolean {
         hent(accessToken).let { response ->
             if (!response.status.isSuccess()) {
                 throw CommunicationException("Klarte ikke hente data fra digisos. Http-status [${response.status}]")
             }
 
             return unpackResponse(response)
-                .toInternal(innsynsUrlResolver)
-                .let { SakstemaResult(it) }
+                .isNotEmpty()
         }
     }
 
@@ -54,5 +51,10 @@ class DigiSosConsumer(
             accept(ContentType.Application.Json)
         }
     }
-
 }
+
+data class DigiSosResponse(
+    val navn : String,
+    val kode : String,
+    val sistEndret : LocalDateTime
+)

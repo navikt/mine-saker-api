@@ -1,4 +1,4 @@
-package no.nav.tms.minesaker.api.saf.journalposter.v2
+package no.nav.tms.minesaker.api.saf.journalposter
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 

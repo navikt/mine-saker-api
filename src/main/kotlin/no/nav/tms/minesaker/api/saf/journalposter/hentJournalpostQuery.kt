@@ -1,45 +1,45 @@
-package no.nav.tms.minesaker.api.saf.journalposter.v2
+package no.nav.tms.minesaker.api.saf.journalposter
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.dokument.saf.selvbetjening.generated.dto.ALLE_JOURNALPOSTER
-import no.nav.dokument.saf.selvbetjening.generated.dto.AlleJournalposter
-import no.nav.dokument.saf.selvbetjening.generated.dto.allejournalposter.AvsenderMottaker
-import no.nav.dokument.saf.selvbetjening.generated.dto.allejournalposter.DokumentInfo
+import no.nav.dokument.saf.selvbetjening.generated.dto.HENT_JOURNALPOST
+import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalpost
 import no.nav.dokument.saf.selvbetjening.generated.dto.enums.Datotype
 import no.nav.dokument.saf.selvbetjening.generated.dto.enums.Variantformat
-import no.nav.dokument.saf.selvbetjening.generated.dto.allejournalposter.RelevantDato
+import no.nav.dokument.saf.selvbetjening.generated.dto.hentjournalpost.RelevantDato
+import no.nav.dokument.saf.selvbetjening.generated.dto.hentjournalpost.AvsenderMottaker
+import no.nav.dokument.saf.selvbetjening.generated.dto.hentjournalpost.DokumentInfo
 import no.nav.tms.minesaker.api.saf.GraphQLRequest
 import no.nav.tms.minesaker.api.saf.compactJson
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-class AlleJournalposterRequest(override val variables: AlleJournalposterRequestVariables) : GraphQLRequest {
+class HentJournalpostV2Request(override val variables: HentJournalpostV2RequestVariables) : GraphQLRequest {
 
     override val query: String get() = queryString
 
     companion object {
-        val queryString = compactJson(ALLE_JOURNALPOSTER)
+        val queryString = compactJson(HENT_JOURNALPOST)
 
-        fun create(ident: String) = AlleJournalposterRequest(
-            AlleJournalposterRequestVariables(ident)
+        fun create(journalpostId: String) = HentJournalpostV2Request(
+            HentJournalpostV2RequestVariables(journalpostId)
         )
     }
 }
 
-data class AlleJournalposterRequestVariables(
-    val ident: String
+data class HentJournalpostV2RequestVariables(
+    val journalpostId: String
 )
 
-fun AlleJournalposter.Result.toInternal(): List<JournalpostV2> {
-    return dokumentoversiktSelvbetjening.journalposter.map {
+fun HentJournalpost.Result.toInternal(): JournalpostV2? {
+    return journalpostById?.let {
         val (dokument, vedlegg) = dokumenter(it.dokumenter).let { dokumenter ->
             dokumenter.first() to dokumenter.drop(1)
         }
 
         val sakstema = Sakstema.fromExternal(it.tema!!)
 
-        JournalpostV2(
+        return JournalpostV2(
             journalpostId = it.journalpostId,
             tittel = it.tittel ?: "---",
             temakode = sakstema.name,
@@ -107,8 +107,8 @@ private fun dokumenter(dokumenter: List<DokumentInfo?>?): List<DokumentHeaderV2>
                         }
                     )
                 } ?: run {
-                log.warn { "Dokumentet med dokumentInfoId=${info.dokumentInfoId} har ingen varianter som kan vises for bruker." }
-                null
+                    log.warn { "Dokumentet med dokumentInfoId=${info.dokumentInfoId} har ingen varianter som kan vises for bruker." }
+                    null
             }
         } ?: run {
             log.warn { "Mottok journalpost uten dokumenter" }

@@ -47,6 +47,9 @@ spec:
           cluster: "prod-fss"
         - application: "repr-api"
           namespace: "repr"
+    inbound:
+      rules:
+        - application: "tms-dokumentarkiv"
   ingresses:
     - "https://person.nav.no/mine-saker-api"
     - "https://www.nav.no/mine-saker-api"

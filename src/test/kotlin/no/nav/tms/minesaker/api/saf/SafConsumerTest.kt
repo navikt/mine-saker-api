@@ -1,7 +1,6 @@
 package no.nav.tms.minesaker.api.saf
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -14,14 +13,10 @@ import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.runBlocking
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentSakstemaer
-import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterRequest
-import no.nav.tms.minesaker.api.saf.journalposter.HentJournalposterResultTestData
-import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterResponse
-import no.nav.tms.minesaker.api.saf.sakstemaer.ForenkletSakstema
-import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
-import no.nav.tms.minesaker.api.saf.sakstemaer.HentSakstemaResultTestData
-import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaerRequest
+import no.nav.dokument.saf.selvbetjening.generated.dto.AlleJournalposter
+import no.nav.tms.minesaker.api.saf.journalposter.AlleJournalposterRequest
+import no.nav.tms.minesaker.api.saf.journalposter.AlleJournalposterResultTestData
+import no.nav.tms.minesaker.api.saf.journalposter.JournalpostV2
 import no.nav.tms.minesaker.api.setup.*
 
 import org.junit.jupiter.api.Test
@@ -32,77 +27,10 @@ internal class SafConsumerTest {
     private val safDummyEndpoint = createUrl("https://www.dummy.no")
     private val dummyToken = "<access_token>"
     private val dummyIdent = "123"
-    private val dummyUrlResolver = InnsynsUrlResolver(mapOf(), "http://dummy.innsyn.no")
-
-    @Test
-    fun `Skal kunne hente sakstemaer`() {
-        val externalResponse = response()
-        val safResponseAsJson = objectMapper.writeValueAsString(externalResponse)
-        val mockHttpClient = createMockHttpClient {
-            respond(
-                safResponseAsJson,
-                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            )
-        }
-        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint, dummyUrlResolver)
-
-        val request = SakstemaerRequest.create(dummyIdent)
-
-        val sakstemarespons = runBlocking {
-            consumer.hentSakstemaer(request, dummyToken)
-        }
-
-        val externalSakstema = externalResponse.data!!.dokumentoversiktSelvbetjening.tema
-        sakstemarespons.resultsSorted().size shouldBe externalSakstema.size
-        sakstemarespons.resultsSorted()[0].shouldBeInstanceOf<ForenkletSakstema>()
-        sakstemarespons.resultsSorted()[0].navn shouldBe externalSakstema[0].navn
-        sakstemarespons.resultsSorted()[0].kode.toString() shouldBe externalSakstema[0].kode
-        sakstemarespons shouldNotBe externalSakstema
-    }
-
-    @Test
-    fun `Hvis henting av sakstema returnerer generisk feil, skal det kastes CommunicationException`() {
-        val invalidJsonResponseSomVilTriggeEnException = "invalid response"
-        val mockHttpClient = createMockHttpClient {
-            respond(
-                invalidJsonResponseSomVilTriggeEnException,
-                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            )
-        }
-        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint, dummyUrlResolver)
-
-        val request = SakstemaerRequest.create(dummyIdent)
-
-        shouldThrow<CommunicationException> {
-            runBlocking {
-                consumer.hentSakstemaer(request, dummyToken)
-            }
-        }
-    }
-
-    @Test
-    fun `Hvis henting av sakstema returnerer resultat uten data, skal det kastes SafException`() {
-        val feilrespons =  """{ "data": null }"""
-        val mockHttpClient = createMockHttpClient {
-            respond(
-                feilrespons,
-                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            )
-        }
-        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint, dummyUrlResolver)
-
-        val request = SakstemaerRequest.create(dummyIdent)
-
-        shouldThrow<SafResultException> {
-            runBlocking {
-                consumer.hentSakstemaer(request, dummyToken)
-            }
-        }
-    }
 
     @Test
     fun `Skal kunne hente journalposter`() {
-        val externalResponse = GraphQLResponse(HentJournalposterResultTestData.journalposterResult())
+        val externalResponse = GraphQLResponse(AlleJournalposterResultTestData.journalposterResult())
         val safResponseAsJson = objectMapper.writeValueAsString(externalResponse)
         val mockHttpClient = createMockHttpClient {
             respond(
@@ -110,19 +38,18 @@ internal class SafConsumerTest {
                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             )
         }
-        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint, dummyUrlResolver)
+        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val request = JournalposterRequest.create(dummyIdent, Sakstemakode.FOR)
+        val request = AlleJournalposterRequest.create(dummyIdent)
 
         val internalSakstema = runBlocking {
-            consumer.hentJournalposter(dummyIdent, request, dummyToken)
+            consumer.alleJournalposter(request, dummyToken)
         }
 
-        val externalSakstema = externalResponse.data!!.dokumentoversiktSelvbetjening.tema
-        internalSakstema.shouldBeInstanceOf<JournalposterResponse>()
-        internalSakstema.navn shouldBe externalSakstema[0].navn
-        internalSakstema.kode.toString() shouldBe externalSakstema[0].kode
-        internalSakstema shouldNotBe  externalSakstema
+        val externalSakstema = externalResponse.data!!.dokumentoversiktSelvbetjening.journalposter
+        internalSakstema.shouldBeInstanceOf<List<JournalpostV2>>()
+        internalSakstema.first().temakode shouldBe externalSakstema[0].tema
+        internalSakstema shouldNotBe externalSakstema
     }
 
     @Test
@@ -131,13 +58,13 @@ internal class SafConsumerTest {
             respondError(HttpStatusCode.BadRequest)
         }
 
-        val failingConsumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint, dummyUrlResolver)
+        val failingConsumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val request = JournalposterRequest.create(dummyIdent, Sakstemakode.FOR)
+        val request = AlleJournalposterRequest.create(dummyIdent)
 
         val result = runCatching {
             runBlocking {
-                failingConsumer.hentJournalposter(dummyIdent, request, dummyToken)
+                failingConsumer.alleJournalposter(request, dummyToken)
             }
         }
 
@@ -156,13 +83,13 @@ internal class SafConsumerTest {
                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             )
         }
-        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint, dummyUrlResolver)
+        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val request = JournalposterRequest.create(dummyIdent, Sakstemakode.FOR)
+        val request = AlleJournalposterRequest.create(dummyIdent)
 
         val result = runCatching {
             runBlocking {
-                consumer.hentJournalposter(dummyIdent, request, dummyToken)
+                consumer.alleJournalposter(request, dummyToken)
             }
         }
 
@@ -181,13 +108,13 @@ internal class SafConsumerTest {
                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             )
         }
-        val consumerConsistentlyFailing = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint, dummyUrlResolver)
+        val consumerConsistentlyFailing = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val request = JournalposterRequest.create(dummyIdent, Sakstemakode.DAG)
+        val request = AlleJournalposterRequest.create(dummyIdent)
 
         val result = kotlin.runCatching {
             runBlocking {
-                consumerConsistentlyFailing.hentJournalposter(dummyIdent, request, dummyToken)
+                consumerConsistentlyFailing.alleJournalposter(request, dummyToken)
             }
         }
 
@@ -206,42 +133,19 @@ internal class SafConsumerTest {
                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             )
         }
-        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint, dummyUrlResolver)
+        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
-        val request = JournalposterRequest.create(dummyIdent, Sakstemakode.FOR)
+        val request = AlleJournalposterRequest.create(dummyIdent)
 
         val result = runCatching {
             runBlocking {
-                consumer.hentJournalposter(dummyIdent, request, dummyToken)
+                consumer.alleJournalposter(request, dummyToken)
             }
         }
 
         result.isFailure shouldBe true
         val exception = result.exceptionOrNull()
         exception.shouldBeInstanceOf<SafResultException>()
-    }
-
-    @Test
-    fun `Skal returnere data til bruker, hvis det mottas baade data og det rapporteres feil fra SAF`() {
-        val externalResponseWithDataAndError = HentJournalposterResultTestData.responseWithDataAndError()
-        val safErrorResponseAsJson = objectMapper.writeValueAsString(externalResponseWithDataAndError)
-        val mockHttpClient = createMockHttpClient {
-            respond(
-                safErrorResponseAsJson,
-                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            )
-        }
-        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint, dummyUrlResolver)
-
-        val request = JournalposterRequest.create(dummyIdent, Sakstemakode.FOR)
-
-        val result = runCatching {
-            runBlocking {
-                consumer.hentJournalposter(dummyIdent, request, dummyToken)
-            }
-        }
-
-        result.isSuccess shouldBe true
     }
 
     @Test
@@ -255,7 +159,7 @@ internal class SafConsumerTest {
                 }
             )
         }
-        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint, dummyUrlResolver)
+        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
         runBlocking {
             consumer.hentDokument("123", "456", dummyToken) {
@@ -272,7 +176,7 @@ internal class SafConsumerTest {
         val mockHttpClient = createMockHttpClient {
             respondError(status = expectedErrorCode)
         }
-        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint, dummyUrlResolver)
+        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
         val result = runCatching {
             runBlocking {
@@ -291,7 +195,7 @@ internal class SafConsumerTest {
         val mockHttpClient = createMockHttpClient {
             respondError(status = expectedErrorCode)
         }
-        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint, dummyUrlResolver)
+        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
         val result = runCatching {
             runBlocking {
@@ -316,7 +220,7 @@ internal class SafConsumerTest {
                 }
             )
         }
-        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint, dummyUrlResolver)
+        val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
         runBlocking {
             consumer.hentDokument("123", "456", dummyToken) {
@@ -352,12 +256,12 @@ private suspend fun DokumentStream.receiveBody(): ByteArray {
     return buffer
 }
 
-private fun response(): GraphQLResponse<HentSakstemaer.Result> {
-    val data = HentSakstemaResultTestData.result()
+private fun response(): GraphQLResponse<AlleJournalposter.Result> {
+    val data = AlleJournalposterResultTestData.journalposterResult()
     return GraphQLResponse(data)
 }
 
-private fun responseWithError(data: HentSakstemaer.Result? = null): GraphQLResponse<HentSakstemaer.Result> {
+private fun responseWithError(data: AlleJournalposter.Result? = null): GraphQLResponse<AlleJournalposter.Result> {
     val error = GraphQLError("Feilet ved henting av data for bruker.")
 
     return GraphQLResponse(data, listOf(error))

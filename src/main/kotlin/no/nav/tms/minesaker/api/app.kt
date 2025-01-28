@@ -10,15 +10,12 @@ import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktService
 import no.nav.tms.minesaker.api.saf.fullmakt.NavnFetcher
 import no.nav.tms.minesaker.api.setup.Environment
 import no.nav.tms.minesaker.api.setup.HttpClientBuilder
-import no.nav.tms.minesaker.api.saf.InnsynsUrlResolver
 import no.nav.tms.minesaker.api.setup.TokendingsExchange
 import no.nav.tms.token.support.tokendings.exchange.TokendingsServiceBuilder
 
 fun main() {
     val environment = Environment()
     val httpClient = HttpClientBuilder.build()
-
-    val innsynsUrlResolver = InnsynsUrlResolver(environment.innsynsLenker, environment.defaultInnsynLenke)
 
     val tokendingsService = TokendingsServiceBuilder.buildTokendingsService(maxCachedEntries = 10000)
 
@@ -35,8 +32,8 @@ fun main() {
     val fullmaktService = FullmaktService(fullmaktConsumer, navnFetcher)
     val fullmaktSessionStore = FullmaktRedis()
 
-    val safConsumer = SafConsumer(httpClient, environment.safEndpoint, innsynsUrlResolver)
-    val digiSosConsumer = DigiSosConsumer(httpClient, environment.digiSosEndpoint, innsynsUrlResolver)
+    val safConsumer = SafConsumer(httpClient, environment.safEndpoint)
+    val digiSosConsumer = DigiSosConsumer(httpClient, environment.digiSosEndpoint)
     val sakService = SakService(safConsumer, tokendingsExchange, digiSosConsumer)
 
     embeddedServer(
@@ -46,7 +43,6 @@ fun main() {
 
             mineSakerApi(
                 sakService = sakService,
-                sakerUrl = environment.sakerUrl,
                 httpClient = httpClient,
                 corsAllowedOrigins = environment.corsAllowedOrigins,
                 authConfig = authConfig(),

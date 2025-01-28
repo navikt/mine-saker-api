@@ -12,23 +12,16 @@ import kotlinx.coroutines.withContext
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.utils.io.*
 import no.nav.dokument.saf.selvbetjening.generated.dto.*
+import no.nav.tms.minesaker.api.saf.journalposter.*
 import no.nav.tms.minesaker.api.setup.CommunicationException
 import no.nav.tms.minesaker.api.setup.DocumentNotFoundException
 import no.nav.tms.minesaker.api.setup.SafResultException
-import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterRequest
-import no.nav.tms.minesaker.api.saf.journalposter.v1.JournalposterResponse
-import no.nav.tms.minesaker.api.saf.journalposter.v1.toInternal
-import no.nav.tms.minesaker.api.saf.journalposter.v2.*
-import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaerRequest
-import no.nav.tms.minesaker.api.saf.sakstemaer.toInternal
-import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaResult
 import java.net.URL
 import java.util.*
 
 class SafConsumer(
     private val httpClient: HttpClient,
-    private val safEndpoint: URL,
-    private val innsynsUrlResolver: InnsynsUrlResolver
+    private val safEndpoint: URL
 ) {
 
     private val log = KotlinLogging.logger {}
@@ -38,28 +31,6 @@ class SafConsumer(
     private val navConsumerIdHeaderName = "Nav-Consumer-Id"
     private val navConsumerId = "mine-saker-api"
 
-    suspend fun hentSakstemaer(request: SakstemaerRequest, accessToken: String): SakstemaResult {
-        return unwrapSafResponse<HentSakstemaer.Result>(sendQuery(request, accessToken))
-            .toInternal(innsynsUrlResolver)
-    }
-
-    suspend fun hentJournalposter(
-        innloggetBruker: String,
-        request: JournalposterRequest,
-        accessToken: String
-    ): JournalposterResponse? {
-        val result: HentJournalposter.Result = unwrapSafResponse(sendQuery(request, accessToken))
-        return result.toInternal(innloggetBruker)
-    }
-
-    suspend fun hentJournalposterV2(
-        request: HentJournalposterV2Request,
-        accessToken: String
-    ): HentJournalposterResponseV2? {
-        val result: HentJournalposterV2.Result = unwrapSafResponse(sendQuery(request, accessToken))
-        return result.toInternal()
-    }
-
     suspend fun alleJournalposter(
         request: AlleJournalposterRequest,
         accessToken: String
@@ -68,11 +39,11 @@ class SafConsumer(
         return result.toInternal()
     }
 
-    suspend fun hentJournalpostV2(
+    suspend fun hentJournalpost(
         request: HentJournalpostV2Request,
         accessToken: String
     ): JournalpostV2? {
-        val result: HentJournalpostV2.Result = unwrapSafResponse(sendQuery(request, accessToken))
+        val result: HentJournalpost.Result = unwrapSafResponse(sendQuery(request, accessToken))
         return result.toInternal()
     }
 

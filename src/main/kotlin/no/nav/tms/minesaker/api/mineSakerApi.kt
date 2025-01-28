@@ -23,7 +23,6 @@ import no.nav.tms.minesaker.api.setup.CommunicationException
 import no.nav.tms.minesaker.api.setup.DocumentNotFoundException
 import no.nav.tms.minesaker.api.setup.SafResultException
 import no.nav.tms.minesaker.api.setup.InvalidRequestException
-import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaException
 import no.nav.tms.minesaker.api.setup.healthApi
 import no.nav.tms.minesaker.api.saf.fullmakt.*
 import no.nav.tms.token.support.idporten.sidecar.IdPortenLogin
@@ -38,7 +37,6 @@ fun Application.mineSakerApi(
     sakService: SakService,
     httpClient: HttpClient,
     corsAllowedOrigins: String,
-    sakerUrl: String,
     fullmaktService: FullmaktService,
     fullmaktSessionStore: FullmaktSessionStore,
     authConfig: Application.() -> Unit
@@ -80,12 +78,6 @@ fun Application.mineSakerApi(
                     log.warn { "Dokument ikke funnet." }
                     secureLog.warn(cause) { "Dokument { journalpostId: ${cause.journalpostId}, dokumentinfoId: ${cause.dokumentinfoId} } ikke funnet." }
                     call.respond(HttpStatusCode.NotFound)
-                }
-
-                is SakstemaException -> {
-                    log.warn { "Feil ved transformering av data." }
-                    secureLog.warn(cause) { "Feil ved transformering av data." }
-                    call.respond(HttpStatusCode.InternalServerError)
                 }
 
                 is UgyldigFullmaktException -> {
@@ -136,7 +128,7 @@ fun Application.mineSakerApi(
         }
 
         authenticate(SubstantialAuth) {
-            sakApiExternal(sakService, sakerUrl)
+            sakApiExternal(sakService)
         }
     }
 

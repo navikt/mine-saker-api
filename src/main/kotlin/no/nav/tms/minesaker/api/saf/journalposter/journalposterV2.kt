@@ -1,13 +1,6 @@
-package no.nav.tms.minesaker.api.saf.journalposter.v2
+package no.nav.tms.minesaker.api.saf.journalposter
 
 import java.time.ZonedDateTime
-
-data class HentJournalposterResponseV2(
-    val kode: String,
-    val navn: String,
-
-    val journalposter: List<JournalpostV2>
-)
 
 data class JournalpostV2(
     val journalpostId: String,

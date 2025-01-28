@@ -6,8 +6,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
-import io.kotest.matchers.types.shouldBeInstanceOf
 import io.ktor.client.*
 import io.ktor.client.engine.mock.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -15,11 +13,9 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import kotlinx.coroutines.runBlocking
-import no.nav.tms.minesaker.api.saf.InnsynsUrlResolver
 import no.nav.tms.minesaker.api.setup.jsonConfig
 
 import no.nav.tms.minesaker.api.setup.CommunicationException
-import no.nav.tms.minesaker.api.saf.sakstemaer.ForenkletSakstema
 import no.nav.tms.minesaker.api.setup.createUrl
 import org.junit.jupiter.api.Test
 
@@ -34,10 +30,9 @@ internal class DigiSosConsumerTest {
     }
     private val digiSosDummyEndpoint = createUrl("https://www.dummy.no")
     private val dummyToken = "<access_token>"
-    private val dummyResolver = InnsynsUrlResolver(mapOf(), "http://dummy.innsyn.no")
 
     @Test
-    fun `Skal kunne hente sakstemaer`() {
+    fun `returnerer true hvis bruker har noen innsendte søknader`() {
         val externalResponse = listOf(responseSisteEndretEnUkeSiden())
         val responseAsJson = objectMapper.writeValueAsString(externalResponse)
         val mockHttpClient = createMockHttpClient {
@@ -46,17 +41,30 @@ internal class DigiSosConsumerTest {
                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             )
         }
-        val consumer = DigiSosConsumer(mockHttpClient, digiSosEndpoint = digiSosDummyEndpoint,dummyResolver)
+        val consumer = DigiSosConsumer(mockHttpClient, digiSosEndpoint = digiSosDummyEndpoint)
 
-        val internalSakstema = runBlocking {
-            consumer.hentSakstemaer(dummyToken)
+        val harInnsendte = runBlocking {
+            consumer.harInnsendte(dummyToken)
         }
 
-        internalSakstema.resultsSorted().size shouldBe externalResponse.size
-        internalSakstema.resultsSorted()[0].shouldBeInstanceOf<ForenkletSakstema>()
-        internalSakstema.resultsSorted()[0].navn shouldBe externalResponse[0].navn
-        internalSakstema.resultsSorted()[0].kode.toString() shouldBe externalResponse[0].kode
-        internalSakstema shouldNotBe externalResponse
+        harInnsendte shouldBe true
+    }
+
+    @Test
+    fun `returnerer true hvis bruker ikke har innsendte søknader`() {
+        val mockHttpClient = createMockHttpClient {
+            respond(
+                "[]",
+                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            )
+        }
+        val consumer = DigiSosConsumer(mockHttpClient, digiSosEndpoint = digiSosDummyEndpoint)
+
+        val harInnsendte = runBlocking {
+            consumer.harInnsendte(dummyToken)
+        }
+
+        harInnsendte shouldBe false
     }
 
     @Test
@@ -68,11 +76,11 @@ internal class DigiSosConsumerTest {
                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             )
         }
-        val consumer = DigiSosConsumer(mockHttpClient, digiSosEndpoint = digiSosDummyEndpoint, dummyResolver)
+        val consumer = DigiSosConsumer(mockHttpClient, digiSosEndpoint = digiSosDummyEndpoint)
 
         shouldThrow<CommunicationException> {
             runBlocking {
-                consumer.hentSakstemaer(dummyToken)
+                consumer.harInnsendte(dummyToken)
             }
         }
 

@@ -1,37 +1,42 @@
 package no.nav.tms.minesaker.api.saf.journalposter
 
-import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalposter
+import no.nav.dokument.saf.selvbetjening.generated.dto.AlleJournalposter
+import no.nav.dokument.saf.selvbetjening.generated.dto.allejournalposter.Dokumentoversikt
+import no.nav.dokument.saf.selvbetjening.generated.dto.allejournalposter.*
+import no.nav.dokument.saf.selvbetjening.generated.dto.enums.*
 import no.nav.tms.minesaker.api.saf.GraphQLError
 import no.nav.tms.minesaker.api.saf.GraphQLResponse
 import no.nav.tms.minesaker.api.saf.journalposter.JournalpostTestData.listOfSakstemaer
-import no.nav.tms.minesaker.api.saf.journalposter.v1.*
 
 object JournalpostTestData {
 
     fun inngaaendeDokument(
         tittel: String? = "Dummytittel Inngående",
         journalpostId: String = "dummyId-Inngående",
-        journalposttype: SafJournalposttype = SafJournalposttype.I,
-        avsender: SafAvsenderMottaker? = avsenderMottakerPerson("123"),
-        mottaker: SafAvsenderMottaker? = avsenderMottakerOrganisasjon("654"),
-        relevanteDatoer: List<SafRelevantDato?> = listOf(
+        journalposttype: Journalposttype = Journalposttype.I,
+        temakode: String = "AAP",
+        avsender: AvsenderMottaker? = avsenderMottakerPerson("123"),
+        mottaker: AvsenderMottaker? = avsenderMottakerOrganisasjon("654"),
+        relevanteDatoer: List<RelevantDato?> = listOf(
+            RelevantDatoTestData.datoOpprettet(),
             RelevantDatoTestData.datoForInngaaendeDokument(),
             RelevantDatoTestData.datoForUtgaaendeDokument()
         ),
-        dokumenter: List<SafDokumentInfo?>? = listOf(
-            SafDokumentInfo(
+        dokumenter: List<DokumentInfo?>? = listOf(
+            DokumentInfo(
                 "Dummytittel med arkivert",
                 "dummyId001",
                 listOf(
-                    SafDokumentvariant(SafVariantformat.SLADDET, true, listOf("Skannet_dokument"), "PDF"),
-                    SafDokumentvariant(SafVariantformat.ARKIV, true, listOf("ok"), "PDF")
+                    Dokumentvariant(Variantformat.SLADDET, true, listOf("Skannet_dokument"), "PDF", 1_000_000),
+                    Dokumentvariant(Variantformat.ARKIV, true, listOf("ok"), "PDF", 1_000_000)
                 )
             )
         )
-    ) = SafJournalpost(
+    ) = Journalpost(
         tittel,
         journalpostId,
         journalposttype,
+        temakode,
         avsender,
         mottaker,
         relevanteDatoer,
@@ -41,62 +46,47 @@ object JournalpostTestData {
 
     fun avsenderMottakerPerson(
         ident: String = "123",
-        idType: SafAvsenderMottakerIdType = SafAvsenderMottakerIdType.FNR
+        idType: AvsenderMottakerIdType = AvsenderMottakerIdType.FNR,
+        navn: String = "Navn Navnesen"
     ) =
-        SafAvsenderMottaker(ident, idType)
+        AvsenderMottaker(ident, idType, navn)
 
     fun avsenderMottakerOrganisasjon(
         ident: String = "987654",
-        idType: SafAvsenderMottakerIdType = SafAvsenderMottakerIdType.ORGNR
+        idType: AvsenderMottakerIdType = AvsenderMottakerIdType.ORGNR,
+        navn: String = "Navn Navnesen"
     ) =
-        SafAvsenderMottaker(ident, idType)
+        AvsenderMottaker(ident, idType, navn)
 
-    fun listOfSakstemaer(): List<SafSakstema> {
+    fun listOfSakstemaer(): List<Journalpost> {
         return listOf(
-            sakstemaWithUtgaaendeDokument(),
-            sakstemaWithInngaaendeDokument()
+            inngaaendeDokument(temakode = "AAP"),
+            inngaaendeDokument(temakode = "KON", journalposttype = Journalposttype.U)
         )
     }
-
-    fun sakstemaWithUtgaaendeDokument(navn: String = "navn1", kode: String = "AAP") =
-        SafSakstema(navn, kode, listOf(inngaaendeDokument()))
-
-    fun sakstemaWithInngaaendeDokument(navn: String = "navn2", kode: String = "KON") =
-        SafSakstema(
-            navn,
-            kode,
-            listOf(inngaaendeDokument(journalposttype = SafJournalposttype.U))
-        )
 }
 
+object AlleJournalposterResultTestData {
 
-object HentJournalposterResultTestData {
-
-    fun responseWithDataAndError(): GraphQLResponse<HentJournalposter.Result> {
+    fun responseWithDataAndError(): GraphQLResponse<AlleJournalposter.Result> {
         val data = journalposterResult()
         val error = GraphQLError("Feilet ved henting av data for bruker.")
         return GraphQLResponse(data, listOf(error))
     }
 
-    fun journalposterResult(): HentJournalposter.Result {
+    fun journalposterResult(): AlleJournalposter.Result {
         val temaer = listOfSakstemaer()
-        val dokumentoversikt = SafDokumentoversikt(temaer)
-        return HentJournalposter.Result(dokumentoversikt)
+        val dokumentoversikt = Dokumentoversikt(temaer)
+        return AlleJournalposter.Result(dokumentoversikt)
     }
 
 }
 
 object RelevantDatoTestData {
 
-    fun datoForUtgaaendeDokument(): SafRelevantDato {
-        return SafRelevantDato("2018-01-01T12:00:00", SafDatotype.DATO_EKSPEDERT)
-    }
+    fun datoOpprettet() = RelevantDato("2018-01-01T12:00:00", Datotype.DATO_OPPRETTET)
 
-    fun datoForInngaaendeDokument(): SafRelevantDato {
-        return SafRelevantDato("2018-02-02T12:00:00", SafDatotype.DATO_REGISTRERT)
-    }
+    fun datoForUtgaaendeDokument() = RelevantDato("2018-01-01T12:00:00", Datotype.DATO_EKSPEDERT)
 
-    fun datoForNotat(): SafRelevantDato {
-        return SafRelevantDato("2018-03-03T12:00:00", SafDatotype.DATO_OPPRETTET)
-    }
+    fun datoForInngaaendeDokument() = RelevantDato("2018-02-02T12:00:00", Datotype.DATO_REGISTRERT)
 }
