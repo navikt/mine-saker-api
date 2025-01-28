@@ -5,12 +5,6 @@ query($ident : String!) {
             journalpostId
             journalposttype
             tema
-            journalstatus
-            sak {
-                fagsakId
-                fagsaksystem
-                sakstype
-            }
             avsender {
                 id
                 type

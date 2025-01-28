@@ -2,7 +2,6 @@ package no.nav.tms.minesaker.api.common
 
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.Application
 import io.ktor.server.auth.*
@@ -11,21 +10,15 @@ import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.tms.minesaker.api.SubstantialAuth
-import no.nav.tms.minesaker.api.setup.CommunicationException
 import no.nav.tms.minesaker.api.setup.DocumentNotFoundException
-import no.nav.tms.minesaker.api.setup.SafResultException
 import no.nav.tms.minesaker.api.mineSakerApi
-import no.nav.tms.minesaker.api.digisos.DigiSosConsumer
-import no.nav.tms.minesaker.api.saf.sakstemaer.Sakstemakode
-import no.nav.tms.minesaker.api.saf.SafConsumer
+import no.nav.tms.minesaker.api.innsendte.DigiSosConsumer
+import no.nav.tms.minesaker.api.journalpost.SafConsumer
 import no.nav.tms.minesaker.api.setup.TokendingsExchange
-import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktService
-import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktSessionStore
-import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktTestSessionStore
-import no.nav.tms.minesaker.api.saf.sakstemaer.ForenkletSakstema
-import no.nav.tms.minesaker.api.saf.sakstemaer.Kildetype
-import no.nav.tms.minesaker.api.SakService
-import no.nav.tms.minesaker.api.saf.sakstemaer.SakstemaResult
+import no.nav.tms.minesaker.api.fullmakt.FullmaktService
+import no.nav.tms.minesaker.api.fullmakt.FullmaktSessionStore
+import no.nav.tms.minesaker.api.fullmakt.FullmaktTestSessionStore
+import no.nav.tms.minesaker.api.journalpost.SafService
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.idPortenMock
 import org.junit.jupiter.api.Test
@@ -33,117 +26,6 @@ import org.junit.jupiter.api.Test
 internal class ExceptionApiTest {
 
     private val testfnr = "1234"
-
-    @Test
-    fun `journalposter med queryparameter`() = testApplication {
-        application {
-            val sakserviceMock = createSakService(safConsumer = mockk<SafConsumer>().also {
-                coEvery {
-                    it.hentJournalposter(any(), any(), any())
-                } throws CommunicationException("Fikk http-status [500] fra SAF.")
-            })
-
-            val (fullmaktService, fullmaktRedisService) = mockFullmakt()
-
-            mineSakerApi(
-                sakService = sakserviceMock,
-                httpClient = mockk(),
-                corsAllowedOrigins = "*",
-                authConfig = { defaultAuthConfig() },
-                sakerUrl = "http://minesaker.dev",
-                fullmaktService = fullmaktService,
-                fullmaktSessionStore = fullmaktRedisService,
-            )
-        }
-
-        client.get("/journalposter").apply {
-            status shouldBe HttpStatusCode.BadRequest
-            bodyAsText() shouldBe "Parameter sakstemakode mangler"
-        }
-        client.get("/journalposter?sakstemakode=UGLYDIG").apply {
-            status shouldBe HttpStatusCode.BadRequest
-            bodyAsText() shouldBe "Ugyldig verdi for sakstemakode"
-        }
-        client.get("/journalposter?sakstemakode=AAP").apply {
-            status shouldBe HttpStatusCode.ServiceUnavailable
-        }
-
-    }
-
-    @Test
-    fun `journalposter med pathparameter`() = testApplication {
-        application {
-            val sakserviceMock = createSakService(safConsumer = mockk<SafConsumer>().also {
-                coEvery {
-                    it.hentJournalposter(any(), any(), any())
-                } throws SafResultException("Ingen data i resultatet fra SAF.", listOf(), mapOf())
-            })
-
-            val (fullmaktService, fullmaktRedisService) = mockFullmakt()
-
-            mineSakerApi(
-                sakService = sakserviceMock,
-                httpClient = mockk(),
-                corsAllowedOrigins = "*",
-                authConfig = { defaultAuthConfig() },
-                sakerUrl = "http://minesaker.dev",
-                fullmaktService = fullmaktService,
-                fullmaktSessionStore = fullmaktRedisService,
-            )
-        }
-
-        client.get("/journalposter/UGLYDIG").apply {
-            status shouldBe HttpStatusCode.BadRequest
-            bodyAsText() shouldBe "Ugyldig verdi for sakstemakode"
-        }
-        client.get("/journalposter/AAP").apply {
-            status shouldBe HttpStatusCode.InternalServerError
-        }
-
-    }
-
-    @Test
-    fun sakstema() = testApplication {
-        val safConsumerMock = mockk<SafConsumer>().also {
-            coEvery { it.hentSakstemaer(any(), any()) } returns SakstemaResult.withErrors(listOf(Kildetype.SAF))
-        }
-
-        val (fullmaktService, fullmaktRedisService) = mockFullmakt()
-
-        val digiSosConsumerMockk = mockk<DigiSosConsumer>().also {
-            coEvery { it.hentSakstemaer(any()) } returns SakstemaResult(
-                results = listOf(
-                    ForenkletSakstema(
-                        navn = "Navnese",
-                        kode = Sakstemakode.AAP,
-                        sistEndret = null,
-                        detaljvisningUrl = "https://detaljer.test"
-                    )
-                )
-            )
-        }
-        application {
-            val sakserviceMock = createSakService(safConsumer = safConsumerMock, digiSosConsumer = digiSosConsumerMockk)
-            mineSakerApi(
-                sakService = sakserviceMock,
-                httpClient = mockk(),
-                corsAllowedOrigins = "*",
-                authConfig = { defaultAuthConfig() },
-                sakerUrl = "http://minesaker.dev",
-                fullmaktService = fullmaktService,
-                fullmaktSessionStore = fullmaktRedisService,
-            )
-        }
-
-        client.get("/sakstemaer").apply {
-            status shouldBe HttpStatusCode.OK
-        }
-        coEvery { digiSosConsumerMockk.hentSakstemaer(any()) } returns SakstemaResult.withErrors(listOf(Kildetype.DIGISOS))
-
-        client.get("/sakstemaer").apply {
-            status shouldBe HttpStatusCode.ServiceUnavailable
-        }
-    }
 
     @Test
     fun dokumenter() = testApplication {
@@ -161,10 +43,10 @@ internal class ExceptionApiTest {
 
             mineSakerApi(
                 sakService = sakserviceMock,
+                digiSosConsumer = mockk(),
                 httpClient = mockk(),
                 corsAllowedOrigins = "*",
                 authConfig = { defaultAuthConfig() },
-                sakerUrl = "http://minesaker.dev",
                 fullmaktService = fullmaktService,
                 fullmaktSessionStore = fullmaktRedisService,
             )
@@ -185,15 +67,13 @@ internal class ExceptionApiTest {
 
     fun createSakService(
         safConsumer: SafConsumer = mockk(),
-        digiSosConsumer: DigiSosConsumer = mockk()
-    ) = SakService(
+    ) = SafService(
         safConsumer = safConsumer,
         tokendingsExchange = mockk<TokendingsExchange>().also {
             coEvery { it.safToken(any()) } returns "<dummytoken>"
             coEvery { it.digisosToken(any()) } returns "<dummytoken>"
 
-        },
-        digiSosConsumer = digiSosConsumer
+        }
     )
 
     private fun Application.defaultAuthConfig() =

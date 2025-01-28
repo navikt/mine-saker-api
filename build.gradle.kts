@@ -2,14 +2,12 @@ import com.expediagroup.graphql.plugin.gradle.graphql
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
-    // Apply the Kotlin JVM plugin to add support for Kotlin on the JVM.
     kotlin("jvm").version(Kotlin.version)
 
     id(GraphQL.pluginId) version GraphQL.version
 
     id(TmsJarBundling.plugin)
 
-    // Apply the application plugin to add support for building a CLI application.
     application
 }
 
