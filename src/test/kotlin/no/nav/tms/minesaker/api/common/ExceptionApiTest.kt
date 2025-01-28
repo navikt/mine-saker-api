@@ -67,15 +67,13 @@ internal class ExceptionApiTest {
 
     fun createSakService(
         safConsumer: SafConsumer = mockk(),
-        digiSosConsumer: DigiSosConsumer = mockk()
     ) = SafService(
         safConsumer = safConsumer,
         tokendingsExchange = mockk<TokendingsExchange>().also {
             coEvery { it.safToken(any()) } returns "<dummytoken>"
             coEvery { it.digisosToken(any()) } returns "<dummytoken>"
 
-        },
-        digiSosConsumer = digiSosConsumer
+        }
     )
 
     private fun Application.defaultAuthConfig() =

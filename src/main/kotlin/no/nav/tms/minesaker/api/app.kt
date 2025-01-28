@@ -37,7 +37,7 @@ fun main() {
 
     val safConsumer = SafConsumer(httpClient, environment.safEndpoint)
     val digiSosConsumer = DigiSosConsumer(httpClient, tokendingsExchange, environment.digiSosEndpoint, environment.legacyDigisosUrl)
-    val sakService = SafService(safConsumer, tokendingsExchange, digiSosConsumer)
+    val sakService = SafService(safConsumer, tokendingsExchange)
 
     embeddedServer(
         factory = Netty,

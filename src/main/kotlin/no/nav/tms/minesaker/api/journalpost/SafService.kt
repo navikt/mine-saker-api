@@ -1,7 +1,6 @@
 package no.nav.tms.minesaker.api.journalpost
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.tms.minesaker.api.innsendte.DigiSosConsumer
 import no.nav.tms.minesaker.api.journalpost.query.AlleJournalposterRequest
 import no.nav.tms.minesaker.api.journalpost.query.HentJournalpostV2Request
 import no.nav.tms.minesaker.api.setup.TokendingsExchange
@@ -9,8 +8,7 @@ import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
 
 class SafService(
     private val safConsumer: SafConsumer,
-    private val tokendingsExchange: TokendingsExchange,
-    private val digiSosConsumer: DigiSosConsumer,
+    private val tokendingsExchange: TokendingsExchange
 ) {
 
     private val log = KotlinLogging.logger { }
