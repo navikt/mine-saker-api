@@ -47,6 +47,8 @@ spec:
           cluster: "prod-fss"
         - application: "repr-api"
           namespace: "repr"
+        - application: "sosialhjelp-soknad-api"
+          namespace: "teamdigisos"
     inbound:
       rules:
         - application: "tms-dokumentarkiv"

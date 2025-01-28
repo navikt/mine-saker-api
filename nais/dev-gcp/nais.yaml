@@ -47,6 +47,8 @@ spec:
           cluster: "dev-fss"
         - application: "repr-api"
           namespace: "repr"
+        - application: "sosialhjelp-soknad-api"
+          namespace: "teamdigisos"
   ingresses:
     - "https://www.intern.dev.nav.no/mine-saker-api"
     - "https://www.ansatt.dev.nav.no/mine-saker-api"
