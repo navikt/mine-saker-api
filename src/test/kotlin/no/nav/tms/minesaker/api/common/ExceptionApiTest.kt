@@ -2,7 +2,6 @@ package no.nav.tms.minesaker.api.common
 
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.Application
 import io.ktor.server.auth.*
@@ -11,16 +10,15 @@ import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.tms.minesaker.api.SubstantialAuth
-import no.nav.tms.minesaker.api.setup.CommunicationException
 import no.nav.tms.minesaker.api.setup.DocumentNotFoundException
 import no.nav.tms.minesaker.api.mineSakerApi
-import no.nav.tms.minesaker.api.digisos.DigiSosConsumer
-import no.nav.tms.minesaker.api.saf.SafConsumer
+import no.nav.tms.minesaker.api.innsendte.DigiSosConsumer
+import no.nav.tms.minesaker.api.journalpost.SafConsumer
 import no.nav.tms.minesaker.api.setup.TokendingsExchange
-import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktService
-import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktSessionStore
-import no.nav.tms.minesaker.api.saf.fullmakt.FullmaktTestSessionStore
-import no.nav.tms.minesaker.api.SakService
+import no.nav.tms.minesaker.api.fullmakt.FullmaktService
+import no.nav.tms.minesaker.api.fullmakt.FullmaktSessionStore
+import no.nav.tms.minesaker.api.fullmakt.FullmaktTestSessionStore
+import no.nav.tms.minesaker.api.journalpost.SafService
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.idPortenMock
 import org.junit.jupiter.api.Test
@@ -45,6 +43,7 @@ internal class ExceptionApiTest {
 
             mineSakerApi(
                 sakService = sakserviceMock,
+                digiSosConsumer = mockk(),
                 httpClient = mockk(),
                 corsAllowedOrigins = "*",
                 authConfig = { defaultAuthConfig() },
@@ -69,7 +68,7 @@ internal class ExceptionApiTest {
     fun createSakService(
         safConsumer: SafConsumer = mockk(),
         digiSosConsumer: DigiSosConsumer = mockk()
-    ) = SakService(
+    ) = SafService(
         safConsumer = safConsumer,
         tokendingsExchange = mockk<TokendingsExchange>().also {
             coEvery { it.safToken(any()) } returns "<dummytoken>"

@@ -19,22 +19,23 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 import no.nav.tms.common.metrics.installTmsMicrometerMetrics
-import no.nav.tms.minesaker.api.setup.CommunicationException
-import no.nav.tms.minesaker.api.setup.DocumentNotFoundException
-import no.nav.tms.minesaker.api.setup.SafResultException
-import no.nav.tms.minesaker.api.setup.InvalidRequestException
-import no.nav.tms.minesaker.api.setup.healthApi
-import no.nav.tms.minesaker.api.saf.fullmakt.*
 import no.nav.tms.token.support.idporten.sidecar.IdPortenLogin
 import no.nav.tms.token.support.idporten.sidecar.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.idPorten
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUserFactory
 import no.nav.tms.common.observability.ApiMdc
-import no.nav.tms.minesaker.api.setup.jsonConfig
+import no.nav.tms.minesaker.api.fullmakt.*
+import no.nav.tms.minesaker.api.innsendte.DigiSosConsumer
+import no.nav.tms.minesaker.api.innsendte.digiSosRoute
+import no.nav.tms.minesaker.api.journalpost.SafService
+import no.nav.tms.minesaker.api.journalpost.journalpostRouteExternal
+import no.nav.tms.minesaker.api.journalpost.journalpostRoutes
+import no.nav.tms.minesaker.api.setup.*
 
 
 fun Application.mineSakerApi(
-    sakService: SakService,
+    sakService: SafService,
+    digiSosConsumer: DigiSosConsumer,
     httpClient: HttpClient,
     corsAllowedOrigins: String,
     fullmaktService: FullmaktService,
@@ -123,12 +124,13 @@ fun Application.mineSakerApi(
         healthApi()
 
         authenticate {
-            mineSakerRoute(sakService)
+            digiSosRoute(digiSosConsumer)
+            journalpostRoutes(sakService)
             fullmaktApi(fullmaktService, fullmaktSessionStore)
         }
 
         authenticate(SubstantialAuth) {
-            sakApiExternal(sakService)
+            journalpostRouteExternal(sakService)
         }
     }
 
