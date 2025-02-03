@@ -11,14 +11,13 @@ import no.nav.tms.minesaker.api.setup.InvalidRequestException
 import no.nav.tms.minesaker.api.fullmakt.FullmaktAttribute
 import no.nav.tms.minesaker.api.fullmakt.enableFullmakt
 
-const val dokumentIdParameterName = "dokumentId"
 const val journalpostIdParameterName = "journalpostId"
 
 fun Route.journalpostRoutes(service: SafService) {
 
     enableFullmakt {
 
-        get("/v2/journalposter/alle") {
+        get("/journalposter/alle") {
             service.alleJournalposter(
                 user = idportenUser,
                 representert = call.representert
@@ -27,7 +26,7 @@ fun Route.journalpostRoutes(service: SafService) {
             }
         }
 
-        get("/v2/journalposter/journalpost/{$journalpostIdParameterName}") {
+        get("/journalposter/journalpost/{$journalpostIdParameterName}") {
             val journalpostId = call.journalpostId()
 
 //            service.hentJournalpost(
@@ -62,45 +61,12 @@ fun Route.journalpostRoutes(service: SafService) {
         }
     }
 
-    get("/dokument/{$journalpostIdParameterName}/{$dokumentIdParameterName}") {
-        service.hentDokumentStream(
-            idportenUser,
-            call.journalpostId(),
-            call.dokumentInfoId()
-        ) { stream ->
-
-            call.respondBytesWriter(
-                contentLength = stream.size,
-                contentType = stream.contentType,
-                status = HttpStatusCode.OK
-            ) {
-                streamFrom(stream.channel)
-            }
-        }
-    }
-}
-
-private suspend fun ByteWriteChannel.streamFrom(input: ByteReadChannel) {
-    while (!input.isClosedForRead) {
-        val packet = input.readRemaining(DEFAULT_BUFFER_SIZE.toLong())
-        while (!packet.exhausted()) {
-            writePacket(packet)
-        }
-        flush()
-    }
-}
-
-// Lenkes til eller kalles fra andre steder enn dokumentarkiv
-fun Route.journalpostRouteExternal(
-    service: SafService
-) {
-    get("/v2/journalposter/siste") {
+    get("/journalposter/siste") {
         val antall = call.antallFromParameters() ?: 3
 
         call.respond(service.sisteJournalposter(idportenUser, antall))
     }
 }
-
 
 private val ApplicationCall.representert get() =
     attributes.getOrNull(FullmaktAttribute)?.ident
@@ -119,16 +85,3 @@ private fun ApplicationCall.enableRepr(): Boolean {
 
 private fun ApplicationCall.journalpostId(): String = parameters[journalpostIdParameterName]
     ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$journalpostIdParameterName' er spesifisert.")
-
-
-private fun ApplicationCall.dokumentInfoId(): String = parameters[dokumentIdParameterName]
-    ?.let {
-        if (it == "-")
-            throw InvalidRequestException(
-                message = "Forsøkte å hente info for ugyldig dokumment-id",
-                sensitiveMessage = "Forsøkte å hente info for ugyldig dokuemnt-id"
-            )
-        else it
-    }
-    ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$dokumentIdParameterName' er spesifisert.")
-

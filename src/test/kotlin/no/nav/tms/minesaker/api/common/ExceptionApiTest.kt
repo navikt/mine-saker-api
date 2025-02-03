@@ -9,10 +9,8 @@ import io.ktor.server.testing.*
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
-import no.nav.tms.minesaker.api.SubstantialAuth
 import no.nav.tms.minesaker.api.setup.DocumentNotFoundException
 import no.nav.tms.minesaker.api.mineSakerApi
-import no.nav.tms.minesaker.api.innsendte.DigiSosConsumer
 import no.nav.tms.minesaker.api.journalpost.SafConsumer
 import no.nav.tms.minesaker.api.setup.TokendingsExchange
 import no.nav.tms.minesaker.api.fullmakt.FullmaktService
@@ -21,6 +19,7 @@ import no.nav.tms.minesaker.api.fullmakt.FullmaktTestSessionStore
 import no.nav.tms.minesaker.api.journalpost.SafService
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.idPortenMock
+import no.nav.tms.token.support.tokenx.validation.mock.tokenXMock
 import org.junit.jupiter.api.Test
 
 internal class ExceptionApiTest {
@@ -42,7 +41,7 @@ internal class ExceptionApiTest {
             val sakserviceMock = createSakService(safConsumer = safconsumerMockk)
 
             mineSakerApi(
-                sakService = sakserviceMock,
+                safService = sakserviceMock,
                 digiSosConsumer = mockk(),
                 httpClient = mockk(),
                 corsAllowedOrigins = "*",
@@ -85,11 +84,10 @@ internal class ExceptionApiTest {
                 staticUserPid = testfnr
             }
 
-            idPortenMock {
-                authenticatorName = SubstantialAuth
+            tokenXMock {
                 alwaysAuthenticated = true
                 setAsDefault = false
-                staticLevelOfAssurance = LevelOfAssurance.SUBSTANTIAL
+                staticLevelOfAssurance = no.nav.tms.token.support.tokenx.validation.mock.LevelOfAssurance.HIGH
                 staticUserPid = testfnr
             }
         }

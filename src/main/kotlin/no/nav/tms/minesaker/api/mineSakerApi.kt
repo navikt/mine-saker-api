@@ -28,13 +28,15 @@ import no.nav.tms.minesaker.api.fullmakt.*
 import no.nav.tms.minesaker.api.innsendte.DigiSosConsumer
 import no.nav.tms.minesaker.api.innsendte.digiSosRoute
 import no.nav.tms.minesaker.api.journalpost.SafService
-import no.nav.tms.minesaker.api.journalpost.journalpostRouteExternal
+import no.nav.tms.minesaker.api.journalpost.dokumentRoute
 import no.nav.tms.minesaker.api.journalpost.journalpostRoutes
 import no.nav.tms.minesaker.api.setup.*
+import no.nav.tms.token.support.tokenx.validation.TokenXAuthenticator
+import no.nav.tms.token.support.tokenx.validation.tokenX
 
 
 fun Application.mineSakerApi(
-    sakService: SafService,
+    safService: SafService,
     digiSosConsumer: DigiSosConsumer,
     httpClient: HttpClient,
     corsAllowedOrigins: String,
@@ -125,12 +127,17 @@ fun Application.mineSakerApi(
 
         authenticate {
             digiSosRoute(digiSosConsumer)
-            journalpostRoutes(sakService)
             fullmaktApi(fullmaktService, fullmaktSessionStore)
+            dokumentRoute(safService)
+            route("v2") {
+                journalpostRoutes(safService)
+            }
         }
 
-        authenticate(SubstantialAuth) {
-            journalpostRouteExternal(sakService)
+        authenticate(TokenXAuthenticator.name) {
+            route("ssr") {
+                journalpostRoutes(safService)
+            }
         }
     }
 
@@ -160,15 +167,12 @@ fun authConfig(): Application.() -> Unit = {
             levelOfAssurance = LevelOfAssurance.HIGH
         }
 
-        idPorten {
-            authenticatorName = SubstantialAuth
+        tokenX {
             setAsDefault = false
-            levelOfAssurance = LevelOfAssurance.SUBSTANTIAL
+            levelOfAssurance = no.nav.tms.token.support.tokenx.validation.LevelOfAssurance.HIGH
         }
     }
 }
-
-const val SubstantialAuth = "substantial_auth"
 
 private fun Application.configureShutdownHook(httpClient: HttpClient) {
     monitor.subscribe(ApplicationStopping) {
