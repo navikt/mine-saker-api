@@ -45,7 +45,7 @@ fun main() {
             rootPath = "mine-saker-api"
 
             mineSakerApi(
-                sakService = sakService,
+                safService = sakService,
                 digiSosConsumer = digiSosConsumer,
                 httpClient = httpClient,
                 corsAllowedOrigins = environment.corsAllowedOrigins,

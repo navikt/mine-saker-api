@@ -17,15 +17,11 @@ import io.ktor.utils.io.*
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import no.nav.tms.minesaker.api.SubstantialAuth
-import no.nav.tms.minesaker.api.fullmakt.FullmaktForhold
-import no.nav.tms.minesaker.api.fullmakt.FullmaktGiver
-import no.nav.tms.minesaker.api.fullmakt.FullmaktService
-import no.nav.tms.minesaker.api.fullmakt.UgyldigFullmaktException
 import no.nav.tms.minesaker.api.setup.jsonConfig
 import no.nav.tms.minesaker.api.mineSakerApi
 import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.mock.idPortenMock
+import no.nav.tms.token.support.tokenx.validation.mock.tokenXMock
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 
@@ -150,7 +146,7 @@ class FullmaktApiKtTest {
 
         application {
             mineSakerApi(
-                sakService = mockk(),
+                safService = mockk(),
                 digiSosConsumer = mockk(),
                 httpClient = testClient,
                 corsAllowedOrigins = "*",
@@ -165,11 +161,10 @@ class FullmaktApiKtTest {
                             staticUserPid = ident
                         }
 
-                        idPortenMock {
-                            authenticatorName = SubstantialAuth
+                        tokenXMock {
                             alwaysAuthenticated = true
                             setAsDefault = false
-                            staticLevelOfAssurance = LevelOfAssurance.SUBSTANTIAL
+                            staticLevelOfAssurance = no.nav.tms.token.support.tokenx.validation.mock.LevelOfAssurance.HIGH
                             staticUserPid = ident
                         }
                     }

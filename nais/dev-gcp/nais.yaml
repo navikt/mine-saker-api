@@ -49,6 +49,9 @@ spec:
           namespace: "repr"
         - application: "sosialhjelp-soknad-api"
           namespace: "teamdigisos"
+    inbound:
+      rules:
+        - application: "tms-dokumentarkiv"
   ingresses:
     - "https://www.intern.dev.nav.no/mine-saker-api"
     - "https://www.ansatt.dev.nav.no/mine-saker-api"
