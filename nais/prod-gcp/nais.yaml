@@ -51,6 +51,7 @@ spec:
           namespace: "teamdigisos"
     inbound:
       rules:
+        - application: "tms-min-side"
         - application: "tms-dokumentarkiv"
   ingresses:
     - "https://person.nav.no/mine-saker-api"
