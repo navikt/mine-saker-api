@@ -1,6 +1,7 @@
 package no.nav.tms.minesaker.api.journalpost
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.tms.minesaker.api.UserPrincipal
 import no.nav.tms.minesaker.api.journalpost.query.AlleJournalposterRequest
 import no.nav.tms.minesaker.api.journalpost.query.HentJournalpostV2Request
 import no.nav.tms.minesaker.api.setup.TokendingsExchange
@@ -20,28 +21,28 @@ class SafService(
         receiver: suspend (DokumentStream) -> Unit
     ) {
         log.info { "Henter dokument $dokumentinfoId fra journalposten $journapostId" }
-        val exchangedToken = tokendingsExchange.safToken(user)
+        val exchangedToken = tokendingsExchange.safToken(user.tokenString)
         safConsumer.hentDokument(journapostId, dokumentinfoId, exchangedToken, receiver)
     }
 
-    suspend fun alleJournalposter(user: IdportenUser, representert: String?): List<Journalpost> =
+    suspend fun alleJournalposter(user: UserPrincipal, representert: String?): List<Journalpost> =
         if (representert != null) {
             log.info { "Henter alle journalposter for representert fra SAF" }
 
             safConsumer.alleJournalposter(
                 request = AlleJournalposterRequest.create(representert),
-                accessToken = tokendingsExchange.safToken(user)
+                accessToken = tokendingsExchange.safToken(user.accessToken)
             )
         } else {
             log.info { "Henter alle journalposter for bruker fra SAF" }
 
             safConsumer.alleJournalposter(
                 request = AlleJournalposterRequest.create(user.ident),
-                accessToken = tokendingsExchange.safToken(user)
+                accessToken = tokendingsExchange.safToken(user.accessToken)
             )
         }
 
-    suspend fun hentJournalpost(user: IdportenUser, journapostId: String, representert: String?): Journalpost? {
+    suspend fun hentJournalpost(user: UserPrincipal, journapostId: String, representert: String?): Journalpost? {
         if (representert != null) {
             log.info { "Henter enkelt journalpost for representert fra SAF" }
         } else {
@@ -50,15 +51,15 @@ class SafService(
 
         return safConsumer.hentJournalpost(
             request = HentJournalpostV2Request.create(journapostId),
-            accessToken = tokendingsExchange.safToken(user)
+            accessToken = tokendingsExchange.safToken(user.accessToken)
         )
     }
 
-    suspend fun sisteJournalposter(user: IdportenUser, antall: Int): List<ForenkletJournalpost> {
+    suspend fun sisteJournalposter(user: UserPrincipal, antall: Int): List<ForenkletJournalpost> {
 
         val journalposter = safConsumer.alleJournalposter(
             request = AlleJournalposterRequest.create(user.ident),
-            accessToken = tokendingsExchange.safToken(user)
+            accessToken = tokendingsExchange.safToken(user.accessToken)
         ).sortedByDescending { it.opprettet }
             .map {
                 ForenkletJournalpost(

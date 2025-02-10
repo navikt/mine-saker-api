@@ -16,7 +16,7 @@ class FullmaktConsumer(
     private val pdlFullmaktUrl: String
 ) {
     suspend fun getFullmaktsGivere(user: IdportenUser): List<FullmaktGiver> {
-        return getFullmaktList(tokendingsExchange.pdlFullmaktToken(user))
+        return getFullmaktList(tokendingsExchange.pdlFullmaktToken(user.tokenString))
             .map {
                 FullmaktGiver(
                     ident = it.fullmaktsgiver,
@@ -40,7 +40,7 @@ class FullmaktConsumer(
             }
         }.body()
 
-    suspend fun token(user: IdportenUser): String = tokendingsExchange.pdlFullmaktToken(user)
+    suspend fun token(user: IdportenUser): String = tokendingsExchange.pdlFullmaktToken(user.tokenString)
 }
 
 typealias FullmaktResponse = List<FullmaktResponseEntry>

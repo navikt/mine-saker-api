@@ -31,8 +31,11 @@ import no.nav.tms.minesaker.api.journalpost.SafService
 import no.nav.tms.minesaker.api.journalpost.dokumentRoute
 import no.nav.tms.minesaker.api.journalpost.journalpostRoutes
 import no.nav.tms.minesaker.api.setup.*
+import no.nav.tms.token.support.idporten.sidecar.IdPortenTokenPrincipal
 import no.nav.tms.token.support.tokenx.validation.TokenXAuthenticator
+import no.nav.tms.token.support.tokenx.validation.TokenXPrincipal
 import no.nav.tms.token.support.tokenx.validation.tokenX
+import no.nav.tms.token.support.tokenx.validation.user.TokenXUserFactory
 
 
 fun Application.mineSakerApi(
@@ -180,3 +183,23 @@ private fun Application.configureShutdownHook(httpClient: HttpClient) {
     }
 }
 val RoutingContext.idportenUser get() = IdportenUserFactory.createIdportenUser(call)
+
+val RoutingContext.user: UserPrincipal get() {
+
+    return call.principal<IdPortenTokenPrincipal>()?.let {
+
+        val idPortenUser = IdportenUserFactory.createIdportenUser(call)
+
+        UserPrincipal(idPortenUser.ident, idPortenUser.tokenString)
+    } ?: call.principal<TokenXPrincipal>()?.let {
+
+        val tokenXUser = TokenXUserFactory.createTokenXUser(call)
+
+        UserPrincipal(tokenXUser.ident, tokenXUser.tokenString)
+    }?: throw IllegalStateException("Fant ingen principal")
+}
+
+class UserPrincipal(
+    val ident: String,
+    val accessToken: String
+)
