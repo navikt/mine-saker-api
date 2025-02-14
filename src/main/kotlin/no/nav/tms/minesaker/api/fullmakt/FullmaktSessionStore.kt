@@ -1,8 +1,7 @@
 package no.nav.tms.minesaker.api.fullmakt
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.lettuce.core.RedisClient
-import io.lettuce.core.RedisURI
+import io.valkey.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.nav.tms.common.util.config.StringEnvVar.getEnvVar
@@ -29,17 +28,31 @@ class FullmaktRedis(
 
     private val objectMapper = jacksonObjectMapper()
 
-    override suspend fun setFullmaktGiver(ident: String, fullmaktGiver: FullmaktGiver): Unit = withContext(Dispatchers.IO) {
-        commands.setex(ident, oneHourInSeconds, fullmaktGiver.toJson())
+    override suspend fun setFullmaktGiver(ident: String, fullmaktGiver: FullmaktGiver): Unit = withClient { client ->
+        client.setex(ident, oneHourInSeconds, fullmaktGiver.toJson())
     }
 
-    override suspend fun getCurrentFullmaktGiver(ident: String): FullmaktGiver? = withContext(Dispatchers.IO) {
-        commands.get(ident)
+    override suspend fun getCurrentFullmaktGiver(ident: String): FullmaktGiver? = withClient { client ->
+        client.get(ident)
             ?.fullmaktGiverFromJson()
     }
 
-    override suspend fun clearFullmaktGiver(ident: String): Unit = withContext(Dispatchers.IO) {
-        commands.del(ident)
+    override suspend fun clearFullmaktGiver(ident: String): Unit = withClient { client ->
+        client.del(ident)
+    }
+
+    fun closeConnection() {
+        pool.close()
+    }
+
+    private suspend fun <T> withClient(block: (Jedis) -> T): T = withContext(Dispatchers.IO) {
+        val jedis = pool.resource
+
+        try {
+            block(jedis)
+        } finally {
+            pool.returnResource(jedis)
+        }
     }
 
     private fun FullmaktGiver.toJson() = objectMapper.writeValueAsString(this)
