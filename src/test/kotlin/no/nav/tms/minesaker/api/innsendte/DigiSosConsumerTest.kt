@@ -34,17 +34,13 @@ internal class DigiSosConsumerTest {
         disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
     }
     private val digiSosEndpoint = createUrl("https://dummy")
-    private val legacyDigiSosEndpoint = createUrl("https://legacy.dummy")
-
     private val userToken = "<original>"
-
     private val user: IdportenUser = mockk<IdportenUser>().also {
         every { it.tokenString } returns userToken
     }
 
     private val tokendingsExchange = mockk<TokendingsExchange>().also {
         coEvery { it.digisosToken(userToken) } returns "<exchanged>"
-        coEvery { it.legacyDigisosToken(userToken) } returns "<exchanged>"
     }
 
     @Test
@@ -58,7 +54,7 @@ internal class DigiSosConsumerTest {
             )
         })
 
-        val consumer = DigiSosConsumer(mockHttpClient, tokendingsExchange, digiSosEndpoint, legacyDigiSosEndpoint)
+        val consumer = DigiSosConsumer(mockHttpClient, tokendingsExchange, digiSosEndpoint)
 
         val harInnsendte = runBlocking {
             consumer.harInnsendte(user)
@@ -66,31 +62,11 @@ internal class DigiSosConsumerTest {
 
         harInnsendte shouldBe true
     }
-    @Test
-    fun `returnerer true hvis bruker har noen innsendte søknader i gammel tjeneste`() {
-        val externalResponse = listOf(responseSisteEndretEnUkeSiden())
-        val responseAsJson = objectMapper.writeValueAsString(externalResponse)
-        val mockHttpClient = createMockHttpClient(legacyHandler = {
-            respond(
-                responseAsJson,
-                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            )
-        })
-
-        val consumer = DigiSosConsumer(mockHttpClient, tokendingsExchange, digiSosEndpoint, legacyDigiSosEndpoint)
-
-        val harInnsendte = runBlocking {
-            consumer.harInnsendte(user)
-        }
-
-        harInnsendte shouldBe true
-    }
-
     @Test
     fun `returnerer false hvis bruker ikke har innsendte søknader`() {
         val mockHttpClient = createMockHttpClient()
 
-        val consumer = DigiSosConsumer(mockHttpClient, tokendingsExchange, digiSosEndpoint, legacyDigiSosEndpoint)
+        val consumer = DigiSosConsumer(mockHttpClient, tokendingsExchange, digiSosEndpoint)
 
         val harInnsendte = runBlocking {
             consumer.harInnsendte(user)
@@ -108,7 +84,7 @@ internal class DigiSosConsumerTest {
                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             )
         }
-        val consumer = DigiSosConsumer(mockHttpClient, tokendingsExchange, digiSosEndpoint, legacyDigiSosEndpoint)
+        val consumer = DigiSosConsumer(mockHttpClient, tokendingsExchange, digiSosEndpoint)
 
         shouldThrow<CommunicationException> {
             runBlocking {
@@ -120,7 +96,6 @@ internal class DigiSosConsumerTest {
 
     private fun createMockHttpClient(
         handler: MockRequestHandleScope.() -> HttpResponseData = { emptyResponse() },
-        legacyHandler: MockRequestHandleScope.() -> HttpResponseData = { emptyResponse() }
     ): HttpClient {
 
         return HttpClient(MockEngine) {
@@ -128,7 +103,6 @@ internal class DigiSosConsumerTest {
                 addHandler {
                     when (it.url.host) {
                         digiSosEndpoint.host -> handler()
-                        legacyDigiSosEndpoint.host -> legacyHandler()
                         else -> respond("not found", status = HttpStatusCode.NotFound)
                     }
                 }

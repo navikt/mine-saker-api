@@ -19,29 +19,24 @@ class DigiSosConsumer(
     private val httpClient: HttpClient,
     private val tokendingsExchange: TokendingsExchange,
     private val digiSosEndpoint: URL,
-    private val legacyDigiSosEndpoint: URL,
 ) {
 
     private val log = KotlinLogging.logger {}
     private val callIdHeaderName = "Nav-Callid"
 
-    suspend fun harInnsendte(user: IdportenUser): Boolean = withContext(Dispatchers.IO) {
-        val harInnsendte = harInnsendte(digiSosEndpoint, tokendingsExchange.digisosToken(user.tokenString))
-        val harInnsendteLegacy = harInnsendte(legacyDigiSosEndpoint, tokendingsExchange.legacyDigisosToken(user.tokenString))
+    suspend fun harInnsendte(user: IdportenUser): Boolean {
+        val accessToken = tokendingsExchange.digisosToken(user.tokenString)
 
-        harInnsendte.await() || harInnsendteLegacy.await()
-    }
-
-    private fun CoroutineScope.harInnsendte(baseUrl: URL, accessToken: String): Deferred<Boolean> = async {
-        hentInnsendte(baseUrl, accessToken).let { response ->
+        hentInnsendte(accessToken).let { response ->
             if (!response.status.isSuccess()) {
                 throw CommunicationException("Klarte ikke hente data fra digisos. Http-status [${response.status}]")
             }
 
-            unpackResponse(response)
+            return unpackResponse(response)
                 .isNotEmpty()
         }
     }
+
 
     private suspend fun unpackResponse(response: HttpResponse): List<DigiSosResponse> = try {
         response.body()
@@ -49,11 +44,11 @@ class DigiSosConsumer(
         throw CommunicationException("Uventet form på json i svar fra Digisos.", e)
     }
 
-    private suspend fun hentInnsendte(baseUrl: URL, accessToken: String): HttpResponse = withContext(Dispatchers.IO) {
+    private suspend fun hentInnsendte(accessToken: String): HttpResponse = withContext(Dispatchers.IO) {
         val callId = UUID.randomUUID()
-        log.info { "Gjør kall mot DigiSos ($baseUrl) med callId: $callId" }
+        log.info { "Gjør kall mot DigiSos ($digiSosEndpoint) med callId: $callId" }
         httpClient.get {
-            url("$baseUrl/minesaker/innsendte")
+            url("$digiSosEndpoint/minesaker/innsendte")
             method = HttpMethod.Get
             header(callIdHeaderName, callId)
             header(HttpHeaders.Authorization, "Bearer $accessToken")

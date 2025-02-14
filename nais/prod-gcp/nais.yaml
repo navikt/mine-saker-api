@@ -40,8 +40,6 @@ spec:
     outbound:
       external:
         - host: "safselvbetjening.prod-fss-pub.nais.io"
-        - host: "sosialhjelp-soknad-api.prod-fss-pub.nais.io"
-        - host: "sosialhjelp-soknad-api.nais.oera.no"
         - host: "pdl-fullmakt.prod-fss-pub.nais.io"
         - host: "pdl-api.prod-fss-pub.nais.io"
       rules:
@@ -92,7 +90,3 @@ spec:
       value: http://sosialhjelp-soknad-api.teamdigisos/sosialhjelp/soknad-api
     - name: DIGISOS_CLIENT_ID
       value: prod-gcp:teamdigisos:sosialhjelp-soknad-api
-    - name: LEGACY_DIGISOS_API_URL
-      value: https://sosialhjelp-soknad-api.prod-fss-pub.nais.io/sosialhjelp/soknad-api
-    - name: LEGACY_DIGISOS_CLIENT_ID
-      value: prod-fss:teamdigisos:sosialhjelp-soknad-api
