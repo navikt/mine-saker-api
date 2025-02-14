@@ -14,6 +14,9 @@ spec:
   readiness:
     path: /mine-saker-api/internal/isReady
     initialDelay: 15
+  redis:
+    - instance: fullmakt
+      access: readwrite
   valkey:
     - instance: fullmakt
       access: readwrite
