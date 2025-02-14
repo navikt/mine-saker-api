@@ -45,7 +45,7 @@ dependencies {
     implementation(Ktor.Server.statusPages)
     implementation(Logstash.logbackEncoder)
     implementation(Prometheus.metricsCore)
-    implementation(Valkey.java)
+    implementation(Lettuce.core)
     implementation(TmsCommonLib.metrics)
     implementation(TmsCommonLib.utils)
     implementation(TmsCommonLib.observability)
