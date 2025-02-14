@@ -10,19 +10,19 @@ class TokendingsExchange(
     private val pdlFullmaktClientId: String,
     private val pdlApiClientId: String
 ) {
-    suspend fun safToken(user: IdportenUser): String {
-        return tokendingsService.exchangeToken(user.tokenString, safselvbetjeningClientId)
+    suspend fun safToken(accessToken: String): String {
+        return tokendingsService.exchangeToken(accessToken, safselvbetjeningClientId)
     }
 
-    suspend fun digisosToken(user: IdportenUser): String {
-        return tokendingsService.exchangeToken(user.tokenString, digiSosClientId)
+    suspend fun digisosToken(accessToken: String): String {
+        return tokendingsService.exchangeToken(accessToken, digiSosClientId)
     }
 
-    suspend fun pdlFullmaktToken(user: IdportenUser): String {
-        return tokendingsService.exchangeToken(user.tokenString, pdlFullmaktClientId)
+    suspend fun pdlFullmaktToken(accessToken: String): String {
+        return tokendingsService.exchangeToken(accessToken, pdlFullmaktClientId)
     }
 
-    suspend fun pdlApiToken(user: IdportenUser): String {
-        return tokendingsService.exchangeToken(user.tokenString, pdlApiClientId)
+    suspend fun pdlApiToken(accessToken: String): String {
+        return tokendingsService.exchangeToken(accessToken, pdlApiClientId)
     }
 }

@@ -25,7 +25,7 @@ class DigiSosConsumer(
     private val callIdHeaderName = "Nav-Callid"
 
     suspend fun harInnsendte(user: IdportenUser): Boolean {
-        val accessToken = tokendingsExchange.digisosToken(user)
+        val accessToken = tokendingsExchange.digisosToken(user.tokenString)
 
         hentInnsendte(accessToken).let { response ->
             if (!response.status.isSuccess()) {
