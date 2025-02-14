@@ -1,12 +1,13 @@
 package no.nav.tms.minesaker.api
 
+import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.tms.minesaker.api.innsendte.DigiSosConsumer
 import no.nav.tms.minesaker.api.journalpost.SafConsumer
 import no.nav.tms.minesaker.api.fullmakt.FullmaktConsumer
-import no.nav.tms.minesaker.api.fullmakt.FullmaktRedis
 import no.nav.tms.minesaker.api.fullmakt.FullmaktService
+import no.nav.tms.minesaker.api.fullmakt.FullmaktValkey
 import no.nav.tms.minesaker.api.fullmakt.NavnFetcher
 import no.nav.tms.minesaker.api.journalpost.SafService
 import no.nav.tms.minesaker.api.setup.Environment
@@ -33,7 +34,7 @@ fun main() {
 
     val fullmaktConsumer = FullmaktConsumer(httpClient, tokendingsExchange, environment.reprFullmaktUrl)
     val fullmaktService = FullmaktService(fullmaktConsumer, navnFetcher)
-    val fullmaktSessionStore = FullmaktRedis()
+    val fullmaktSessionStore = FullmaktValkey()
 
     val safConsumer = SafConsumer(httpClient, environment.safEndpoint)
     val digiSosConsumer = DigiSosConsumer(httpClient, tokendingsExchange, environment.digiSosEndpoint, environment.legacyDigisosUrl)
@@ -53,6 +54,10 @@ fun main() {
                 fullmaktService = fullmaktService,
                 fullmaktSessionStore = fullmaktSessionStore
             )
+
+            monitor.subscribe(ApplicationStopPreparing) {
+                fullmaktSessionStore.closeConnection()
+            }
         },
         configure = {
             connector {
