@@ -14,9 +14,9 @@ interface FullmaktSessionStore {
 }
 
 class FullmaktRedis(
-    host: String = getEnvVar("REDIS_URI_FULLMAKT"),
-    username: String = getEnvVar("REDIS_USERNAME_FULLMAKT"),
-    password: String = getEnvVar("REDIS_PASSWORD_FULLMAKT")
+    host: String = getEnvVar("VALKEY_URI_FULLMAKT"),
+    username: String = getEnvVar("VALKEY_USERNAME_FULLMAKT"),
+    password: String = getEnvVar("VALKEY_PASSWORD_FULLMAKT")
 ) : FullmaktSessionStore {
     private val oneHourInSeconds = 3600L
 
