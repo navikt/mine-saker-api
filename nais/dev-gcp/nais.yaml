@@ -17,6 +17,9 @@ spec:
   redis:
     - instance: fullmakt
       access: readwrite
+  valkey:
+    - instance: fullmakt
+      access: readwrite
   prometheus:
     enabled: true
     path: /mine-saker-api/metrics
