@@ -21,9 +21,9 @@ object KtorClientLogging: KtorDefaults.ClientDefaults {
     val logging = dependency("ktor-client-logging")
 }
 
-object Lettuce: DependencyGroup {
-    override val groupId get() = "io.lettuce"
-    override val version get() = "6.2.6.RELEASE"
+object Valkey: DependencyGroup {
+    override val groupId get() = "io.valkey"
+    override val version get() = "5.3.0"
 
-    val core = dependency("lettuce-core")
+    val java = dependency("valkey-java")
 }
