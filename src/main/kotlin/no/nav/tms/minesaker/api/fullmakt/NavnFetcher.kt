@@ -34,7 +34,7 @@ class NavnFetcher(
     }
 
     private fun fetchNavn(user: IdportenUser): String = runBlocking(Dispatchers.IO) {
-        tokendingsExchange.pdlApiToken(user)
+        tokendingsExchange.pdlApiToken(user.tokenString)
             .let { token -> queryForNavn(user.ident, token) }
             .let { response -> checkForErrors(response) }
             .hentPerson.fullnavn

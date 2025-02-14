@@ -13,6 +13,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import no.nav.tms.minesaker.api.setup.jsonConfig
@@ -34,11 +35,16 @@ internal class DigiSosConsumerTest {
     }
     private val digiSosEndpoint = createUrl("https://dummy")
     private val legacyDigiSosEndpoint = createUrl("https://legacy.dummy")
-    private val user: IdportenUser = mockk()
+
+    private val userToken = "<original>"
+
+    private val user: IdportenUser = mockk<IdportenUser>().also {
+        every { it.tokenString } returns userToken
+    }
 
     private val tokendingsExchange = mockk<TokendingsExchange>().also {
-        coEvery { it.digisosToken(user) } returns "<accesstoken>"
-        coEvery { it.legacyDigisosToken(user) } returns "<accesstoken>"
+        coEvery { it.digisosToken(userToken) } returns "<exchanged>"
+        coEvery { it.legacyDigisosToken(userToken) } returns "<exchanged>"
     }
 
     @Test

@@ -26,8 +26,8 @@ class DigiSosConsumer(
     private val callIdHeaderName = "Nav-Callid"
 
     suspend fun harInnsendte(user: IdportenUser): Boolean = withContext(Dispatchers.IO) {
-        val harInnsendte = harInnsendte(digiSosEndpoint, tokendingsExchange.digisosToken(user))
-        val harInnsendteLegacy = harInnsendte(legacyDigiSosEndpoint, tokendingsExchange.legacyDigisosToken(user))
+        val harInnsendte = harInnsendte(digiSosEndpoint, tokendingsExchange.digisosToken(user.tokenString))
+        val harInnsendteLegacy = harInnsendte(legacyDigiSosEndpoint, tokendingsExchange.legacyDigisosToken(user.tokenString))
 
         harInnsendte.await() || harInnsendteLegacy.await()
     }

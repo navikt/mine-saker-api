@@ -10,6 +10,7 @@ import io.ktor.utils.io.*
 import no.nav.tms.minesaker.api.setup.InvalidRequestException
 import no.nav.tms.minesaker.api.fullmakt.FullmaktAttribute
 import no.nav.tms.minesaker.api.fullmakt.enableFullmakt
+import no.nav.tms.minesaker.api.user
 
 const val journalpostIdParameterName = "journalpostId"
 
@@ -19,7 +20,7 @@ fun Route.journalpostRoutes(service: SafService) {
 
         get("/journalposter/alle") {
             service.alleJournalposter(
-                user = idportenUser,
+                user = user,
                 representert = call.representert
             ).let { result ->
                 call.respond(HttpStatusCode.OK, result)
@@ -46,7 +47,7 @@ fun Route.journalpostRoutes(service: SafService) {
             }
 
             service.alleJournalposter(
-                user = idportenUser,
+                user = user,
                 representert = representert
             ).firstOrNull{
                 it.journalpostId == journalpostId
@@ -64,7 +65,7 @@ fun Route.journalpostRoutes(service: SafService) {
     get("/journalposter/siste") {
         val antall = call.antallFromParameters() ?: 3
 
-        call.respond(service.sisteJournalposter(idportenUser, antall))
+        call.respond(service.sisteJournalposter(user, antall))
     }
 }
 
