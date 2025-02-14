@@ -7,7 +7,6 @@ class TokendingsExchange(
     private val tokendingsService: TokendingsService,
     private val safselvbetjeningClientId: String,
     private val digiSosClientId: String,
-    private val legacyDigiSosClientId: String,
     private val pdlFullmaktClientId: String,
     private val pdlApiClientId: String
 ) {
@@ -17,10 +16,6 @@ class TokendingsExchange(
 
     suspend fun digisosToken(user: IdportenUser): String {
         return tokendingsService.exchangeToken(user.tokenString, digiSosClientId)
-    }
-
-    suspend fun legacyDigisosToken(user: IdportenUser): String {
-        return tokendingsService.exchangeToken(user.tokenString, legacyDigiSosClientId)
     }
 
     suspend fun pdlFullmaktToken(user: IdportenUser): String {

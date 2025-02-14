@@ -24,7 +24,6 @@ fun main() {
         tokendingsService = tokendingsService,
         safselvbetjeningClientId = environment.safClientId,
         digiSosClientId = environment.digiSosClientId,
-        legacyDigiSosClientId = environment.legacyDigisosClientId,
         pdlFullmaktClientId = environment.reprFullmaktClientId,
         pdlApiClientId = environment.pdlApiClientId
     )
@@ -36,7 +35,7 @@ fun main() {
     val fullmaktSessionStore = FullmaktRedis()
 
     val safConsumer = SafConsumer(httpClient, environment.safEndpoint)
-    val digiSosConsumer = DigiSosConsumer(httpClient, tokendingsExchange, environment.digiSosEndpoint, environment.legacyDigisosUrl)
+    val digiSosConsumer = DigiSosConsumer(httpClient, tokendingsExchange, environment.digiSosEndpoint)
     val sakService = SafService(safConsumer, tokendingsExchange)
 
     embeddedServer(
