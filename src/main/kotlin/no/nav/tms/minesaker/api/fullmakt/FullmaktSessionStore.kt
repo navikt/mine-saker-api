@@ -46,12 +46,8 @@ class FullmaktRedis(
     }
 
     private suspend fun <T> withClient(block: (Jedis) -> T): T = withContext(Dispatchers.IO) {
-        val jedis = pool.resource
-
-        try {
-            block(jedis)
-        } finally {
-            pool.returnResource(jedis)
+        pool.resource.use {
+            block(it)
         }
     }
 
