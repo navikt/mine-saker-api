@@ -153,7 +153,8 @@ private suspend fun resetFullmaktSession(
     log: KLogger,
     secureLog: KLogger
 ) = try {
-    val ident = IdportenUserFactory.createIdportenUser(call).ident
+
+    val ident = call.user.ident
 
     fullmaktSessionStore.clearFullmaktGiver(ident)
 } catch (e: Exception) {
@@ -184,16 +185,16 @@ private fun Application.configureShutdownHook(httpClient: HttpClient) {
 }
 val RoutingContext.idportenUser get() = IdportenUserFactory.createIdportenUser(call)
 
-val RoutingContext.user: UserPrincipal get() {
+val ApplicationCall.user: UserPrincipal get() {
 
-    return call.principal<IdPortenTokenPrincipal>()?.let {
+    return principal<IdPortenTokenPrincipal>()?.let {
 
-        val idPortenUser = IdportenUserFactory.createIdportenUser(call)
+        val idPortenUser = IdportenUserFactory.createIdportenUser(this)
 
         UserPrincipal(idPortenUser.ident, idPortenUser.tokenString)
-    } ?: call.principal<TokenXPrincipal>()?.let {
+    } ?: principal<TokenXPrincipal>()?.let {
 
-        val tokenXUser = TokenXUserFactory.createTokenXUser(call)
+        val tokenXUser = TokenXUserFactory.createTokenXUser(this)
 
         UserPrincipal(tokenXUser.ident, tokenXUser.tokenString)
     }?: throw IllegalStateException("Fant ingen principal")
