@@ -20,7 +20,7 @@ fun Route.journalpostRoutes(service: SafService) {
 
         get("/journalposter/alle") {
             service.alleJournalposter(
-                user = user,
+                user = call.user,
                 representert = call.representert
             ).let { result ->
                 call.respond(HttpStatusCode.OK, result)
@@ -47,7 +47,7 @@ fun Route.journalpostRoutes(service: SafService) {
             }
 
             service.alleJournalposter(
-                user = user,
+                user = call.user,
                 representert = representert
             ).firstOrNull{
                 it.journalpostId == journalpostId
@@ -65,7 +65,7 @@ fun Route.journalpostRoutes(service: SafService) {
     get("/journalposter/siste") {
         val antall = call.antallFromParameters() ?: 3
 
-        call.respond(service.sisteJournalposter(user, antall))
+        call.respond(service.sisteJournalposter(call.user, antall))
     }
 }
 
