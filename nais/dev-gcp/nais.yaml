@@ -37,6 +37,9 @@ spec:
   tokenx:
     enabled: true
   accessPolicy:
+    inbound:
+      rules:
+        - application: tms-dokumentarkiv
     outbound:
       external:
         - host: "safselvbetjening.dev-fss-pub.nais.io"
