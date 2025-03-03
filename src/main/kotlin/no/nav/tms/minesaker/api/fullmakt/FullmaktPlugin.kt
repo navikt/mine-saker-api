@@ -37,7 +37,7 @@ val FullmaktAttribute = AttributeKey<FullmaktGiver>("fullmakt_attribute")
 
 private val FullmaktInterceptor = createRouteScopedPlugin(name = "fullmakt-interceptor") {
     val config = application.plugin(FullmaktSessions).config
-    val redisService = config.sessionStore
+    val sessionStore = config.sessionStore
 
     val log = KotlinLogging.logger { }
     val secureLog = KotlinLogging.logger("secureLog")
@@ -49,7 +49,7 @@ private val FullmaktInterceptor = createRouteScopedPlugin(name = "fullmakt-inter
         if (principal != null) {
 
             try {
-                redisService.getCurrentFullmaktGiver(principal.ident())
+                sessionStore.getCurrentFullmaktGiver(principal.ident())
                     ?.let { fullmaktGiver -> call.attributes.put(FullmaktAttribute, fullmaktGiver) }
             } catch (e: Exception) {
                 log.warn { "Feil mot fullmakt-sessionstore." }
