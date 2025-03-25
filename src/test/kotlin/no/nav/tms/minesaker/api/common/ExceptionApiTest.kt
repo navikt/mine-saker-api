@@ -35,7 +35,7 @@ internal class ExceptionApiTest {
             } returns Unit
         }
 
-        val (fullmaktService, fullmaktRedisService) = mockFullmakt()
+        val (fullmaktService, fullmaktValkeyService) = mockFullmakt()
 
         application {
             val sakserviceMock = createSakService(safConsumer = safconsumerMockk)
@@ -47,7 +47,7 @@ internal class ExceptionApiTest {
                 corsAllowedOrigins = "*",
                 authConfig = { defaultAuthConfig() },
                 fullmaktService = fullmaktService,
-                fullmaktSessionStore = fullmaktRedisService,
+                fullmaktSessionStore = fullmaktValkeyService,
             )
         }
 
