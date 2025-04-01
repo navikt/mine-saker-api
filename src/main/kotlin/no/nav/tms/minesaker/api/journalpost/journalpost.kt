@@ -10,7 +10,8 @@ data class Journalpost(
     val avsender: String?,
     val mottaker: String?,
     val journalposttype: String,
-    val opprettet: ZonedDateTime,
+    @Deprecated("Bruk sorteringsdato") val opprettet: ZonedDateTime,
+    val sorteringsdato: ZonedDateTime,
     val dokument: DokumentHeader,
     val vedlegg: List<DokumentHeader>
 )
@@ -22,6 +23,7 @@ data class ForenkletJournalpost(
     val avsender: String?,
     val mottaker: String?,
     val opprettet: ZonedDateTime,
+    val sorteringsdato: ZonedDateTime,
     val dokumentInfoId: String?
 )
 

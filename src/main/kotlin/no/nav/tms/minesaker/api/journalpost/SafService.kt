@@ -60,7 +60,7 @@ class SafService(
         val journalposter = safConsumer.alleJournalposter(
             request = AlleJournalposterRequest.create(user.ident),
             accessToken = tokendingsExchange.safToken(user.accessToken)
-        ).sortedByDescending { it.opprettet }
+        ).sortedByDescending { it.sorteringsdato }
             .map {
                 ForenkletJournalpost(
                     journalpostId = it.journalpostId,
@@ -68,7 +68,8 @@ class SafService(
                     temakode = it.temakode,
                     avsender = it.avsender,
                     mottaker = it.mottaker,
-                    opprettet = it.opprettet,
+                    opprettet = it.sorteringsdato,
+                    sorteringsdato = it.sorteringsdato,
                     dokumentInfoId = it.dokument.dokumentInfoId,
                 )
             }

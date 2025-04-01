@@ -167,7 +167,8 @@ class JournalposterFullmaktTest {
                 mottaker = null,
                 dokument = DokumentHeader.blank(),
                 vedlegg = emptyList(),
-                opprettet = ZonedDateTime.now()
+                opprettet = ZonedDateTime.now(),
+                sorteringsdato = ZonedDateTime.now(),
             )
         )
 

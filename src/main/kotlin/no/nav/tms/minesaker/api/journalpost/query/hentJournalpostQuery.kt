@@ -3,18 +3,14 @@ package no.nav.tms.minesaker.api.journalpost.query
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.dokument.saf.selvbetjening.generated.dto.HENT_JOURNALPOST
 import no.nav.dokument.saf.selvbetjening.generated.dto.HentJournalpost
-import no.nav.dokument.saf.selvbetjening.generated.dto.enums.Datotype
 import no.nav.dokument.saf.selvbetjening.generated.dto.enums.Journalposttype
 import no.nav.dokument.saf.selvbetjening.generated.dto.enums.Variantformat
-import no.nav.dokument.saf.selvbetjening.generated.dto.hentjournalpost.RelevantDato
 import no.nav.dokument.saf.selvbetjening.generated.dto.hentjournalpost.AvsenderMottaker
 import no.nav.dokument.saf.selvbetjening.generated.dto.hentjournalpost.DokumentInfo
 import no.nav.tms.minesaker.api.journalpost.DokumentHeader
 import no.nav.tms.minesaker.api.journalpost.Journalpost
 import no.nav.tms.minesaker.api.journalpost.Sakstema
 import no.nav.tms.minesaker.api.journalpost.Tilgangssperre
-import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.ZonedDateTime
 
 class HentJournalpostV2Request(override val variables: HentJournalpostV2RequestVariables) : GraphQLRequest {
@@ -50,7 +46,8 @@ fun HentJournalpost.Result.toInternal(): Journalpost? {
             avsender = mapAvsender(it.avsender, it.mottaker, it.journalposttype),
             mottaker = mapMottaker(it.mottaker, it.avsender, it.journalposttype),
             journalposttype = mapJournalpostType(it.journalposttype),
-            opprettet = opprettet(it.relevanteDatoer),
+            opprettet = sorteringsdato(it.datoSortering),
+            sorteringsdato = sorteringsdato(it.datoSortering),
             dokument = dokument,
             vedlegg = vedlegg
         )
@@ -119,12 +116,6 @@ private fun dokumenter(dokumenter: List<DokumentInfo?>?): List<DokumentHeader> {
         }
 }
 
-private fun opprettet(datoer: List<RelevantDato?>): ZonedDateTime {
-    val opprettet = datoer.filterNotNull()
-        .firstOrNull { it.datotype == Datotype.DATO_OPPRETTET }
-        ?.dato
-        ?.let { LocalDateTime.parse(it) }
-        ?: throw IllegalArgumentException("Fant ikke opprettet dato for journalpost")
-
-    return ZonedDateTime.of(opprettet, ZoneId.of("Z"))
+private fun sorteringsdato(datoSortering: String): ZonedDateTime {
+    return ZonedDateTime.parse("${datoSortering}Z")
 }

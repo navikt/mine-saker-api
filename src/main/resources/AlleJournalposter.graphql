@@ -15,10 +15,7 @@ query($ident : String!) {
                 type
                 navn
             }
-            relevanteDatoer {
-                dato
-                datotype
-            }
+            datoSortering
             dokumenter {
                 tittel
                 dokumentInfoId
