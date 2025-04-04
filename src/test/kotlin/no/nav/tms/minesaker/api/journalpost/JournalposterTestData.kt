@@ -17,11 +17,7 @@ object JournalpostTestData {
         temakode: String = "AAP",
         avsender: AvsenderMottaker? = avsenderMottakerPerson("123"),
         mottaker: AvsenderMottaker? = avsenderMottakerOrganisasjon("654"),
-        relevanteDatoer: List<RelevantDato?> = listOf(
-            RelevantDatoTestData.datoOpprettet(),
-            RelevantDatoTestData.datoForInngaaendeDokument(),
-            RelevantDatoTestData.datoForUtgaaendeDokument()
-        ),
+        sorteringsdato: String = "2018-01-01T12:00:00",
         dokumenter: List<DokumentInfo?>? = listOf(
             DokumentInfo(
                 "Dummytittel med arkivert",
@@ -39,7 +35,7 @@ object JournalpostTestData {
         temakode,
         avsender,
         mottaker,
-        relevanteDatoer,
+        sorteringsdato,
         dokumenter
     )
 
@@ -82,13 +78,4 @@ object AlleJournalposterResultTestData {
         return AlleJournalposter.Result(dokumentoversikt)
     }
 
-}
-
-object RelevantDatoTestData {
-
-    fun datoOpprettet() = RelevantDato("2018-01-01T12:00:00", Datotype.DATO_OPPRETTET)
-
-    fun datoForUtgaaendeDokument() = RelevantDato("2018-01-01T12:00:00", Datotype.DATO_EKSPEDERT)
-
-    fun datoForInngaaendeDokument() = RelevantDato("2018-02-02T12:00:00", Datotype.DATO_REGISTRERT)
 }
