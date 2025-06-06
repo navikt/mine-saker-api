@@ -2,8 +2,6 @@ package no.nav.tms.minesaker.api
 
 import io.github.oshai.kotlinlogging.KLogger
 import io.ktor.client.HttpClient
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCall
@@ -16,6 +14,7 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.uri
 import io.ktor.server.response.respond
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 import no.nav.tms.common.metrics.installTmsMicrometerMetrics
@@ -61,6 +60,11 @@ fun Application.mineSakerApi(
                     cause.sensitiveMessage?.let {
                         secureLog.error { it }
                     }
+                }
+
+                is FileStreamingException -> {
+                    log.warn { cause.describe() }
+                    secureLog.warn(cause) { cause.describe() }
                 }
 
                 is CommunicationException -> {
