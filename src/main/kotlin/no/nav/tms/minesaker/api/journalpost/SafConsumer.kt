@@ -10,11 +10,13 @@ import io.ktor.http.HttpHeaders.Authorization
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.ktor.util.cio.*
 import io.ktor.utils.io.*
 import no.nav.dokument.saf.selvbetjening.generated.dto.*
 import no.nav.tms.minesaker.api.journalpost.query.*
 import no.nav.tms.minesaker.api.setup.CommunicationException
 import no.nav.tms.minesaker.api.setup.DocumentNotFoundException
+import no.nav.tms.minesaker.api.setup.FileStreamingException
 import no.nav.tms.minesaker.api.setup.SafResultException
 import java.net.URL
 import java.util.*
@@ -85,8 +87,18 @@ class SafConsumer(
                 ).let {
                     receiver(it)
                 }
-            } catch (e: Exception) {
-                secureLog.error(e) { "Feil ved streaming av dokument fra SAF [journalpostId: $journalpostId,  type: ${response.contentType()}, størrelse: ${response.contentLength()}]" }
+            } catch (e: ChannelWriteException) {
+
+                throw FileStreamingException(
+                    cause = e,
+                    journalpostId = journalpostId,
+                    dokumentId = dokumentinfoId,
+                    fileType = response.contentType().toString(),
+                    fileSize = response.contentLength() ?: 0
+                )
+            }
+            catch (e: Exception) {
+                secureLog.error(e) { "Feil ved streaming av dokument fra SAF [journalpostId: $journalpostId, type: ${response.contentType()}, størrelse: ${response.contentLength()}]" }
                 throw CommunicationException("Klarte ikke å lese dokument fra SAF.", e)
             }
         }
