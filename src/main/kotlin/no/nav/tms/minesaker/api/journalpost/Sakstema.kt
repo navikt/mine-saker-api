@@ -61,6 +61,12 @@ enum class Sakstema(val navn: String) {
     EYB("Barnepensjon"),
     EYO("Omstillingsstønad"),
 
+    // Nye per 2025.06.05
+    AKT("Aktivitetsplan med dialoger"),
+    UNG("Ungdomsprogramytelsen"),
+    PAI("Innsyn"),
+    POI("Innsyn etter personopplysningsloven"),
+
     // Listen under skal ikke vises til brukere
     FAR("Foreldreskap"),
     KTR("Kontroll"),

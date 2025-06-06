@@ -5,7 +5,6 @@ interface GraphQLRequest {
     val operationName : String?
         get() = null
     val variables: Any
-
 }
 
 
