@@ -62,7 +62,6 @@ dependencies {
     testImplementation(Kotest.runnerJunit5)
     testImplementation(Kotest.assertionsCore)
     testImplementation(Mockk.mockk)
-    testImplementation(TmsCommonLib.testutils)
 
     testRuntimeOnly(Jjwt.impl)
     testRuntimeOnly(Jjwt.jackson)
