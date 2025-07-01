@@ -14,10 +14,7 @@ import io.ktor.util.cio.*
 import io.ktor.utils.io.*
 import no.nav.dokument.saf.selvbetjening.generated.dto.*
 import no.nav.tms.minesaker.api.journalpost.query.*
-import no.nav.tms.minesaker.api.setup.CommunicationException
-import no.nav.tms.minesaker.api.setup.DocumentNotFoundException
-import no.nav.tms.minesaker.api.setup.FileStreamingException
-import no.nav.tms.minesaker.api.setup.SafResultException
+import no.nav.tms.minesaker.api.setup.*
 import java.net.URL
 import java.util.*
 
@@ -52,6 +49,7 @@ class SafConsumer(
     suspend fun hentDokument(
         journalpostId: String,
         dokumentinfoId: String,
+        erSladdet: Boolean,
         accessToken: String,
         receiver: suspend (DokumentStream) -> Unit
     ) {
@@ -59,8 +57,10 @@ class SafConsumer(
         val callId = UUID.randomUUID()
         log.info { "Sender POST-kall med correlationId=$callId" }
 
+        val visningsFormat = if (erSladdet) "SLADDET" else "ARKIV"
+
         val statement = httpClient.prepareGet {
-            url("$safEndpoint/rest/hentdokument/$journalpostId/$dokumentinfoId/ARKIV")
+            url("$safEndpoint/rest/hentdokument/$journalpostId/$dokumentinfoId/$visningsFormat")
             method = HttpMethod.Get
             header(Authorization, "Bearer $accessToken")
             header(safCallIdHeaderName, callId)
@@ -74,6 +74,15 @@ class SafConsumer(
                     journalpostId = journalpostId,
                     dokumentinfoId = dokumentinfoId,
                     sensitiveMessage = "Fant ikke dokument hos SAF for url ${response.request.url}"
+                )
+            } else if (response.status == HttpStatusCode.Forbidden) {
+                val requestedVariant = if (erSladdet) "SLADDET" else "ARKIV"
+
+                throw DocumentFormatNotAvailableException(
+                    "Dokumentet hos SAF kan ikke vises med variant [$requestedVariant]",
+                    journalpostId = journalpostId,
+                    dokumentinfoId = dokumentinfoId,
+                    requestedVariant = requestedVariant
                 )
             } else if (!response.status.isSuccess()) {
                 throw CommunicationException("Klarte ikke å hente dokument fra SAF. Http-status [${response.status}]")

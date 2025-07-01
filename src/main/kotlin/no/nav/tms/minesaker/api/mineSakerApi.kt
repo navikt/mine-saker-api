@@ -90,6 +90,12 @@ fun Application.mineSakerApi(
                     call.respond(HttpStatusCode.NotFound)
                 }
 
+                is DocumentFormatNotAvailableException -> {
+                    log.warn { "Dokument kan ikke vises i forespurt format." }
+                    secureLog.warn(cause) { "Dokument { journalpostId: ${cause.journalpostId}, dokumentinfoId: ${cause.dokumentinfoId} } kunne ikke vises i variant [${cause.requestedVariant}]." }
+                    call.respond(HttpStatusCode.Forbidden)
+                }
+
                 is UgyldigFullmaktException -> {
                     log.warn { "Bruker forsøkte å sette ugyldig fullmakt." }
                     secureLog.warn(cause) { "Bruker forsøkte å sette ugyldig fullmakt. Bruker ${cause.fullmektig} er ikke representant for ${cause.giver}" }

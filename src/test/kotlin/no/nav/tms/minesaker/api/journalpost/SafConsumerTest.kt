@@ -162,7 +162,7 @@ internal class SafConsumerTest {
         val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
         runBlocking {
-            consumer.hentDokument("123", "456", dummyToken) {
+            consumer.hentDokument("123", "456", false, dummyToken) {
                 it.size shouldBe dummyBinaryDataResponse.size
 
                 it.receiveBody() shouldBe dummyBinaryDataResponse
@@ -180,7 +180,7 @@ internal class SafConsumerTest {
 
         val result = runCatching {
             runBlocking {
-                consumer.hentDokument("123", "456", dummyToken) {}
+                consumer.hentDokument("123", "456", false, dummyToken) {}
             }
         }
 
@@ -199,7 +199,7 @@ internal class SafConsumerTest {
 
         val result = runCatching {
             runBlocking {
-                consumer.hentDokument("123", "456", dummyToken) {}
+                consumer.hentDokument("123", "456", false, dummyToken) {}
             }
         }
 
@@ -223,7 +223,7 @@ internal class SafConsumerTest {
         val consumer = SafConsumer(mockHttpClient, safEndpoint = safDummyEndpoint)
 
         runBlocking {
-            consumer.hentDokument("123", "456", dummyToken) {
+            consumer.hentDokument("123", "456", false, dummyToken) {
                 it.size shouldBe dummyBinaryDataResponse.size
                 it.contentType shouldBe ContentType.Application.Json
                 it.receiveBody() shouldBe dummyBinaryDataResponse
