@@ -98,6 +98,7 @@ private fun dokumenter(dokumenter: List<DokumentInfo?>?): List<DokumentHeader> {
                         filtype = variant.filtype,
                         filstorrelse = variant.filstorrelse,
                         brukerHarTilgang = variant.brukerHarTilgang,
+                        sladdetVisning = variant.variantformat == Variantformat.SLADDET,
                         tilgangssperre = if (variant.brukerHarTilgang) {
                             null
                         } else {

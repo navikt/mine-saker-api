@@ -31,7 +31,7 @@ internal class ExceptionApiTest {
 
         val safconsumerMockk = mockk<SafConsumer>().also {
             coEvery {
-                it.hentDokument(any(), any(), any(), any())
+                it.hentDokument(any(), any(), any(), any(), any())
             } returns Unit
         }
 
@@ -56,7 +56,7 @@ internal class ExceptionApiTest {
         }
 
         clearMocks(safconsumerMockk)
-        coEvery { safconsumerMockk.hentDokument(any(), any(), any(), any()) } throws DocumentNotFoundException("", "123", "456")
+        coEvery { safconsumerMockk.hentDokument(any(), any(), any(), any(), any()) } throws DocumentNotFoundException("", "123", "456")
 
         client.get("/dokument/gghh11/hfajskk").apply {
             status shouldBe HttpStatusCode.NotFound

@@ -18,11 +18,12 @@ class SafService(
         user: IdportenUser,
         journapostId: String,
         dokumentinfoId: String,
+        erSladdet: Boolean,
         receiver: suspend (DokumentStream) -> Unit
     ) {
         log.info { "Henter dokument $dokumentinfoId fra journalposten $journapostId" }
         val exchangedToken = tokendingsExchange.safToken(user.tokenString)
-        safConsumer.hentDokument(journapostId, dokumentinfoId, exchangedToken, receiver)
+        safConsumer.hentDokument(journapostId, dokumentinfoId, erSladdet, exchangedToken, receiver)
     }
 
     suspend fun alleJournalposter(user: UserPrincipal, representert: String?): List<Journalpost> =

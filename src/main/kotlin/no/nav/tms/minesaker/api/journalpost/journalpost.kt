@@ -33,6 +33,7 @@ data class DokumentHeader(
     val filtype: String,
     val filstorrelse: Int,
     val brukerHarTilgang: Boolean,
+    val sladdetVisning: Boolean,
     val tilgangssperre: Tilgangssperre?
 ) {
     companion object {
@@ -42,6 +43,7 @@ data class DokumentHeader(
             filtype = "",
             filstorrelse = 0,
             brukerHarTilgang = true,
+            sladdetVisning = false,
             tilgangssperre = null
         )
     }

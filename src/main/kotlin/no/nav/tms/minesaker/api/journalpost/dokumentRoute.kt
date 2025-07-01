@@ -19,7 +19,8 @@ fun Route.dokumentRoute(service: SafService) {
         service.hentDokumentStream(
             idportenUser,
             call.journalpostId(),
-            call.dokumentInfoId()
+            call.dokumentInfoId(),
+            call.sladdetDokument(),
         ) { stream ->
 
             call.respondBytesWriter(
@@ -58,3 +59,8 @@ private fun ApplicationCall.dokumentInfoId(): String = parameters[dokumentIdPara
     }
     ?: throw InvalidRequestException("Kallet kan ikke utføres uten at '$dokumentIdParameterName' er spesifisert.")
 
+private fun ApplicationCall.sladdetDokument(): Boolean = try {
+    request.queryParameters["sladdet"]?.toBoolean() ?: false
+} catch (e: Exception) {
+    throw InvalidRequestException("Ugyldig verdi for parameter 'sladdet'")
+}
