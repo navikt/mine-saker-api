@@ -58,6 +58,13 @@ class DocumentNotFoundException(
     sensitiveMessage: String? = null
 ) : MineSakerException(message, cause, sensitiveMessage)
 
+class DocumentFormatNotAvailableException(
+    message: String,
+    val journalpostId: String,
+    val dokumentinfoId: String,
+    val requestedVariant: String,
+) : MineSakerException(message)
+
 class InvalidRequestException(message: String, cause: Throwable? = null, sensitiveMessage: String? = null) :
     MineSakerException(message, cause, sensitiveMessage)
 
