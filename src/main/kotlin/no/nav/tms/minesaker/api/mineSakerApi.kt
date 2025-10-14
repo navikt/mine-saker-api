@@ -62,9 +62,10 @@ fun Application.mineSakerApi(
                     }
                 }
 
-                is FileStreamingException -> {
+                is PrematureClientCloseException -> {
                     log.warn { cause.describe() }
                     secureLog.warn(cause) { cause.describe() }
+                    call.respond(HttpStatusCode.NoContent)
                 }
 
                 is CommunicationException -> {

@@ -22,14 +22,14 @@ open class MineSakerException(message: String, cause: Throwable?, val sensitiveM
     }
 }
 
-class FileStreamingException(
+class PrematureClientCloseException(
     cause: Throwable,
     private val journalpostId: String,
     private val dokumentId: String,
     private val fileType: String,
     private val fileSize: Long
 ) : RuntimeException(cause) {
-    fun describe() = "Feil ved streaming av dokument til bruker [journalpostId: $journalpostId, dokumentId: $dokumentId, filtype: $fileType, størrelse: ${formatBytes(fileSize)}]"
+    fun describe() = "Streaming av dokument til bruker avbrutt [journalpostId: $journalpostId, dokumentId: $dokumentId, filtype: $fileType, størrelse: ${formatBytes(fileSize)}]"
 
     private fun formatBytes(bytes: Long) = when(bytes) {
         in 0 until KILOBYTE -> "$bytes bytes"

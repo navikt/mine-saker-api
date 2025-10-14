@@ -98,7 +98,7 @@ class SafConsumer(
                 }
             } catch (e: ChannelWriteException) {
 
-                throw FileStreamingException(
+                throw PrematureClientCloseException(
                     cause = e,
                     journalpostId = journalpostId,
                     dokumentId = dokumentinfoId,
