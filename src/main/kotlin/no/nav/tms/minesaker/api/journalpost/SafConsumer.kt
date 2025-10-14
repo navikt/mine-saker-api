@@ -113,25 +113,25 @@ class SafConsumer(
         }
     }
 
-    private suspend fun sendQuery(request: GraphQLRequest, accessToken: String): HttpResponse =
-        withContext(Dispatchers.IO) {
-            val callId = UUID.randomUUID()
-            log.info { "Sender graphql-spørring med correlationId=$callId" }
-            httpClient.post {
-                url("$safEndpoint/graphql")
-                method = HttpMethod.Post
-                header(safCallIdHeaderName, callId)
-                header(Authorization, "Bearer $accessToken")
-                contentType(ContentType.Application.Json)
-                accept(ContentType.Application.Json)
-                setBody(request)
-                timeout {
-                    socketTimeoutMillis = 25000
-                    connectTimeoutMillis = 10000
-                    requestTimeoutMillis = 35000
-                }
+    private suspend fun sendQuery(request: GraphQLRequest, accessToken: String): HttpResponse {
+        val callId = UUID.randomUUID()
+        log.info { "Sender graphql-spørring med correlationId=$callId" }
+
+        return httpClient.post {
+            url("$safEndpoint/graphql")
+            method = HttpMethod.Post
+            header(safCallIdHeaderName, callId)
+            header(Authorization, "Bearer $accessToken")
+            contentType(ContentType.Application.Json)
+            accept(ContentType.Application.Json)
+            setBody(request)
+            timeout {
+                socketTimeoutMillis = 25000
+                connectTimeoutMillis = 10000
+                requestTimeoutMillis = 35000
             }
         }
+    }
 
     private suspend inline fun <reified T> unwrapSafResponse(response: HttpResponse): T {
         if (!response.status.isSuccess()) {
