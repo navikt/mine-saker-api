@@ -11,13 +11,9 @@ query($journalpostId : String!) {
             sakstype
         }
         avsender {
-            id
-            type
             navn
         }
         mottaker {
-            id
-            type
             navn
         }
         datoSortering

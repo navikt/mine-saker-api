@@ -6,13 +6,9 @@ query($ident : String!) {
             journalposttype
             tema
             avsender {
-                id
-                type
                 navn
             }
             mottaker {
-                id
-                type
                 navn
             }
             datoSortering

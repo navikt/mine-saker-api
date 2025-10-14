@@ -41,18 +41,14 @@ object JournalpostTestData {
 
 
     fun avsenderMottakerPerson(
-        ident: String = "123",
-        idType: AvsenderMottakerIdType = AvsenderMottakerIdType.FNR,
         navn: String = "Navn Navnesen"
     ) =
-        AvsenderMottaker(ident, idType, navn)
+        AvsenderMottaker(navn)
 
     fun avsenderMottakerOrganisasjon(
-        ident: String = "987654",
-        idType: AvsenderMottakerIdType = AvsenderMottakerIdType.ORGNR,
         navn: String = "Navn Navnesen"
     ) =
-        AvsenderMottaker(ident, idType, navn)
+        AvsenderMottaker(navn)
 
     fun listOfSakstemaer(): List<SafJournalpost> {
         return listOf(
