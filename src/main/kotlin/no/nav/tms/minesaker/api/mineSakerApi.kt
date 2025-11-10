@@ -50,7 +50,6 @@ fun Application.mineSakerApi(
     val secureLog = KotlinLogging.logger("secureLog")
 
     install(DefaultHeaders)
-    install(ApiMdc)
 
     install(StatusPages) {
         exception<Throwable> { call, cause ->
@@ -112,6 +111,8 @@ fun Application.mineSakerApi(
             }
         }
     }
+
+    install(ApiMdc)
 
     install(CORS) {
         allowHost(corsAllowedOrigins)
