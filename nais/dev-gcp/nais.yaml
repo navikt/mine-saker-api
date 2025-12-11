@@ -20,8 +20,6 @@ spec:
   prometheus:
     enabled: true
     path: /mine-saker-api/metrics
-  secureLogs:
-    enabled: true
   replicas:
     min: 2
     max: 4
@@ -47,6 +45,8 @@ spec:
           namespace: "repr"
         - application: "sosialhjelp-soknad-api"
           namespace: "teamdigisos"
+        - application: logging
+          namespace: nais-system
     inbound:
       rules:
         - application: "tms-min-side"

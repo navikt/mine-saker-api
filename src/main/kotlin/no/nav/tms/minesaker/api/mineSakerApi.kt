@@ -17,6 +17,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
+import no.nav.tms.common.logging.TeamLogs
 import no.nav.tms.common.metrics.installTmsMicrometerMetrics
 import no.nav.tms.token.support.idporten.sidecar.IdPortenLogin
 import no.nav.tms.token.support.idporten.sidecar.LevelOfAssurance
@@ -47,7 +48,7 @@ fun Application.mineSakerApi(
     authConfig: Application.() -> Unit
 ) {
     val log = KotlinLogging.logger { }
-    val secureLog = KotlinLogging.logger("secureLog")
+    val teamLog = TeamLogs.logger { }
 
     install(DefaultHeaders)
 
@@ -55,57 +56,55 @@ fun Application.mineSakerApi(
         exception<Throwable> { call, cause ->
             when (cause) {
                 is InvalidRequestException -> {
-                    call.respond(HttpStatusCode.BadRequest, cause.message ?: "Ukjent feil i request")
-                    cause.sensitiveMessage?.let {
-                        secureLog.error { it }
-                    }
+                    call.respond(HttpStatusCode.BadRequest, cause.message!!)
+                    log.warn { "Feil i request: ${cause.message}" }
                 }
 
                 is PrematureClientCloseException -> {
                     log.warn { cause.describe() }
-                    secureLog.warn(cause) { cause.describe() }
+                    teamLog.warn(cause) { cause.describe() }
                     call.respond(HttpStatusCode.NoContent)
                 }
 
                 is CommunicationException -> {
                     log.error { "Kommunikasjonsfeil mot SAF eller Digisos." }
-                    secureLog.error(cause) { "Kommunikasjonsfeil mot SAF eller Digisos." }
+                    teamLog.error(cause) { "Kommunikasjonsfeil mot SAF eller Digisos." }
                     call.respond(HttpStatusCode.ServiceUnavailable)
                 }
 
                 is SafResultException -> {
                     log.warn { "Feil i resultat fra SAF." }
-                    secureLog.warn(cause) {
+                    teamLog.warn(cause) {
                         "Feil i graphql resultat for kall til ${call.request.uri}: \n${
                             cause.errors?.joinToString("\n") { it.message }
                         }"
                     }
-                    resetFullmaktSession(call, fullmaktSessionStore, log, secureLog)
+                    resetFullmaktSession(call, fullmaktSessionStore, log, teamLog)
                     call.respond(HttpStatusCode.InternalServerError)
                 }
 
                 is DocumentNotFoundException -> {
                     log.warn { "Dokument ikke funnet." }
-                    secureLog.warn(cause) { "Dokument { journalpostId: ${cause.journalpostId}, dokumentinfoId: ${cause.dokumentinfoId} } ikke funnet." }
+                    teamLog.warn(cause) { "Dokument { journalpostId: ${cause.journalpostId}, dokumentinfoId: ${cause.dokumentinfoId} } ikke funnet." }
                     call.respond(HttpStatusCode.NotFound)
                 }
 
                 is DocumentFormatNotAvailableException -> {
                     log.warn { "Dokument kan ikke vises i forespurt format." }
-                    secureLog.warn(cause) { "Dokument { journalpostId: ${cause.journalpostId}, dokumentinfoId: ${cause.dokumentinfoId} } kunne ikke vises i variant [${cause.requestedVariant}]." }
+                    teamLog.warn(cause) { "Dokument { journalpostId: ${cause.journalpostId}, dokumentinfoId: ${cause.dokumentinfoId} } kunne ikke vises i variant [${cause.requestedVariant}]." }
                     call.respond(HttpStatusCode.Forbidden)
                 }
 
                 is UgyldigFullmaktException -> {
                     log.warn { "Bruker forsøkte å sette ugyldig fullmakt." }
-                    secureLog.warn(cause) { "Bruker forsøkte å sette ugyldig fullmakt. Bruker ${cause.fullmektig} er ikke representant for ${cause.giver}" }
+                    teamLog.warn(cause) { "Bruker forsøkte å sette ugyldig fullmakt. Bruker ${cause.fullmektig} er ikke representant for ${cause.giver}" }
 
                     call.respond(HttpStatusCode.Forbidden)
                 }
 
                 else -> {
                     log.error { "Kall til ${call.request.uri}" }
-                    secureLog.error(cause) { "Kall til ${call.request.uri} feiler." }
+                    teamLog.error(cause) { "Kall til ${call.request.uri} feiler." }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
             }
@@ -163,7 +162,7 @@ private suspend fun resetFullmaktSession(
     call: ApplicationCall,
     fullmaktSessionStore: FullmaktSessionStore,
     log: KLogger,
-    secureLog: KLogger
+    teamLog: KLogger
 ) = try {
 
     val ident = call.user.ident
@@ -171,7 +170,7 @@ private suspend fun resetFullmaktSession(
     fullmaktSessionStore.clearFullmaktGiver(ident)
 } catch (e: Exception) {
     log.error { "Klarte ikke nullstille fullmakt-sesjon." }
-    secureLog.error(e) { "Klarte ikke nullstille fullmakt-sesjon." }
+    teamLog.error(e) { "Klarte ikke nullstille fullmakt-sesjon." }
 }
 
 fun authConfig(): Application.() -> Unit = {

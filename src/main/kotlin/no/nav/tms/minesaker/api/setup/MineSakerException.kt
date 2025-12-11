@@ -65,8 +65,8 @@ class DocumentFormatNotAvailableException(
     val requestedVariant: String,
 ) : MineSakerException(message)
 
-class InvalidRequestException(message: String, cause: Throwable? = null, sensitiveMessage: String? = null) :
-    MineSakerException(message, cause, sensitiveMessage)
+class InvalidRequestException(message: String, cause: Throwable? = null) :
+    MineSakerException(message, cause, null)
 
 class SafResultException(
     message: String,
