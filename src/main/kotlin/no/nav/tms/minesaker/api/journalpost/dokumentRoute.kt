@@ -52,8 +52,7 @@ private fun ApplicationCall.dokumentInfoId(): String = parameters[dokumentIdPara
     ?.let {
         if (it == "-")
             throw InvalidRequestException(
-                message = "Forsøkte å hente info for ugyldig dokumment-id",
-                sensitiveMessage = "Forsøkte å hente info for ugyldig dokuemnt-id"
+                message = "Forsøkte å hente info for ugyldig dokumment-id"
             )
         else it
     }

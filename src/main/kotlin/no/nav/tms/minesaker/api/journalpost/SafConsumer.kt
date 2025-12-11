@@ -13,6 +13,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.util.cio.*
 import io.ktor.utils.io.*
 import no.nav.dokument.saf.selvbetjening.generated.dto.*
+import no.nav.tms.common.logging.TeamLogs
 import no.nav.tms.minesaker.api.journalpost.query.*
 import no.nav.tms.minesaker.api.setup.*
 import java.net.URL
@@ -24,7 +25,7 @@ class SafConsumer(
 ) {
 
     private val log = KotlinLogging.logger {}
-    private val secureLog = KotlinLogging.logger("secureLog")
+    private val teamLog = TeamLogs.logger { }
 
     private val safCallIdHeaderName = "Nav-Callid"
     private val navConsumerIdHeaderName = "Nav-Consumer-Id"
@@ -106,7 +107,7 @@ class SafConsumer(
                     fileSize = response.contentLength() ?: 0
                 )
             } catch (e: Exception) {
-                secureLog.error(e) { "Feil ved streaming av dokument fra SAF [journalpostId: $journalpostId, type: ${response.contentType()}, størrelse: ${response.contentLength()}]" }
+                teamLog.error(e) { "Feil ved streaming av dokument fra SAF [journalpostId: $journalpostId, type: ${response.contentType()}, størrelse: ${response.contentLength()}]" }
                 throw CommunicationException("Klarte ikke å lese dokument fra SAF.", e)
             }
         }
@@ -152,7 +153,7 @@ class SafConsumer(
                 if (it.containsData() && it.containsErrors()) {
                     val baseMsg = "Resultatet inneholdt data og feil, dataene returneres til bruker."
                     log.warn { baseMsg }
-                    secureLog.warn {
+                    teamLog.warn {
                         "$baseMsg Feilene var errors: ${it.errors}, extensions: ${it.extensions}"
                     }
                 }

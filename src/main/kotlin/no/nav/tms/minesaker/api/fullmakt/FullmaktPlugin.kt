@@ -5,6 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 import io.ktor.util.*
+import no.nav.tms.common.logging.TeamLogs
 import no.nav.tms.token.support.idporten.sidecar.IdPortenTokenPrincipal
 
 fun Route.enableFullmakt(
@@ -40,7 +41,7 @@ private val FullmaktInterceptor = createRouteScopedPlugin(name = "fullmakt-inter
     val sessionStore = config.sessionStore
 
     val log = KotlinLogging.logger { }
-    val secureLog = KotlinLogging.logger("secureLog")
+    val teamLog = TeamLogs.logger { }
 
     on(AuthenticationChecked) { call ->
 
@@ -53,7 +54,7 @@ private val FullmaktInterceptor = createRouteScopedPlugin(name = "fullmakt-inter
                     ?.let { fullmaktGiver -> call.attributes.put(FullmaktAttribute, fullmaktGiver) }
             } catch (e: Exception) {
                 log.warn { "Feil mot fullmakt-sessionstore." }
-                secureLog.warn(e) { "Feil mot fullmakt-sessionstore." }
+                teamLog.warn(e) { "Feil mot fullmakt-sessionstore." }
             }
         }
     }
