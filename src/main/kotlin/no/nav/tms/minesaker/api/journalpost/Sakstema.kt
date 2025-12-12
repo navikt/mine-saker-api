@@ -67,12 +67,16 @@ enum class Sakstema(val navn: String) {
     PAI("Innsyn"),
     POI("Innsyn etter personopplysningsloven"),
 
+    // Nye per 2025.11.24
+    OLJ("Oljepionerene"),
+
     // Listen under skal ikke vises til brukere
     FAR("Foreldreskap"),
     KTR("Kontroll"),
     KTA("Kontroll – anmeldelse"),
     ARS("Arbeidsrådgivning – skjermet"),
     ARP("Arbeidsrådgivning – psykologtester"),
+    BBF("Barnebortføring"),
 
     // Brukes der mapping mangler. Indikerer at filen må oppdateres
     Ukjent("Ukjent");
