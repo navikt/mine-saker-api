@@ -52,6 +52,7 @@ dependencies {
     implementation(TmsCommonLib.teamLogger)
     implementation(TmsKtorTokenSupport.idportenSidecar)
     implementation(TmsKtorTokenSupport.tokendingsExchange)
+    implementation(TmsKtorTokenSupport.azureExchange)
     implementation(TmsKtorTokenSupport.tokenXValidation)
 
     testImplementation(JunitPlatform.launcher)

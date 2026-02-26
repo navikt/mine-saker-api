@@ -16,6 +16,7 @@ import io.ktor.server.response.respond
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.*
 import io.ktor.server.auth.*
+import io.ktor.server.response.respondText
 import io.ktor.server.routing.*
 import no.nav.tms.common.logging.TeamLogs
 import no.nav.tms.common.metrics.installTmsMicrometerMetrics
@@ -31,7 +32,9 @@ import no.nav.tms.minesaker.api.journalpost.SafService
 import no.nav.tms.minesaker.api.journalpost.dokumentRoute
 import no.nav.tms.minesaker.api.journalpost.journalpostRoutes
 import no.nav.tms.minesaker.api.setup.*
+import no.nav.tms.token.support.azure.exchange.AzureServiceBuilder
 import no.nav.tms.token.support.idporten.sidecar.IdPortenTokenPrincipal
+import no.nav.tms.token.support.tokendings.exchange.TokendingsServiceBuilder
 import no.nav.tms.token.support.tokenx.validation.TokenXAuthenticator
 import no.nav.tms.token.support.tokenx.validation.TokenXPrincipal
 import no.nav.tms.token.support.tokenx.validation.tokenX
@@ -139,6 +142,8 @@ fun Application.mineSakerApi(
     routing {
         healthApi()
 
+        debug()
+
         authenticate {
             digiSosRoute(digiSosConsumer)
             fullmaktApi(fullmaktService, fullmaktSessionStore)
@@ -156,6 +161,27 @@ fun Application.mineSakerApi(
     }
 
     configureShutdownHook(httpClient)
+}
+
+private fun Route.debug() {
+    val tokendingsService = TokendingsServiceBuilder.buildTokendingsService()
+    val azureService = AzureServiceBuilder.buildAzureService()
+
+    route("/debug") {
+        authenticate {
+            get("/idporten") {
+                call.respondText(idportenUser.tokenString)
+            }
+
+            get("/tokenx") {
+                call.respondText(tokendingsService.exchangeToken(idportenUser.tokenString, "dev-fss:teamdokumenthandtering:safselvbetjening"))
+            }
+        }
+
+        get("/azure") {
+            call.respondText(azureService.getAccessToken("dev-fss.teamdokumenthandtering.safselvbetjening"))
+        }
+    }
 }
 
 private suspend fun resetFullmaktSession(
