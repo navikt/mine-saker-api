@@ -27,3 +27,7 @@ object Valkey: DependencyGroup {
 
     val java = dependency("valkey-java")
 }
+
+object TmsCommonLibBeta: TmsCommonLibDefaults {
+    override val version get() = "5.3.0-observability-beta2"
+}

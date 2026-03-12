@@ -24,6 +24,7 @@ import no.nav.tms.token.support.idporten.sidecar.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.idPorten
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUserFactory
 import no.nav.tms.common.observability.ApiMdc
+import no.nav.tms.common.observability.Domain
 import no.nav.tms.minesaker.api.fullmakt.*
 import no.nav.tms.minesaker.api.innsendte.DigiSosConsumer
 import no.nav.tms.minesaker.api.innsendte.digiSosRoute
@@ -50,6 +51,9 @@ fun Application.mineSakerApi(
     val log = KotlinLogging.logger { }
     val teamLog = TeamLogs.logger { }
 
+    install(ApiMdc){
+        applicationDomain= Domain.custom("dokumenter")
+    }
     install(DefaultHeaders)
 
     install(StatusPages) {
@@ -111,7 +115,6 @@ fun Application.mineSakerApi(
         }
     }
 
-    install(ApiMdc)
 
     install(CORS) {
         allowHost(corsAllowedOrigins)

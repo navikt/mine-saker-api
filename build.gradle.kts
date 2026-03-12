@@ -48,7 +48,7 @@ dependencies {
     implementation(Valkey.java)
     implementation(TmsCommonLib.metrics)
     implementation(TmsCommonLib.utils)
-    implementation(TmsCommonLib.observability)
+    implementation(TmsCommonLibBeta.observability)
     implementation(TmsCommonLib.teamLogger)
     implementation(TmsKtorTokenSupport.idportenSidecar)
     implementation(TmsKtorTokenSupport.tokendingsExchange)
