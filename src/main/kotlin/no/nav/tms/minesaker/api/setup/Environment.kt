@@ -24,5 +24,5 @@ fun createUrl(uri: String): URL = URI.create(uri).toURL()
 object MdcDomains{
     val safDomain= Domain.custom("saf-request")
     val digiSosDomain = Domain.custom("digisos-request")
-    val pdlDomain= Domain.custom("pdl-request")
+    val fullmaktDomain= Domain.custom("representasjon")
 }

@@ -7,10 +7,10 @@ import io.ktor.server.routing.*
 import io.ktor.server.request.receive
 import no.nav.tms.common.observability.mdcDomain
 import no.nav.tms.minesaker.api.idportenUser
-import no.nav.tms.minesaker.api.setup.MdcDomains.pdlDomain
+import no.nav.tms.minesaker.api.setup.MdcDomains.fullmaktDomain
 
 fun Route.fullmaktApi(fullmaktService: FullmaktService, sessionStore: FullmaktSessionStore) {
-    mdcDomain = pdlDomain
+    mdcDomain = fullmaktDomain
     enableFullmakt {
         get("/fullmakt/info") {
             val fullmaktGiver = fullmaktGiver
