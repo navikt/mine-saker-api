@@ -7,14 +7,14 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.utils.io.*
+import no.nav.tms.common.observability.mdcDomain
 import no.nav.tms.minesaker.api.setup.InvalidRequestException
-import no.nav.tms.minesaker.api.fullmakt.FullmaktAttribute
-import no.nav.tms.minesaker.api.fullmakt.enableFullmakt
+import no.nav.tms.minesaker.api.setup.MdcDomains.safDomain
 
 private const val dokumentIdParameterName = "dokumentId"
 
 fun Route.dokumentRoute(service: SafService) {
-
+    mdcDomain = safDomain
     get("/dokument/{$journalpostIdParameterName}/{$dokumentIdParameterName}") {
         service.hentDokumentStream(
             idportenUser,

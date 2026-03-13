@@ -4,12 +4,15 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import no.nav.tms.common.logging.TeamLogs
+import no.nav.tms.common.observability.mdcDomain
 import no.nav.tms.minesaker.api.idportenUser
+import no.nav.tms.minesaker.api.setup.MdcDomains.digiSosDomain
 
 fun Route.digiSosRoute(digiSosConsumer: DigiSosConsumer) {
 
     val log = KotlinLogging.logger { }
     val teamLog = TeamLogs.logger { }
+    mdcDomain = digiSosDomain
 
     get("/v2/sosialhjelp/har_innsendte") {
         val harInnsendte = try {

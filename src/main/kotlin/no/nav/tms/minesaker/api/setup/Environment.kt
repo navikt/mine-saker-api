@@ -1,5 +1,6 @@
 package no.nav.tms.minesaker.api.setup
 
+import no.nav.tms.common.observability.Domain
 import no.nav.tms.common.util.config.StringEnvVar.getEnvVar
 import java.net.URI
 import java.net.URL
@@ -19,3 +20,9 @@ data class Environment(
 )
 
 fun createUrl(uri: String): URL = URI.create(uri).toURL()
+
+object MdcDomains{
+    val safDomain= Domain.custom("saf-request")
+    val digiSosDomain = Domain.custom("digisos-request")
+    val pdlDomain= Domain.custom("pdl-request")
+}

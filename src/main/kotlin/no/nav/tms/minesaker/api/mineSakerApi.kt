@@ -19,11 +19,12 @@ import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 import no.nav.tms.common.logging.TeamLogs
 import no.nav.tms.common.metrics.installTmsMicrometerMetrics
+import no.nav.tms.common.observability.ApiMdc
+import no.nav.tms.common.observability.Domain
 import no.nav.tms.token.support.idporten.sidecar.IdPortenLogin
 import no.nav.tms.token.support.idporten.sidecar.LevelOfAssurance
 import no.nav.tms.token.support.idporten.sidecar.idPorten
 import no.nav.tms.token.support.idporten.sidecar.user.IdportenUserFactory
-import no.nav.tms.common.observability.ApiMdc
 import no.nav.tms.minesaker.api.fullmakt.*
 import no.nav.tms.minesaker.api.innsendte.DigiSosConsumer
 import no.nav.tms.minesaker.api.innsendte.digiSosRoute
@@ -36,7 +37,6 @@ import no.nav.tms.token.support.tokenx.validation.TokenXAuthenticator
 import no.nav.tms.token.support.tokenx.validation.TokenXPrincipal
 import no.nav.tms.token.support.tokenx.validation.tokenX
 import no.nav.tms.token.support.tokenx.validation.user.TokenXUserFactory
-
 
 fun Application.mineSakerApi(
     safService: SafService,
@@ -51,6 +51,9 @@ fun Application.mineSakerApi(
     val teamLog = TeamLogs.logger { }
 
     install(DefaultHeaders)
+    install(ApiMdc){
+        applicationDomain= Domain.custom("dokumenter")
+    }
 
     install(StatusPages) {
         exception<Throwable> { call, cause ->
@@ -110,8 +113,6 @@ fun Application.mineSakerApi(
             }
         }
     }
-
-    install(ApiMdc)
 
     install(CORS) {
         allowHost(corsAllowedOrigins)
