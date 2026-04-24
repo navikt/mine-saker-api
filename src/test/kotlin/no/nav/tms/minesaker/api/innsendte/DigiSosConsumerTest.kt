@@ -19,9 +19,9 @@ import kotlinx.coroutines.runBlocking
 import no.nav.tms.minesaker.api.setup.jsonConfig
 
 import no.nav.tms.minesaker.api.setup.CommunicationException
-import no.nav.tms.minesaker.api.setup.TokendingsExchange
+import no.nav.tms.minesaker.api.setup.TokenExchanger
 import no.nav.tms.minesaker.api.setup.createUrl
-import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
+import no.nav.tms.token.support.user.token.verification.UserPrincipal
 import org.junit.jupiter.api.Test
 
 import java.time.LocalDateTime
@@ -35,11 +35,11 @@ internal class DigiSosConsumerTest {
     }
     private val digiSosEndpoint = createUrl("https://dummy")
     private val userToken = "<original>"
-    private val user: IdportenUser = mockk<IdportenUser>().also {
-        every { it.tokenString } returns userToken
+    private val user: UserPrincipal = mockk<UserPrincipal>().also {
+        every { it.accessToken } returns userToken
     }
 
-    private val tokendingsExchange = mockk<TokendingsExchange>().also {
+    private val tokenExchanger = mockk<TokenExchanger>().also {
         coEvery { it.digisosToken(userToken) } returns "<exchanged>"
     }
 
@@ -54,7 +54,7 @@ internal class DigiSosConsumerTest {
             )
         })
 
-        val consumer = DigiSosConsumer(mockHttpClient, tokendingsExchange, digiSosEndpoint)
+        val consumer = DigiSosConsumer(mockHttpClient, tokenExchanger, digiSosEndpoint)
 
         val harInnsendte = runBlocking {
             consumer.harInnsendte(user)
@@ -66,7 +66,7 @@ internal class DigiSosConsumerTest {
     fun `returnerer false hvis bruker ikke har innsendte søknader`() {
         val mockHttpClient = createMockHttpClient()
 
-        val consumer = DigiSosConsumer(mockHttpClient, tokendingsExchange, digiSosEndpoint)
+        val consumer = DigiSosConsumer(mockHttpClient, tokenExchanger, digiSosEndpoint)
 
         val harInnsendte = runBlocking {
             consumer.harInnsendte(user)
@@ -84,7 +84,7 @@ internal class DigiSosConsumerTest {
                 headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             )
         }
-        val consumer = DigiSosConsumer(mockHttpClient, tokendingsExchange, digiSosEndpoint)
+        val consumer = DigiSosConsumer(mockHttpClient, tokenExchanger, digiSosEndpoint)
 
         shouldThrow<CommunicationException> {
             runBlocking {

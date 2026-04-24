@@ -9,15 +9,15 @@ import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import no.nav.tms.common.logging.TeamLogs
-import no.nav.tms.minesaker.api.setup.TokendingsExchange
-import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
+import no.nav.tms.minesaker.api.setup.TokenExchanger
+import no.nav.tms.token.support.user.token.verification.UserPrincipal
 import java.time.Duration
 
 class NavnFetcher(
     private val client: HttpClient,
     private val pdlUrl: String,
     private val pdlBehandlingsnummer: String,
-    private val tokendingsExchange: TokendingsExchange
+    private val tokenExchanger: TokenExchanger
 ) {
 
     private val cache = Caffeine.newBuilder()
@@ -28,14 +28,14 @@ class NavnFetcher(
     private val log = KotlinLogging.logger {}
     private val teamLog = TeamLogs.logger { }
 
-    fun getNavn(user: IdportenUser): String {
+    fun getNavn(user: UserPrincipal): String {
         return cache.get(user.ident) {
             fetchNavn(user)
         }
     }
 
-    private fun fetchNavn(user: IdportenUser): String = runBlocking(Dispatchers.IO) {
-        tokendingsExchange.pdlApiToken(user.tokenString)
+    private fun fetchNavn(user: UserPrincipal): String = runBlocking(Dispatchers.IO) {
+        tokenExchanger.pdlApiToken(user.accessToken)
             .let { token -> queryForNavn(user.ident, token) }
             .let { response -> checkForErrors(response) }
             .hentPerson.fullnavn

@@ -1,28 +1,27 @@
 package no.nav.tms.minesaker.api.journalpost
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.tms.minesaker.api.UserPrincipal
 import no.nav.tms.minesaker.api.journalpost.query.AlleJournalposterRequest
 import no.nav.tms.minesaker.api.journalpost.query.HentJournalpostV2Request
-import no.nav.tms.minesaker.api.setup.TokendingsExchange
-import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
+import no.nav.tms.minesaker.api.setup.TokenExchanger
+import no.nav.tms.token.support.user.token.verification.UserPrincipal
 
 class SafService(
     private val safConsumer: SafConsumer,
-    private val tokendingsExchange: TokendingsExchange
+    private val tokenExchanger: TokenExchanger
 ) {
 
     private val log = KotlinLogging.logger { }
 
     suspend fun hentDokumentStream(
-        user: IdportenUser,
+        user: UserPrincipal,
         journapostId: String,
         dokumentinfoId: String,
         erSladdet: Boolean,
         receiver: suspend (DokumentStream) -> Unit
     ) {
         log.info { "Henter dokument $dokumentinfoId fra journalposten $journapostId" }
-        val exchangedToken = tokendingsExchange.safToken(user.tokenString)
+        val exchangedToken = tokenExchanger.safToken(user.accessToken)
         safConsumer.hentDokument(journapostId, dokumentinfoId, erSladdet, exchangedToken, receiver)
     }
 
@@ -32,14 +31,14 @@ class SafService(
 
             safConsumer.alleJournalposter(
                 request = AlleJournalposterRequest.create(representert),
-                accessToken = tokendingsExchange.safToken(user.accessToken)
+                accessToken = tokenExchanger.safToken(user.accessToken)
             )
         } else {
             log.info { "Henter alle journalposter for bruker fra SAF" }
 
             safConsumer.alleJournalposter(
                 request = AlleJournalposterRequest.create(user.ident),
-                accessToken = tokendingsExchange.safToken(user.accessToken)
+                accessToken = tokenExchanger.safToken(user.accessToken)
             )
         }
 
@@ -52,7 +51,7 @@ class SafService(
 
         return safConsumer.hentJournalpost(
             request = HentJournalpostV2Request.create(journapostId),
-            accessToken = tokendingsExchange.safToken(user.accessToken)
+            accessToken = tokenExchanger.safToken(user.accessToken)
         )
     }
 
@@ -60,7 +59,7 @@ class SafService(
 
         val journalposter = safConsumer.alleJournalposter(
             request = AlleJournalposterRequest.create(user.ident),
-            accessToken = tokendingsExchange.safToken(user.accessToken)
+            accessToken = tokenExchanger.safToken(user.accessToken)
         ).sortedByDescending { it.sorteringsdato }
             .map {
                 ForenkletJournalpost(

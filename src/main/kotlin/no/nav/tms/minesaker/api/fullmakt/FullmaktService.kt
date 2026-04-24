@@ -1,24 +1,24 @@
 package no.nav.tms.minesaker.api.fullmakt
 
-import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
+import no.nav.tms.token.support.user.token.verification.UserPrincipal
 
 class FullmaktService(
     private val fullmaktConsumer: FullmaktConsumer,
     private val navnFetcher: NavnFetcher
 ) {
-    suspend fun getFullmaktForhold(user: IdportenUser) =
+    suspend fun getFullmaktForhold(user: UserPrincipal) =
         FullmaktForhold(
             navn = navnFetcher.getNavn(user),
             ident = user.ident,
             fullmaktsGivere = fullmaktConsumer.getFullmaktsGivere(user)
         )
 
-    suspend fun validateFullmaktsGiver(user: IdportenUser, giverIdent: String) =
+    suspend fun validateFullmaktsGiver(user: UserPrincipal, giverIdent: String) =
         fullmaktConsumer.getFullmaktsGivere(user)
             .find { it.ident == giverIdent }
             ?: throw UgyldigFullmaktException("Manglende forhold", giver = giverIdent, fullmektig = user.ident)
 
-    suspend fun token(user: IdportenUser) = fullmaktConsumer.token(user)
+    suspend fun token(user: UserPrincipal) = fullmaktConsumer.token(user)
 }
 
 data class FullmaktForhold(
