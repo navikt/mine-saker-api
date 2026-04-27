@@ -13,7 +13,6 @@ import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.auth.*
 import io.ktor.server.testing.*
-import io.ktor.utils.io.*
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -132,7 +131,6 @@ class FullmaktApiKtTest {
         sessionStore.getCurrentFullmaktGiver(ident).shouldBeNull()
     }
 
-    @KtorDsl
     private fun fullmaktApiTest(testBlock: suspend ApplicationTestBuilder.() -> Unit) = testApplication {
         val testClient = createClient {
             install(ContentNegotiation) {

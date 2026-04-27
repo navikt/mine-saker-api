@@ -112,7 +112,6 @@ class JournalposterFullmaktTest {
         sessionStore.getCurrentFullmaktGiver(ident) shouldBe null
     }
 
-    @KtorDsl
     private fun sakApiFullmaktTest(testBlock: suspend (HttpClient) -> Unit) = testApplication {
         val testClient = createClient {
             install(ContentNegotiation) {

@@ -213,7 +213,7 @@ interface TestContainersDefaults: DependencyGroup {
 
 interface TmsCommonLibDefaults: DependencyGroup {
     override val groupId get() = "no.nav.tms.common"
-    override val version get() = "5.3.1"
+    override val version get() = "5.3.2"
 
     val kubernetes get() = dependency("kubernetes")
     val metrics get() = dependency("metrics")
@@ -232,14 +232,13 @@ interface TmsKafkaToolsDefaults: DependencyGroup {
 
 interface TmsKtorTokenSupportDefaults: DependencyGroup {
     override val groupId get() = "no.nav.tms.token.support"
-    override val version get() = "5.0.6"
+    override val version get() = "6.0.0-alpha-3"
 
-    val azureExchange get() = dependency("azure-exchange")
-    val azureValidation get() = dependency("azure-validation")
-    val tokenXValidation get() = dependency("tokenx-validation")
-    val tokenXValidationMock get() = dependency("tokenx-validation-mock")
-    val azureValidationMock get() = dependency("azure-validation-mock")
-    val tokendingsExchange get() = dependency("tokendings-exchange")
-    val idportenSidecar get() = dependency("idporten-sidecar")
-    val idportenSidecarMock get() = dependency("idporten-sidecar-mock")
+    val entraIdTokenVerification get() = dependency("entra-id-token-verification")
+    val entraIdTokenVerificationMock get() = dependency("entra-id-token-verification-mock")
+    val entraIdTokenFetcher get() = dependency("entra-id-token-fetcher")
+    val userLoginRoutes get() = dependency("user-login-routes")
+    val userTokenVerification get() = dependency("user-token-verification")
+    val userTokenVerificationMock get() = dependency("user-token-verification-mock")
+    val userTokenExchange get() = dependency("user-token-exchange")
 }
