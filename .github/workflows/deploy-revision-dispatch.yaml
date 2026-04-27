@@ -36,6 +36,8 @@ jobs:
 
       - name: Bygg prosjekt
         run: ./gradlew assemble
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build og push docker-image
         uses: nais/docker-build-push@v0
