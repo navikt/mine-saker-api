@@ -30,7 +30,7 @@ object Valkey: DependencyGroup {
 
 object TokenSupport6: DependencyGroup {
     override val groupId = "no.nav.tms.token.support"
-    override val version = "6.0.0-alpha-1"
+    override val version = "6.0.0-alpha-2"
 
 
     val entraIdTokenVerification get() = dependency("entra-id-token-verification")
