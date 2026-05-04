@@ -53,6 +53,7 @@ dependencies {
     implementation(TmsKtorTokenSupport.userLoginRoutes)
     implementation(TmsKtorTokenSupport.userTokenVerification)
     implementation(TmsKtorTokenSupport.userTokenExchange)
+    implementation(TmsKtorTokenSupport.entraIdTokenFetcher)
 
     testImplementation(JunitPlatform.launcher)
     testImplementation(JunitJupiter.api)

@@ -51,6 +51,7 @@ spec:
           namespace: "teamdigisos"
         - application: logging
           namespace: nais-system
+        - application: tms-azure-test-dummy
     inbound:
       rules:
         - application: "tms-min-side"

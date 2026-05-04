@@ -14,6 +14,8 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.uri
 import io.ktor.server.response.respond
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
@@ -27,6 +29,7 @@ import no.nav.tms.minesaker.api.journalpost.SafService
 import no.nav.tms.minesaker.api.journalpost.dokumentRoute
 import no.nav.tms.minesaker.api.journalpost.journalpostRoutes
 import no.nav.tms.minesaker.api.setup.*
+import no.nav.tms.token.support.entraid.token.fetcher.EntraIdTokenFetcherBuilder
 import no.nav.tms.token.support.user.login.routes.UserLoginRoutes
 import no.nav.tms.token.support.user.token.verification.LevelOfAssurance
 import no.nav.tms.token.support.user.token.verification.UserPrincipal
@@ -142,6 +145,31 @@ fun Application.mineSakerApi(
             }
             route("ssr") {
                 journalpostRoutes(safService)
+            }
+            route("debug") {
+                val tokenFetcher = EntraIdTokenFetcherBuilder.buildFetcher()
+
+                val client = HttpClientBuilder.build()
+
+                get("test-1") {
+                    val token = tokenFetcher.getAccessToken("dev-gcp.min-side.tms-azure-test-dummy")
+
+                    val response = client.get("http://tms-azure-test-dummy/entraid/test/1") {
+                        header(HttpHeaders.Authorization, "Bearer $token")
+                    }
+
+                    call.respond(response.status)
+                }
+
+                get("test-2") {
+                    val token = tokenFetcher.getAccessToken("dev-gcp.min-side.tms-azure-test-dummy")
+
+                    val response = client.get("http://tms-azure-test-dummy/entraid/test/2") {
+                        header(HttpHeaders.Authorization, "Bearer $token")
+                    }
+
+                    call.respond(response.status)
+                }
             }
         }
     }
