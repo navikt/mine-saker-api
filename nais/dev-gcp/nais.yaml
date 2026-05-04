@@ -33,6 +33,9 @@ spec:
     sidecar:
       enabled: true
       level: idporten-loa-substantial
+  azure:
+    application:
+      enabled: true
   tokenx:
     enabled: true
   accessPolicy:
