@@ -147,7 +147,7 @@ fun Application.mineSakerApi(
                 journalpostRoutes(safService)
             }
             route("debug") {
-                val tokenFetcher = EntraIdTokenFetcherBuilder.buildFetcher()
+                val tokenFetcher = EntraIdTokenFetcherBuilder.build()
 
                 val client = HttpClientBuilder.build()
 

@@ -232,7 +232,7 @@ interface TmsKafkaToolsDefaults: DependencyGroup {
 
 interface TmsKtorTokenSupportDefaults: DependencyGroup {
     override val groupId get() = "no.nav.tms.token.support"
-    override val version get() = "6.0.0-alpha-3"
+    override val version get() = "6.0.0-beta"
 
     val entraIdTokenVerification get() = dependency("entra-id-token-verification")
     val entraIdTokenVerificationMock get() = dependency("entra-id-token-verification-mock")

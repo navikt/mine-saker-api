@@ -1,9 +1,9 @@
 package no.nav.tms.minesaker.api.setup
 
-import no.nav.tms.token.support.user.token.exchange.UserTokenExchangeService
+import no.nav.tms.token.support.user.token.exchange.UserTokenExchanger
 
 class TokenExchanger(
-    private val exchangeService: UserTokenExchangeService,
+    private val exchangeService: UserTokenExchanger,
     private val safselvbetjeningClientId: String,
     private val digiSosClientId: String,
     private val pdlFullmaktClientId: String,
