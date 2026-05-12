@@ -5,7 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.request.receive
-import no.nav.tms.minesaker.api.idportenUser
+import no.nav.tms.minesaker.api.user
 
 fun Route.fullmaktApi(fullmaktService: FullmaktService, sessionStore: FullmaktSessionStore) {
 
@@ -29,19 +29,21 @@ fun Route.fullmaktApi(fullmaktService: FullmaktService, sessionStore: FullmaktSe
     }
 
     get("/fullmakt/forhold") {
-        call.respond(fullmaktService.getFullmaktForhold(idportenUser))
+        call.respond(fullmaktService.getFullmaktForhold(call.user))
     }
 
     post("/fullmakt/representert") {
         val representert = call.represertIdent()
 
-        if (representert == idportenUser.ident) {
-            sessionStore.clearFullmaktGiver(idportenUser.ident)
+        val user = call.user
+
+        if (representert == user.ident) {
+            sessionStore.clearFullmaktGiver(user.ident)
             call.respond(HttpStatusCode.OK)
         } else {
-            val validForhold = fullmaktService.validateFullmaktsGiver(idportenUser, representert)
+            val validForhold = fullmaktService.validateFullmaktsGiver(user, representert)
 
-            sessionStore.setFullmaktGiver(idportenUser.ident, validForhold)
+            sessionStore.setFullmaktGiver(user.ident, validForhold)
 
             call.respond(HttpStatusCode.OK)
         }

@@ -1,12 +1,9 @@
 package no.nav.tms.minesaker.api.journalpost
 
-import no.nav.tms.minesaker.api.idportenUser
-
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.utils.io.*
 import no.nav.tms.minesaker.api.setup.InvalidRequestException
 import no.nav.tms.minesaker.api.fullmakt.FullmaktAttribute
 import no.nav.tms.minesaker.api.fullmakt.enableFullmakt

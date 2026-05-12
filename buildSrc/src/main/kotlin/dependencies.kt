@@ -2,14 +2,14 @@ import default.*
 
 object Caffeine: DependencyGroup {
     override val groupId = "com.github.ben-manes.caffeine"
-    override val version = "3.1.8"
+    override val version = "3.2.3"
 
     val caffeine = dependency("caffeine")
 }
 
 object GraphQL: DependencyGroup {
     override val groupId get() = "com.expediagroup"
-    override val version = "6.3.5"
+    override val version = "9.2.0"
 
     val pluginId get() = "com.expediagroup.graphql"
 
@@ -23,7 +23,7 @@ object KtorClientLogging: KtorDefaults.ClientDefaults {
 
 object Valkey: DependencyGroup {
     override val groupId get() = "io.valkey"
-    override val version get() = "5.3.0"
+    override val version get() = "5.5.0"
 
     val java = dependency("valkey-java")
 }

@@ -17,9 +17,9 @@ import no.nav.tms.minesaker.api.fullmakt.FullmaktService
 import no.nav.tms.minesaker.api.fullmakt.FullmaktSessionStore
 import no.nav.tms.minesaker.api.fullmakt.FullmaktTestSessionStore
 import no.nav.tms.minesaker.api.journalpost.SafService
-import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
-import no.nav.tms.token.support.idporten.sidecar.mock.idPortenMock
-import no.nav.tms.token.support.tokenx.validation.mock.tokenXMock
+import no.nav.tms.token.support.user.token.verification.Issuer
+import no.nav.tms.token.support.user.token.verification.LevelOfAssurance
+import no.nav.tms.token.support.user.token.verificaton.mock.userTokenMock
 import org.junit.jupiter.api.Test
 
 internal class ExceptionApiTest {
@@ -77,18 +77,12 @@ internal class ExceptionApiTest {
 
     private fun Application.defaultAuthConfig() =
         authentication {
-            idPortenMock {
-                alwaysAuthenticated = true
-                setAsDefault = true
-                staticLevelOfAssurance = LevelOfAssurance.HIGH
-                staticUserPid = testfnr
-            }
-
-            tokenXMock {
-                alwaysAuthenticated = true
-                setAsDefault = false
-                staticLevelOfAssurance = no.nav.tms.token.support.tokenx.validation.mock.LevelOfAssurance.HIGH
-                staticUserPid = testfnr
+            userTokenMock {
+                levelOfAssurance = LevelOfAssurance.High
+                enableDefaultAuthentication {
+                    tokenIssuer = Issuer.IdPorten
+                    tokenIdent = testfnr
+                }
             }
         }
 

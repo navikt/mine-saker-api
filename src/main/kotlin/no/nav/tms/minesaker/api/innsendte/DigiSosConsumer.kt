@@ -10,7 +10,7 @@ import io.ktor.serialization.*
 import kotlinx.coroutines.*
 import no.nav.tms.minesaker.api.setup.CommunicationException
 import no.nav.tms.minesaker.api.setup.TokendingsExchange
-import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
+import no.nav.tms.token.support.user.token.verification.UserPrincipal
 import java.net.URL
 import java.time.LocalDateTime
 import java.util.*
@@ -24,8 +24,8 @@ class DigiSosConsumer(
     private val log = KotlinLogging.logger {}
     private val callIdHeaderName = "Nav-Callid"
 
-    suspend fun harInnsendte(user: IdportenUser): Boolean {
-        val accessToken = tokendingsExchange.digisosToken(user.tokenString)
+    suspend fun harInnsendte(user: UserPrincipal): Boolean {
+        val accessToken = tokendingsExchange.digisosToken(user.accessToken)
 
         hentInnsendte(accessToken).let { response ->
             if (!response.status.isSuccess()) {
