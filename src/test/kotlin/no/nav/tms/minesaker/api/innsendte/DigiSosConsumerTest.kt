@@ -21,7 +21,7 @@ import no.nav.tms.minesaker.api.setup.jsonConfig
 import no.nav.tms.minesaker.api.setup.CommunicationException
 import no.nav.tms.minesaker.api.setup.TokendingsExchange
 import no.nav.tms.minesaker.api.setup.createUrl
-import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
+import no.nav.tms.token.support.user.token.verification.UserPrincipal
 import org.junit.jupiter.api.Test
 
 import java.time.LocalDateTime
@@ -35,8 +35,8 @@ internal class DigiSosConsumerTest {
     }
     private val digiSosEndpoint = createUrl("https://dummy")
     private val userToken = "<original>"
-    private val user: IdportenUser = mockk<IdportenUser>().also {
-        every { it.tokenString } returns userToken
+    private val user: UserPrincipal = mockk<UserPrincipal>().also {
+        every { it.accessToken } returns userToken
     }
 
     private val tokendingsExchange = mockk<TokendingsExchange>().also {

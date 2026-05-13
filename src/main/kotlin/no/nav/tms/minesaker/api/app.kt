@@ -10,16 +10,16 @@ import no.nav.tms.minesaker.api.journalpost.SafService
 import no.nav.tms.minesaker.api.setup.Environment
 import no.nav.tms.minesaker.api.setup.HttpClientBuilder
 import no.nav.tms.minesaker.api.setup.TokendingsExchange
-import no.nav.tms.token.support.tokendings.exchange.TokendingsServiceBuilder
+import no.nav.tms.token.support.user.token.exchange.UserTokenExchangerBuilder
 
 fun main() {
     val environment = Environment()
     val httpClient = HttpClientBuilder.build()
 
-    val tokendingsService = TokendingsServiceBuilder.buildTokendingsService(maxCachedEntries = 10000)
+    val tokendingsService = UserTokenExchangerBuilder.build(maxCachedEntries = 10000)
 
     val tokendingsExchange = TokendingsExchange(
-        tokendingsService = tokendingsService,
+        tokenExchanger = tokendingsService,
         safselvbetjeningClientId = environment.safClientId,
         digiSosClientId = environment.digiSosClientId,
         pdlFullmaktClientId = environment.reprFullmaktClientId,

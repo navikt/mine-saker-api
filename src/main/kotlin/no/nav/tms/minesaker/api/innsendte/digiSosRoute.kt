@@ -4,7 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import no.nav.tms.common.logging.TeamLogs
-import no.nav.tms.minesaker.api.idportenUser
+import no.nav.tms.minesaker.api.user
 
 fun Route.digiSosRoute(digiSosConsumer: DigiSosConsumer) {
 
@@ -13,10 +13,10 @@ fun Route.digiSosRoute(digiSosConsumer: DigiSosConsumer) {
 
     get("/v2/sosialhjelp/har_innsendte") {
         val harInnsendte = try {
-            digiSosConsumer.harInnsendte(idportenUser)
+            digiSosConsumer.harInnsendte(call.user)
         } catch (e: Exception) {
             log.error { "Klarte ikke å hente brukers data fra DigiSos." }
-            teamLog.error(e) { "Klarte ikke å hente brukers (${idportenUser.ident}) data fra DigiSos." }
+            teamLog.error(e) { "Klarte ikke å hente brukers (${call.user.ident}) data fra DigiSos." }
             false
         }
 

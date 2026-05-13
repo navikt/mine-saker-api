@@ -8,15 +8,15 @@ import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.nav.tms.minesaker.api.setup.TokendingsExchange
-import no.nav.tms.token.support.idporten.sidecar.user.IdportenUser
+import no.nav.tms.token.support.user.token.verification.UserPrincipal
 
 class FullmaktConsumer(
     private val httpClient: HttpClient,
     private val tokendingsExchange: TokendingsExchange,
     private val pdlFullmaktUrl: String
 ) {
-    suspend fun getFullmaktsGivere(user: IdportenUser): List<FullmaktGiver> {
-        return getFullmaktList(tokendingsExchange.pdlFullmaktToken(user.tokenString))
+    suspend fun getFullmaktsGivere(user: UserPrincipal): List<FullmaktGiver> {
+        return getFullmaktList(tokendingsExchange.pdlFullmaktToken(user.accessToken))
             .map {
                 FullmaktGiver(
                     ident = it.fullmaktsgiver,
@@ -40,7 +40,7 @@ class FullmaktConsumer(
             }
         }.body()
 
-    suspend fun token(user: IdportenUser): String = tokendingsExchange.pdlFullmaktToken(user.tokenString)
+    suspend fun token(user: UserPrincipal): String = tokendingsExchange.pdlFullmaktToken(user.accessToken)
 }
 
 typealias FullmaktResponse = List<FullmaktResponseEntry>

@@ -22,9 +22,9 @@ import no.nav.tms.minesaker.api.journalpost.Sakstema
 import no.nav.tms.minesaker.api.mineSakerApi
 import no.nav.tms.minesaker.api.setup.SafResultException
 import no.nav.tms.minesaker.api.setup.jsonConfig
-import no.nav.tms.token.support.idporten.sidecar.mock.LevelOfAssurance
-import no.nav.tms.token.support.idporten.sidecar.mock.idPortenMock
-import no.nav.tms.token.support.tokenx.validation.mock.tokenXMock
+import no.nav.tms.token.support.user.token.verification.Issuer
+import no.nav.tms.token.support.user.token.verification.LevelOfAssurance
+import no.nav.tms.token.support.user.token.verificaton.mock.userTokenMock
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
@@ -113,7 +113,6 @@ class JournalposterFullmaktTest {
         sessionStore.getCurrentFullmaktGiver(ident) shouldBe null
     }
 
-    @KtorDsl
     private fun sakApiFullmaktTest(testBlock: suspend (HttpClient) -> Unit) = testApplication {
         val testClient = createClient {
             install(ContentNegotiation) {
@@ -134,18 +133,12 @@ class JournalposterFullmaktTest {
                 fullmaktSessionStore = sessionStore,
                 authConfig = {
                     authentication {
-                        idPortenMock {
-                            alwaysAuthenticated = true
-                            setAsDefault = true
-                            staticLevelOfAssurance = LevelOfAssurance.HIGH
-                            staticUserPid = ident
-                        }
-
-                        tokenXMock {
-                            alwaysAuthenticated = true
-                            setAsDefault = false
-                            staticLevelOfAssurance = no.nav.tms.token.support.tokenx.validation.mock.LevelOfAssurance.HIGH
-                            staticUserPid = ident
+                        userTokenMock {
+                            levelOfAssurance = LevelOfAssurance.High
+                            enableDefaultAuthentication {
+                                tokenIssuer = Issuer.IdPorten
+                                tokenIdent = ident
+                            }
                         }
                     }
                 }

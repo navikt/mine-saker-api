@@ -6,7 +6,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 import io.ktor.util.*
 import no.nav.tms.common.logging.TeamLogs
-import no.nav.tms.token.support.idporten.sidecar.IdPortenTokenPrincipal
+import no.nav.tms.token.support.user.token.verification.UserPrincipal
 
 fun Route.enableFullmakt(
     build: Route.() -> Unit
@@ -45,12 +45,12 @@ private val FullmaktInterceptor = createRouteScopedPlugin(name = "fullmakt-inter
 
     on(AuthenticationChecked) { call ->
 
-        val principal = call.principal<IdPortenTokenPrincipal>()
+        val principal = call.principal<UserPrincipal>()
 
         if (principal != null) {
 
             try {
-                sessionStore.getCurrentFullmaktGiver(principal.ident())
+                sessionStore.getCurrentFullmaktGiver(principal.ident)
                     ?.let { fullmaktGiver -> call.attributes.put(FullmaktAttribute, fullmaktGiver) }
             } catch (e: Exception) {
                 log.warn { "Feil mot fullmakt-sessionstore." }

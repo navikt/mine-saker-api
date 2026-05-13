@@ -19,10 +19,6 @@ import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 import no.nav.tms.common.logging.TeamLogs
 import no.nav.tms.common.metrics.installTmsMicrometerMetrics
-import no.nav.tms.token.support.idporten.sidecar.IdPortenLogin
-import no.nav.tms.token.support.idporten.sidecar.LevelOfAssurance
-import no.nav.tms.token.support.idporten.sidecar.idPorten
-import no.nav.tms.token.support.idporten.sidecar.user.IdportenUserFactory
 import no.nav.tms.common.observability.ApiMdc
 import no.nav.tms.minesaker.api.fullmakt.*
 import no.nav.tms.minesaker.api.innsendte.DigiSosConsumer
@@ -31,12 +27,11 @@ import no.nav.tms.minesaker.api.journalpost.SafService
 import no.nav.tms.minesaker.api.journalpost.dokumentRoute
 import no.nav.tms.minesaker.api.journalpost.journalpostRoutes
 import no.nav.tms.minesaker.api.setup.*
-import no.nav.tms.token.support.idporten.sidecar.IdPortenTokenPrincipal
-import no.nav.tms.token.support.tokenx.validation.TokenXAuthenticator
-import no.nav.tms.token.support.tokenx.validation.TokenXPrincipal
-import no.nav.tms.token.support.tokenx.validation.tokenX
-import no.nav.tms.token.support.tokenx.validation.user.TokenXUserFactory
-
+import no.nav.tms.token.support.user.login.routes.UserLoginRoutes
+import no.nav.tms.token.support.user.token.verification.LevelOfAssurance
+import no.nav.tms.token.support.user.token.verification.UserPrincipal
+import no.nav.tms.token.support.user.token.verification.userToken
+import java.lang.IllegalStateException
 
 fun Application.mineSakerApi(
     safService: SafService,
@@ -146,9 +141,6 @@ fun Application.mineSakerApi(
             route("v2") {
                 journalpostRoutes(safService)
             }
-        }
-
-        authenticate(TokenXAuthenticator.name) {
             route("ssr") {
                 journalpostRoutes(safService)
             }
@@ -174,17 +166,11 @@ private suspend fun resetFullmaktSession(
 }
 
 fun authConfig(): Application.() -> Unit = {
-    install(IdPortenLogin)
+    install(UserLoginRoutes)
 
     authentication {
-        idPorten {
-            setAsDefault = true
-            levelOfAssurance = LevelOfAssurance.HIGH
-        }
-
-        tokenX {
-            setAsDefault = false
-            levelOfAssurance = no.nav.tms.token.support.tokenx.validation.LevelOfAssurance.HIGH
+        userToken {
+            levelOfAssurance = LevelOfAssurance.High
         }
     }
 }
@@ -194,24 +180,5 @@ private fun Application.configureShutdownHook(httpClient: HttpClient) {
         httpClient.close()
     }
 }
-val RoutingContext.idportenUser get() = IdportenUserFactory.createIdportenUser(call)
 
-val ApplicationCall.user: UserPrincipal get() {
-
-    return principal<IdPortenTokenPrincipal>()?.let {
-
-        val idPortenUser = IdportenUserFactory.createIdportenUser(this)
-
-        UserPrincipal(idPortenUser.ident, idPortenUser.tokenString)
-    } ?: principal<TokenXPrincipal>()?.let {
-
-        val tokenXUser = TokenXUserFactory.createTokenXUser(this)
-
-        UserPrincipal(tokenXUser.ident, tokenXUser.tokenString)
-    }?: throw IllegalStateException("Fant ingen principal")
-}
-
-class UserPrincipal(
-    val ident: String,
-    val accessToken: String
-)
+val ApplicationCall.user get() = principal<UserPrincipal>() ?: throw IllegalStateException("Fant ikke UserPrincipal i context")
