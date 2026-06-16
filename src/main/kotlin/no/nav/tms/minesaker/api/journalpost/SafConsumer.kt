@@ -58,10 +58,8 @@ class SafConsumer(
         val callId = UUID.randomUUID()
         log.info { "Sender POST-kall med correlationId=$callId" }
 
-        val visningsFormat = if (erSladdet) "SLADDET" else "ARKIV"
-
         val statement = httpClient.prepareGet {
-            url("$safEndpoint/rest/hentdokument/$journalpostId/$dokumentinfoId/$visningsFormat")
+            url("$safEndpoint/rest/hentdokument/$journalpostId/$dokumentinfoId")
             method = HttpMethod.Get
             header(Authorization, "Bearer $accessToken")
             header(safCallIdHeaderName, callId)
