@@ -30,5 +30,3 @@ jobs:
 
       - name: Bygg og test prosjekt
         run: ./gradlew build
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
