@@ -20,7 +20,7 @@ import io.ktor.server.routing.*
 import no.nav.tms.common.logging.TeamLogs
 import no.nav.tms.common.metrics.installTmsMicrometerMetrics
 import no.nav.tms.common.observability.ApiMdc
-import no.nav.tms.minesaker.api.fullmakt.*
+import no.nav.tms.minesaker.api.representasjon.*
 import no.nav.tms.minesaker.api.innsendte.DigiSosConsumer
 import no.nav.tms.minesaker.api.innsendte.digiSosRoute
 import no.nav.tms.minesaker.api.journalpost.SafService
@@ -38,8 +38,8 @@ fun Application.mineSakerApi(
     digiSosConsumer: DigiSosConsumer,
     httpClient: HttpClient,
     corsAllowedOrigins: String,
-    fullmaktService: FullmaktService,
-    fullmaktSessionStore: FullmaktSessionStore,
+    reprService: ReprService,
+    reprSessionStore: ReprSessionStore,
     authConfig: Application.() -> Unit
 ) {
     val log = KotlinLogging.logger { }
@@ -74,7 +74,7 @@ fun Application.mineSakerApi(
                             cause.errors?.joinToString("\n") { it.message }
                         }"
                     }
-                    resetFullmaktSession(call, fullmaktSessionStore, log, teamLog)
+                    resetFullmaktSession(call, reprSessionStore, log, teamLog)
                     call.respond(HttpStatusCode.InternalServerError)
                 }
 
@@ -92,7 +92,7 @@ fun Application.mineSakerApi(
 
                 is UgyldigFullmaktException -> {
                     log.warn { "Bruker forsøkte å sette ugyldig fullmakt." }
-                    teamLog.warn(cause) { "Bruker forsøkte å sette ugyldig fullmakt. Bruker ${cause.fullmektig} er ikke representant for ${cause.giver}" }
+                    teamLog.warn(cause) { "Bruker forsøkte å sette ugyldig fullmakt. Bruker ${cause.fullmektig} er ikke representert for ${cause.giver}" }
 
                     call.respond(HttpStatusCode.Forbidden)
                 }
@@ -117,7 +117,7 @@ fun Application.mineSakerApi(
     authConfig()
 
     install(FullmaktSessions) {
-        sessionStore = fullmaktSessionStore
+        sessionStore = reprSessionStore
     }
 
     install(ContentNegotiation) {
@@ -136,7 +136,7 @@ fun Application.mineSakerApi(
 
         authenticate {
             digiSosRoute(digiSosConsumer)
-            fullmaktApi(fullmaktService, fullmaktSessionStore)
+            reprApi(reprService, reprSessionStore)
             dokumentRoute(safService)
             route("v2") {
                 journalpostRoutes(safService)
@@ -152,14 +152,14 @@ fun Application.mineSakerApi(
 
 private suspend fun resetFullmaktSession(
     call: ApplicationCall,
-    fullmaktSessionStore: FullmaktSessionStore,
+    reprSessionStore: ReprSessionStore,
     log: KLogger,
     teamLog: KLogger
 ) = try {
 
     val ident = call.user.ident
 
-    fullmaktSessionStore.clearFullmaktGiver(ident)
+    reprSessionStore.clearRepresentert(ident)
 } catch (e: Exception) {
     log.error { "Klarte ikke nullstille fullmakt-sesjon." }
     teamLog.error(e) { "Klarte ikke nullstille fullmakt-sesjon." }

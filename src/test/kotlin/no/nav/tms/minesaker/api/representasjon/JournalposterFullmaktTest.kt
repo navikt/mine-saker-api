@@ -1,4 +1,4 @@
-package no.nav.tms.minesaker.api.fullmakt
+package no.nav.tms.minesaker.api.representasjon
 
 import io.kotest.matchers.shouldBe
 import io.ktor.client.*
@@ -10,7 +10,6 @@ import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.auth.*
 import io.ktor.server.testing.*
-import io.ktor.utils.io.*
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -32,20 +31,20 @@ import java.time.ZonedDateTime
 class JournalposterFullmaktTest {
     private val sakService: SafService = mockk()
     private val navnService: NavnFetcher = mockk()
-    private val fullmaktConsumer: FullmaktConsumer = mockk()
+    private val reprConsumer: ReprConsumer = mockk()
 
-    private val sessionStore = FullmaktTestSessionStore()
-    private val fullmaktService = FullmaktService(fullmaktConsumer, navnService)
+    private val sessionStore = ReprTestSessionStore()
+    private val reprService = ReprService(reprConsumer, navnService)
 
     private val ident = "123"
 
-    private val fullmaktGiver1 = FullmaktGiver("111", "abc")
+    private val representert1 = Representert("111", "abc", Representasjonstype.Fullmakt)
 
 
     @AfterEach
     fun cleanUp() = runBlocking {
-        clearMocks(sakService, navnService, fullmaktConsumer)
-        sessionStore.clearFullmaktGiver(ident)
+        clearMocks(sakService, navnService, reprConsumer)
+        sessionStore.clearRepresentert(ident)
     }
 
     @Test
@@ -59,7 +58,7 @@ class JournalposterFullmaktTest {
         } returns journalpostResponse(navnForBruker)
 
         coEvery {
-            sakService.alleJournalposter(any(), fullmaktGiver1.ident)
+            sakService.alleJournalposter(any(), representert1.ident)
         } returns journalpostResponse(navnForRepresentert)
 
         val responseForQuery: List<Journalpost> = client.get("v2/journalposter/alle").body()
@@ -72,14 +71,14 @@ class JournalposterFullmaktTest {
         val navnForBruker = "Tilhører bruker"
         val navnForRepresentert = "Tilhører representert"
 
-        sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
+        sessionStore.setRepresentert(ident, representert1)
 
         coEvery {
             sakService.alleJournalposter(any(), null)
         } returns journalpostResponse(navnForBruker)
 
         coEvery {
-            sakService.alleJournalposter(any(), fullmaktGiver1.ident)
+            sakService.alleJournalposter(any(), representert1.ident)
         } returns journalpostResponse(navnForRepresentert)
 
         val responseForQuery: List<Journalpost> = client.get("v2/journalposter/alle").body()
@@ -92,14 +91,14 @@ class JournalposterFullmaktTest {
     fun `nullstiller fullmakt-sesjon dersom saf returnerer feil for journalposter`() = sakApiFullmaktTest { client ->
         val navnForBruker = "Tilhører bruker"
 
-        sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
+        sessionStore.setRepresentert(ident, representert1)
 
         coEvery {
             sakService.alleJournalposter(any(), null)
         } returns journalpostResponse(navnForBruker)
 
         coEvery {
-            sakService.alleJournalposter(any(), fullmaktGiver1.ident)
+            sakService.alleJournalposter(any(), representert1.ident)
         } throws SafResultException("Error", emptyList(), emptyMap())
 
         val firstResponse = client.get("v2/journalposter/alle")
@@ -110,7 +109,7 @@ class JournalposterFullmaktTest {
 
         secondResponse.body<List<Journalpost>>().first().temanavn shouldBe navnForBruker
 
-        sessionStore.getCurrentFullmaktGiver(ident) shouldBe null
+        sessionStore.getCurrentRepresentert(ident) shouldBe null
     }
 
     private fun sakApiFullmaktTest(testBlock: suspend (HttpClient) -> Unit) = testApplication {
@@ -129,8 +128,8 @@ class JournalposterFullmaktTest {
                 digiSosConsumer = mockk(),
                 httpClient = testClient,
                 corsAllowedOrigins = "*",
-                fullmaktService = fullmaktService,
-                fullmaktSessionStore = sessionStore,
+                reprService = reprService,
+                reprSessionStore = sessionStore,
                 authConfig = {
                     authentication {
                         userTokenMock {

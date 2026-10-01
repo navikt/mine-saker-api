@@ -1,4 +1,4 @@
-package no.nav.tms.minesaker.api.fullmakt
+package no.nav.tms.minesaker.api.representasjon
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.valkey.*
@@ -7,18 +7,18 @@ import kotlinx.coroutines.withContext
 import no.nav.tms.common.util.config.IntEnvVar
 import no.nav.tms.common.util.config.StringEnvVar.getEnvVar
 
-interface FullmaktSessionStore {
-    suspend fun setFullmaktGiver(ident: String, fullmaktGiver: FullmaktGiver)
-    suspend fun getCurrentFullmaktGiver(ident: String): FullmaktGiver?
-    suspend fun clearFullmaktGiver(ident: String)
+interface ReprSessionStore {
+    suspend fun setRepresentert(ident: String, representert: Representert)
+    suspend fun getCurrentRepresentert(ident: String): Representert?
+    suspend fun clearRepresentert(ident: String)
 }
 
-class FullmaktValkey(
+class ReprValkey(
     host: String = getEnvVar("VALKEY_HOST_FULLMAKT"),
     port: Int = IntEnvVar.getEnvVarAsInt("VALKEY_PORT_FULLMAKT"),
     username: String = getEnvVar("VALKEY_USERNAME_FULLMAKT"),
     password: String = getEnvVar("VALKEY_PASSWORD_FULLMAKT")
-) : FullmaktSessionStore {
+) : ReprSessionStore {
 
     private val objectMapper = jacksonObjectMapper()
     private val oneHourInSeconds = 3600L
@@ -41,16 +41,16 @@ class FullmaktValkey(
         JedisPool(poolConfig, uri, clientConfig)
     }
 
-    override suspend fun setFullmaktGiver(ident: String, fullmaktGiver: FullmaktGiver): Unit = withClient { client ->
-        client.setex(ident, oneHourInSeconds, fullmaktGiver.toJson())
+    override suspend fun setRepresentert(ident: String, representert: Representert): Unit = withClient { client ->
+        client.setex(ident, oneHourInSeconds, representert.toJson())
     }
 
-    override suspend fun getCurrentFullmaktGiver(ident: String): FullmaktGiver? = withClient { client ->
+    override suspend fun getCurrentRepresentert(ident: String): Representert? = withClient { client ->
         client.get(ident)
             ?.fullmaktGiverFromJson()
     }
 
-    override suspend fun clearFullmaktGiver(ident: String): Unit = withClient { client ->
+    override suspend fun clearRepresentert(ident: String): Unit = withClient { client ->
         client.del(ident)
     }
 
@@ -64,7 +64,7 @@ class FullmaktValkey(
         }
     }
 
-    private fun FullmaktGiver.toJson() = objectMapper.writeValueAsString(this)
+    private fun Representert.toJson() = objectMapper.writeValueAsString(this)
 
-    private fun String.fullmaktGiverFromJson() = objectMapper.readValue(this, FullmaktGiver::class.java)
+    private fun String.fullmaktGiverFromJson() = objectMapper.readValue(this, Representert::class.java)
 }

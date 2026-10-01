@@ -1,4 +1,4 @@
-package no.nav.tms.minesaker.api.fullmakt
+package no.nav.tms.minesaker.api.representasjon
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.server.application.*
@@ -8,7 +8,7 @@ import io.ktor.util.*
 import no.nav.tms.common.logging.TeamLogs
 import no.nav.tms.token.support.user.token.verification.UserPrincipal
 
-fun Route.enableFullmakt(
+fun Route.enableRepresentasjon(
     build: Route.() -> Unit
 ) {
     val authenticatedRoute = createChild(FullmaktRouteSelector())
@@ -18,7 +18,7 @@ fun Route.enableFullmakt(
 }
 
 class FullmaktConfig {
-    lateinit var sessionStore: FullmaktSessionStore
+    lateinit var sessionStore: ReprSessionStore
 }
 
 class FullmaktSessions(val config: FullmaktConfig) {
@@ -34,7 +34,7 @@ class FullmaktSessions(val config: FullmaktConfig) {
     }
 }
 
-val FullmaktAttribute = AttributeKey<FullmaktGiver>("fullmakt_attribute")
+val FullmaktAttribute = AttributeKey<Representert>("fullmakt_attribute")
 
 private val FullmaktInterceptor = createRouteScopedPlugin(name = "fullmakt-interceptor") {
     val config = application.plugin(FullmaktSessions).config
@@ -50,7 +50,7 @@ private val FullmaktInterceptor = createRouteScopedPlugin(name = "fullmakt-inter
         if (principal != null) {
 
             try {
-                sessionStore.getCurrentFullmaktGiver(principal.ident)
+                sessionStore.getCurrentRepresentert(principal.ident)
                     ?.let { fullmaktGiver -> call.attributes.put(FullmaktAttribute, fullmaktGiver) }
             } catch (e: Exception) {
                 log.warn { "Feil mot fullmakt-sessionstore." }

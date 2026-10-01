@@ -1,4 +1,4 @@
-package no.nav.tms.minesaker.api.fullmakt
+package no.nav.tms.minesaker.api.representasjon
 
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -10,25 +10,19 @@ import kotlinx.coroutines.withContext
 import no.nav.tms.minesaker.api.setup.TokendingsExchange
 import no.nav.tms.token.support.user.token.verification.UserPrincipal
 
-class FullmaktConsumer(
+class ReprConsumer(
     private val httpClient: HttpClient,
     private val tokendingsExchange: TokendingsExchange,
     private val pdlFullmaktUrl: String
 ) {
-    suspend fun getFullmaktsGivere(user: UserPrincipal): List<FullmaktGiver> {
-        return getFullmaktList(tokendingsExchange.pdlFullmaktToken(user.accessToken))
-            .map {
-                FullmaktGiver(
-                    ident = it.fullmaktsgiver,
-                    navn = it.fullmaktsgiverNavn
-                )
-            }
+    suspend fun getRepresenterte(user: UserPrincipal): KanRepresentere {
+        return getRepresenterte(tokendingsExchange.pdlFullmaktToken(user.accessToken))
     }
 
-    private suspend fun getFullmaktList(accessToken: String): FullmaktResponse =
+    private suspend fun getRepresenterte(accessToken: String): KanRepresentere =
         withContext(Dispatchers.IO) {
             httpClient.get {
-                url("$pdlFullmaktUrl/api/eksternbruker/fullmakt/fullmektig/tema")
+                url("$pdlFullmaktUrl/api/v2/eksternbruker/kan-representere")
                 method = HttpMethod.Get
                 header(HttpHeaders.Authorization, "Bearer $accessToken")
                 accept(ContentType.Application.Json)
@@ -43,9 +37,15 @@ class FullmaktConsumer(
     suspend fun token(user: UserPrincipal): String = tokendingsExchange.pdlFullmaktToken(user.accessToken)
 }
 
-typealias FullmaktResponse = List<FullmaktResponseEntry>
+data class KanRepresentere(
+    val fullmakt: List<Fullmaktsgiver>,
+    val vergemaal: List<Verge>
+) {
+    data class Fullmaktsgiver(
+        val fullmaktsgiver: String
+    )
 
-data class FullmaktResponseEntry(
-    val fullmaktsgiver: String,
-    val fullmaktsgiverNavn: String
-)
+    data class Verge(
+        val verge: String
+    )
+}

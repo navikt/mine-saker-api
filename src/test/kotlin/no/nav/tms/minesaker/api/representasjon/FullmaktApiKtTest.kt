@@ -1,4 +1,4 @@
-package no.nav.tms.minesaker.api.fullmakt
+package no.nav.tms.minesaker.api.representasjon
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -13,7 +13,6 @@ import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.auth.*
 import io.ktor.server.testing.*
-import io.ktor.utils.io.*
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -26,20 +25,20 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 
 class FullmaktApiKtTest {
-    private val fullmaktService: FullmaktService = mockk()
-    private val sessionStore = FullmaktTestSessionStore()
+    private val reprService: ReprService = mockk()
+    private val sessionStore = ReprTestSessionStore()
 
     private val ident = "123"
     private val navn = "Innlogget Bruker"
 
-    private val fullmaktGiver1 = FullmaktGiver("111", "abc")
-    private val fullmaktGiver2 = FullmaktGiver("222", "def")
+    private val representert1 = Representert("111", "abc", type = Representasjonstype.Fullmakt)
+    private val representert2 = Representert("222", "def", type = Representasjonstype.Fullmakt)
 
-    private val fullmaktGivere = listOf(fullmaktGiver1, fullmaktGiver2)
+    private val fullmaktGivere = listOf(representert1, representert2)
 
     @AfterEach
     fun cleanUp() = runBlocking{
-        sessionStore.clearFullmaktGiver(ident)
+        sessionStore.clearRepresentert(ident)
     }
 
     @Test
@@ -51,31 +50,32 @@ class FullmaktApiKtTest {
             json["representertNavn"].isNull shouldBe true
         }
 
-        sessionStore.setFullmaktGiver(ident, fullmaktGiver1)
+        sessionStore.setRepresentert(ident, representert1)
 
         client.get("/fullmakt/info").validateResponse { json ->
             json["viserRepresentertesData"].asBoolean() shouldBe true
-            json["representertIdent"].asText() shouldBe fullmaktGiver1.ident
-            json["representertNavn"].asText() shouldBe fullmaktGiver1.navn
+            json["representertIdent"].asText() shouldBe representert1.ident
+            json["representertNavn"].asText() shouldBe representert1.navn
         }
 
-        sessionStore.setFullmaktGiver(ident, fullmaktGiver2)
+        sessionStore.setRepresentert(ident, representert2)
 
         client.get("/fullmakt/info").validateResponse { json ->
             json["viserRepresentertesData"].asBoolean() shouldBe true
-            json["representertIdent"].asText() shouldBe fullmaktGiver2.ident
-            json["representertNavn"].asText() shouldBe fullmaktGiver2.navn
+            json["representertIdent"].asText() shouldBe representert2.ident
+            json["representertNavn"].asText() shouldBe representert2.navn
         }
     }
 
     @Test
     fun `henter gjeldende forhold for bruker`() = fullmaktApiTest {
         coEvery {
-            fullmaktService.getFullmaktForhold(any())
-        } returns FullmaktForhold(
+            reprService.getFullmaktForhold(any())
+        } returns Representantforhold(
             navn = navn,
             ident = ident,
-            fullmaktsGivere = emptyList()
+            fullmaktsGivere = emptyList(),
+            verger = emptyList()
         )
 
         client.get("/fullmakt/forhold").validateResponse { json ->
@@ -85,11 +85,12 @@ class FullmaktApiKtTest {
         }
 
         coEvery {
-            fullmaktService.getFullmaktForhold(any())
-        } returns FullmaktForhold(
+            reprService.getFullmaktForhold(any())
+        } returns Representantforhold(
             navn = navn,
             ident = ident,
-            fullmaktsGivere = fullmaktGivere
+            fullmaktsGivere = fullmaktGivere,
+            verger = emptyList()
         )
 
         client.get("/fullmakt/forhold").validateResponse { json ->
@@ -102,35 +103,35 @@ class FullmaktApiKtTest {
     @Test
     fun `setter fullmaktsgiver for sesjon hvis forhold er gyldig`() = fullmaktApiTest {
         coEvery {
-            fullmaktService.validateFullmaktsGiver(any(), fullmaktGiver1.ident)
-        } returns fullmaktGiver1
+            reprService.validateForhold(any(), representert1.ident, any())
+        } returns representert1
 
         client.post("/fullmakt/representert") {
-            setBody("""{"ident": "${fullmaktGiver1.ident}"}""")
+            setBody("""{"ident": "${representert1.ident}"}""")
             header(HttpHeaders.ContentType, ContentType.Application.Json)
         }
 
-        sessionStore.getCurrentFullmaktGiver(ident).let { giver ->
+        sessionStore.getCurrentRepresentert(ident).let { giver ->
             giver.shouldNotBeNull()
-            giver.ident shouldBe fullmaktGiver1.ident
-            giver.navn shouldBe fullmaktGiver1.navn
+            giver.ident shouldBe representert1.ident
+            giver.navn shouldBe representert1.navn
         }
     }
 
     @Test
     fun `svarer med feil dersom en setter aktivt forhold som ikke er gyldig`() = fullmaktApiTest {
         coEvery {
-            fullmaktService.validateFullmaktsGiver(any(), fullmaktGiver1.ident)
-        } throws UgyldigFullmaktException("Ugyldig", fullmaktGiver1.ident, ident)
+            reprService.validateForhold(any(), representert1.ident, any())
+        } throws UgyldigFullmaktException("Ugyldig", representert1.ident, ident)
 
         val response = client.post("/fullmakt/representert") {
-            setBody("""{"ident": "${fullmaktGiver1.ident}"}""")
+            setBody("""{"ident": "${representert1.ident}"}""")
             header(HttpHeaders.ContentType, ContentType.Application.Json)
         }
 
         response.status shouldBe HttpStatusCode.Forbidden
 
-        sessionStore.getCurrentFullmaktGiver(ident).shouldBeNull()
+        sessionStore.getCurrentRepresentert(ident).shouldBeNull()
     }
 
     private fun fullmaktApiTest(testBlock: suspend ApplicationTestBuilder.() -> Unit) = testApplication {
@@ -149,8 +150,8 @@ class FullmaktApiKtTest {
                 digiSosConsumer = mockk(),
                 httpClient = testClient,
                 corsAllowedOrigins = "*",
-                fullmaktService = fullmaktService,
-                fullmaktSessionStore = sessionStore,
+                reprService = reprService,
+                reprSessionStore = sessionStore,
                 authConfig = {
                     authentication {
                         userTokenMock {

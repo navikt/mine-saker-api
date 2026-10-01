@@ -5,15 +5,15 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import no.nav.tms.minesaker.api.setup.InvalidRequestException
-import no.nav.tms.minesaker.api.fullmakt.FullmaktAttribute
-import no.nav.tms.minesaker.api.fullmakt.enableFullmakt
+import no.nav.tms.minesaker.api.representasjon.FullmaktAttribute
+import no.nav.tms.minesaker.api.representasjon.enableRepresentasjon
 import no.nav.tms.minesaker.api.user
 
 const val journalpostIdParameterName = "journalpostId"
 
 fun Route.journalpostRoutes(service: SafService) {
 
-    enableFullmakt {
+    enableRepresentasjon {
 
         get("/journalposter/alle") {
             service.alleJournalposter(

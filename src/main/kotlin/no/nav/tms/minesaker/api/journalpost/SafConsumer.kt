@@ -23,7 +23,6 @@ class SafConsumer(
     private val httpClient: HttpClient,
     private val safEndpoint: URL
 ) {
-
     private val log = KotlinLogging.logger {}
     private val teamLog = TeamLogs.logger { }
 
