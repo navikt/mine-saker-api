@@ -34,7 +34,7 @@ class FullmaktSessions(val config: FullmaktConfig) {
     }
 }
 
-val FullmaktAttribute = AttributeKey<Representert>("fullmakt_attribute")
+val RepresentertAttribute = AttributeKey<Representert>("fullmakt_attribute")
 
 private val FullmaktInterceptor = createRouteScopedPlugin(name = "fullmakt-interceptor") {
     val config = application.plugin(FullmaktSessions).config
@@ -51,7 +51,7 @@ private val FullmaktInterceptor = createRouteScopedPlugin(name = "fullmakt-inter
 
             try {
                 sessionStore.getCurrentRepresentert(principal.ident)
-                    ?.let { fullmaktGiver -> call.attributes.put(FullmaktAttribute, fullmaktGiver) }
+                    ?.let { fullmaktGiver -> call.attributes.put(RepresentertAttribute, fullmaktGiver) }
             } catch (e: Exception) {
                 log.warn { "Feil mot fullmakt-sessionstore." }
                 teamLog.warn(e) { "Feil mot fullmakt-sessionstore." }

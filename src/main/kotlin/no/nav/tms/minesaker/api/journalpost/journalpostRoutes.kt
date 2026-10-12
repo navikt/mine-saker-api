@@ -5,7 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import no.nav.tms.minesaker.api.setup.InvalidRequestException
-import no.nav.tms.minesaker.api.representasjon.FullmaktAttribute
+import no.nav.tms.minesaker.api.representasjon.RepresentertAttribute
 import no.nav.tms.minesaker.api.representasjon.enableRepresentasjon
 import no.nav.tms.minesaker.api.user
 
@@ -53,7 +53,7 @@ fun Route.journalpostRoutes(service: SafService) {
 }
 
 private val ApplicationCall.representert get() =
-    attributes.getOrNull(FullmaktAttribute)?.ident
+    attributes.getOrNull(RepresentertAttribute)?.ident
 
 private fun ApplicationCall.antallFromParameters(): Int? =
     parameters["antall"]

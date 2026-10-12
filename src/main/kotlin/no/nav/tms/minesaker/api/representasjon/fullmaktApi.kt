@@ -12,33 +12,25 @@ fun Route.reprApi(reprService: ReprService, sessionStore: ReprSessionStore) {
     enableRepresentasjon {
 
         get("/fullmakt/info") {
-            val fullmaktGiver = fullmaktGiver
+            val representert = this.representert
 
-            if (fullmaktGiver == null) {
-                call.respond(Representasjonsinfo(false))
+            if (representert == null) {
+                call.respond(Representasjonsinfo.viserEgne())
             } else {
                 call.respond(
-                    Representasjonsinfo(
-                        viserRepresentertesData = true,
-                        representertNavn = fullmaktGiver.navn,
-                        representertIdent = fullmaktGiver.ident
-                    )
+                    Representasjonsinfo.viserRepresentert(representert)
                 )
             }
         }
 
         get("/repr/info") {
-            val fullmaktGiver = fullmaktGiver
+            val representert = this.representert
 
-            if (fullmaktGiver == null) {
-                call.respond(Representasjonsinfo(false))
+            if (representert == null) {
+                call.respond(Representasjonsinfo.viserEgne())
             } else {
                 call.respond(
-                    Representasjonsinfo(
-                        viserRepresentertesData = true,
-                        representertNavn = fullmaktGiver.navn,
-                        representertIdent = fullmaktGiver.ident
-                    )
+                    Representasjonsinfo.viserRepresentert(representert)
                 )
             }
         }
@@ -87,8 +79,8 @@ fun Route.reprApi(reprService: ReprService, sessionStore: ReprSessionStore) {
     }
 }
 
-private val RoutingContext.fullmaktGiver get() =
-    call.attributes.getOrNull(FullmaktAttribute)
+private val RoutingContext.representert get() =
+    call.attributes.getOrNull(RepresentertAttribute)
 
 private suspend fun ApplicationCall.representert() = receive<RepresentertRequest>()
 
@@ -97,9 +89,25 @@ private data class RepresentertRequest(
     val type: Representasjonstype = Representasjonstype.Fullmakt
 )
 
-data class Representasjonsinfo(
+private data class Representasjonsinfo(
     val viserRepresentertesData: Boolean,
-    val forsholdstype: Representasjonstype? = null,
-    val representertNavn: String? = null,
-    val representertIdent: String? = null,
-)
+    val forsholdstype: Representasjonstype?,
+    val representertNavn: String?,
+    val representertIdent: String?,
+) {
+    companion object {
+        fun viserEgne() = Representasjonsinfo(
+            viserRepresentertesData = false,
+            forsholdstype = null,
+            representertNavn = null,
+            representertIdent = null,
+        )
+
+        fun viserRepresentert(representert: Representert) = Representasjonsinfo(
+            viserRepresentertesData = true,
+            forsholdstype = representert.type,
+            representertNavn = representert.navn,
+            representertIdent = representert.ident,
+        )
+    }
+}

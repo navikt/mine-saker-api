@@ -47,7 +47,7 @@ class ReprService(
                         type = Representasjonstype.Fullmakt
 
                     )
-                } ?: throw UgyldigFullmaktException("Manglende forhold", giver = giverIdent, fullmektig = user.ident)
+                } ?: throw UgyldigRepresentantException("Manglende forhold", representert = giverIdent, representant = user.ident)
         } else {
             kanRepresentere.vergemaal.find { it.verge == giverIdent }
                 ?.let {
@@ -57,7 +57,7 @@ class ReprService(
                         type = Representasjonstype.Verge
 
                     )
-                } ?: throw UgyldigFullmaktException("Manglende forhold", giver = giverIdent, fullmektig = user.ident)
+                } ?: throw UgyldigRepresentantException("Manglende forhold", representert = giverIdent, representant = user.ident)
         }
     }
 
@@ -89,8 +89,8 @@ enum class Representasjonstype {
     Fullmakt, Verge
 }
 
-class UgyldigFullmaktException(
+class UgyldigRepresentantException(
     override val message: String,
-    val giver: String,
-    val fullmektig: String
+    val representert: String,
+    val representant: String
 ): IllegalArgumentException(message)

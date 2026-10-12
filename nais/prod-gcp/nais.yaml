@@ -85,7 +85,7 @@ spec:
     - name: REPR_FULLMAKT_CLIENT_ID
       value: "prod-gcp:repr:repr-api"
     - name: PDL_API_URL
-      value: "https://pdl-api.prod-fss-pub.nais.io/graphql"
+      value: "https://pdl-api.prod-fss-pub.nais.io"
     - name: PDL_API_CLIENT_ID
       value: "prod-fss:pdl:pdl-api"
     - name: PDL_API_ENTRA_ID_CLIENT_ID

@@ -23,7 +23,7 @@ class NavnFetcher(
 ) {
 
     private val cache = Caffeine.newBuilder()
-        .maximumSize(5000)
+        .maximumSize(50000)
         .expireAfterWrite(Duration.ofMinutes(60))
         .build<String, String>()
 
@@ -68,7 +68,7 @@ class NavnFetcher(
 
     private suspend fun queryForNavn(ident: String, token: String): HentNavnResponse {
         val response = client.post {
-            url(pdlUrl)
+            url("$pdlUrl/graphql")
             header(HttpHeaders.Authorization, "Bearer $token")
             header("Behandlingsnummer", pdlBehandlingsnummer)
             header("Tema", "GEN")
@@ -113,7 +113,7 @@ class NavnFetcher(
 
     private suspend fun queryForNavnBolk(identer: List<String>, token: String): HentNavnBolkResponse {
         val response = client.post {
-            url(pdlUrl)
+            url("$pdlUrl/graphql")
             header(HttpHeaders.Authorization, "Bearer $token")
             header("Behandlingsnummer", pdlBehandlingsnummer)
             header("Tema", "GEN")

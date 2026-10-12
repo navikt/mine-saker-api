@@ -13,18 +13,17 @@ import no.nav.tms.token.support.user.token.verification.UserPrincipal
 class ReprConsumer(
     private val httpClient: HttpClient,
     private val tokendingsExchange: TokendingsExchange,
-    private val pdlFullmaktUrl: String
+    private val reprApi: String
 ) {
     suspend fun getRepresenterte(user: UserPrincipal): KanRepresentere {
-        return getRepresenterte(tokendingsExchange.pdlFullmaktToken(user.accessToken))
-    }
-
-    private suspend fun getRepresenterte(accessToken: String): KanRepresentere =
-        withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.IO) {
             httpClient.get {
-                url("$pdlFullmaktUrl/api/v2/eksternbruker/kan-representere")
+                url("$reprApi/api/v2/eksternbruker/kan-representere")
                 method = HttpMethod.Get
-                header(HttpHeaders.Authorization, "Bearer $accessToken")
+                header(
+                    HttpHeaders.Authorization,
+                    "Bearer ${tokendingsExchange.reprApiToken(user.accessToken)}"
+                )
                 accept(ContentType.Application.Json)
                 timeout {
                     socketTimeoutMillis = 25000
@@ -33,8 +32,9 @@ class ReprConsumer(
                 }
             }
         }.body()
+    }
 
-    suspend fun token(user: UserPrincipal): String = tokendingsExchange.pdlFullmaktToken(user.accessToken)
+    suspend fun token(user: UserPrincipal): String = tokendingsExchange.reprApiToken(user.accessToken)
 }
 
 data class KanRepresentere(

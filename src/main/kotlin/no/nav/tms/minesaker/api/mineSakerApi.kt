@@ -90,9 +90,9 @@ fun Application.mineSakerApi(
                     call.respond(HttpStatusCode.Forbidden)
                 }
 
-                is UgyldigFullmaktException -> {
+                is UgyldigRepresentantException -> {
                     log.warn { "Bruker forsøkte å sette ugyldig fullmakt." }
-                    teamLog.warn(cause) { "Bruker forsøkte å sette ugyldig fullmakt. Bruker ${cause.fullmektig} er ikke representert for ${cause.giver}" }
+                    teamLog.warn(cause) { "Bruker forsøkte å sette ugyldig fullmakt. Bruker ${cause.representant} er ikke representert for ${cause.representert}" }
 
                     call.respond(HttpStatusCode.Forbidden)
                 }
