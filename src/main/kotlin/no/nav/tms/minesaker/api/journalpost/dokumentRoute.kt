@@ -34,7 +34,7 @@ fun Route.dokumentRoute(service: SafService) {
 
 private suspend fun ByteWriteChannel.streamFrom(input: ByteReadChannel) {
     while (!input.isClosedForRead) {
-        val packet = input.readRemaining(DEFAULT_BUFFER_SIZE.toLong())
+        val packet = input.readBuffer(DEFAULT_BUFFER_SIZE.toLong())
         while (!packet.exhausted()) {
             writePacket(packet)
         }

@@ -18,7 +18,7 @@ class TokendingsExchange(
         return tokenExchanger.exchangeToken(accessToken, digiSosClientId)
     }
 
-    suspend fun pdlFullmaktToken(accessToken: String): String {
+    suspend fun reprApiToken(accessToken: String): String {
         return tokenExchanger.exchangeToken(accessToken, pdlFullmaktClientId)
     }
 

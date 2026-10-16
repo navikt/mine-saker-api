@@ -13,9 +13,9 @@ import no.nav.tms.minesaker.api.setup.DocumentNotFoundException
 import no.nav.tms.minesaker.api.mineSakerApi
 import no.nav.tms.minesaker.api.journalpost.SafConsumer
 import no.nav.tms.minesaker.api.setup.TokendingsExchange
-import no.nav.tms.minesaker.api.fullmakt.FullmaktService
-import no.nav.tms.minesaker.api.fullmakt.FullmaktSessionStore
-import no.nav.tms.minesaker.api.fullmakt.FullmaktTestSessionStore
+import no.nav.tms.minesaker.api.representasjon.ReprService
+import no.nav.tms.minesaker.api.representasjon.ReprSessionStore
+import no.nav.tms.minesaker.api.representasjon.ReprTestSessionStore
 import no.nav.tms.minesaker.api.journalpost.SafService
 import no.nav.tms.token.support.user.token.verification.Issuer
 import no.nav.tms.token.support.user.token.verification.LevelOfAssurance
@@ -46,8 +46,8 @@ internal class ExceptionApiTest {
                 httpClient = mockk(),
                 corsAllowedOrigins = "*",
                 authConfig = { defaultAuthConfig() },
-                fullmaktService = fullmaktService,
-                fullmaktSessionStore = fullmaktValkeyService,
+                reprService = fullmaktService,
+                reprSessionStore = fullmaktValkeyService,
             )
         }
 
@@ -86,11 +86,11 @@ internal class ExceptionApiTest {
             }
         }
 
-    private fun mockFullmakt(): Pair<FullmaktService, FullmaktSessionStore> {
-        val fullmaktService: FullmaktService = mockk()
-        val sessionStore = FullmaktTestSessionStore()
+    private fun mockFullmakt(): Pair<ReprService, ReprSessionStore> {
+        val reprService: ReprService = mockk()
+        val sessionStore = ReprTestSessionStore()
 
-        return fullmaktService to sessionStore
+        return reprService to sessionStore
     }
 
 }

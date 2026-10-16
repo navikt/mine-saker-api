@@ -35,6 +35,9 @@ spec:
       level: idporten-loa-substantial
   tokenx:
     enabled: true
+  azure:
+    application:
+      enabled: true
   accessPolicy:
     outbound:
       external:
@@ -79,9 +82,11 @@ spec:
     - name: REPR_FULLMAKT_CLIENT_ID
       value: "dev-gcp:repr:repr-api"
     - name: PDL_API_URL
-      value: "https://pdl-api.dev-fss-pub.nais.io/graphql"
+      value: "https://pdl-api.dev-fss-pub.nais.io"
     - name: PDL_API_CLIENT_ID
       value: "dev-fss:pdl:pdl-api"
+    - name: PDL_API_ENTRA_ID_CLIENT_ID
+      value: "dev-fss.pdl.pdl-api"
     - name: PDL_BEHANDLINGSNUMMER
       value: "B499"
     - name: DIGISOS_API_URL
