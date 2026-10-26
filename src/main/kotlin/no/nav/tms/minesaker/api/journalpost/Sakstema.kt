@@ -60,6 +60,7 @@ enum class Sakstema(val navn: String) {
     KLL("Klage – lønnsgaranti"),
     EYB("Barnepensjon"),
     EYO("Omstillingsstønad"),
+    AVP("Aktivitetspenger"),
 
     // Nye per 2025.06.05
     AKT("Aktivitetsplan med dialoger"),
