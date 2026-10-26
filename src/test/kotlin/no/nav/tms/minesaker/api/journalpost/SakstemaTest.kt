@@ -13,7 +13,6 @@ internal class SakstemaTest {
     @Test
     fun `Skal inneholde alle kjente temakoder fra SAF`() {
         val externalTemaer = Tema.entries
-        val internalSakstemaerForSAF = Sakstema.entries
 
         val manglendeTemaer = mutableListOf<String>()
         externalTemaer.forEach { external ->
