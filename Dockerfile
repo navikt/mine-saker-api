@@ -3,4 +3,4 @@ ENV JAVA_OPTS='-XX:MaxRAMPercentage=75'
 COPY build/libs/*.jar ./
 ENV TZ="Europe/Oslo"
 EXPOSE 8080
-CMD ["app.jar"]
+CMD ["-jar", "app.jar"]

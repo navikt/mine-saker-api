@@ -24,7 +24,7 @@ jobs:
       image: ${{ steps.docker-build-push.outputs.image }}
     steps:
       - name: Sjekk ut prosjekt
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Sett opp java
         uses: actions/setup-java@v4
