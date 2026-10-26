@@ -24,6 +24,10 @@ fun Route.journalpostRoutes(service: SafService) {
             }
         }
 
+        get("/none") {
+            call.respond(HttpStatusCode.NotFound)
+        }
+
         get("/journalposter/journalpost/{$journalpostIdParameterName}") {
             val journalpostId = call.journalpostId()
 
