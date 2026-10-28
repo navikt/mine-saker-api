@@ -1,0 +1,14 @@
+[versions]
+caffeine = "3.2.3"
+graphql = "9.2.0"
+valkey = "5.5.0"
+
+[libraries]
+
+caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine"}
+graphql-client = { group = "com.expediagroup", name = "graphql-kotlin-client", version.ref = "graphql" }
+graphql-ktorClient = { group = "com.expediagroup", name = "graphql-kotlin-ktor-client", version.ref = "graphql" }
+valkey = { group = "io.valkey", name = "valkey-java", version.ref = "valkey"}
+
+[plugins]
+graphql = { id = "com.expediagroup.graphql", version.ref = "graphql" }

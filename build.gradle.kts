@@ -2,11 +2,11 @@ import com.expediagroup.graphql.plugin.gradle.graphql
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
-    kotlin("jvm").version(Kotlin.version)
+    kotlin("jvm").version(managed.versions.kotlin)
 
-    id(GraphQL.pluginId) version GraphQL.version
+    alias(libs.plugins.graphql)
 
-    id(TmsJarBundling.plugin)
+    alias(managed.plugins.tms.jarBundling)
 
     application
 }
@@ -26,47 +26,37 @@ repositories {
 }
 
 dependencies {
-    implementation(Caffeine.caffeine)
-    implementation(GraphQL.kotlinClient)
-    implementation(GraphQL.kotlinKtorClient)
-    implementation(JacksonDatatype.datatypeJsr310)
-    implementation(Kotlinx.coroutines)
-    implementation(KotlinLogging.logging)
-    implementation(KtorClientLogging.logging)
-    implementation(Ktor.Server.auth)
-    implementation(Ktor.Server.authJwt)
-    implementation(Ktor.Client.apache5)
-    implementation(Ktor.Client.contentNegotiation)
-    implementation(Ktor.Serialization.jackson)
-    implementation(Ktor.Server.contentNegotiation)
-    implementation(Ktor.Server.cors)
-    implementation(Ktor.Server.defaultHeaders)
-    implementation(Ktor.Server.netty)
-    implementation(Ktor.Server.statusPages)
-    implementation(Logstash.logbackEncoder)
-    implementation(Prometheus.metricsCore)
-    implementation(Valkey.java)
-    implementation(TmsCommonLib.metrics)
-    implementation(TmsCommonLib.utils)
-    implementation(TmsCommonLib.observability)
-    implementation(TmsCommonLib.teamLogger)
-    implementation(TmsKtorTokenSupport.userLoginRoutes)
-    implementation(TmsKtorTokenSupport.userTokenExchange)
-    implementation(TmsKtorTokenSupport.userTokenVerification)
-    implementation(TmsKtorTokenSupport.entraIdTokenFetcher)
+    implementation(libs.caffeine)
+    implementation(libs.graphql.client)
+    implementation(libs.graphql.ktorClient)
+    implementation(libs.valkey)
 
-    testImplementation(JunitPlatform.launcher)
-    testImplementation(JunitJupiter.api)
-    testImplementation(JunitJupiter.engine)
-    testImplementation(Ktor.Test.clientMock)
-    testImplementation(Ktor.Test.serverTestHost)
-    testImplementation(TmsKtorTokenSupport.userTokenVerificationMock)
-    testImplementation(Kotest.runnerJunit5)
-    testImplementation(Kotest.assertionsCore)
-    testImplementation(Mockk.mockk)
+    implementation(managed.bundles.jackson)
+    implementation(managed.bundles.ktorServer)
+    implementation(managed.bundles.ktorClient)
 
-    testRuntimeOnly(Jjwt.impl)
-    testRuntimeOnly(Jjwt.jackson)
+    implementation(managed.kotlinx.coroutines)
+    implementation(managed.kotlinLogging)
+    implementation(managed.ktor.serialization.jackson)
+    implementation(managed.ktor.server.cors)
+    implementation(managed.ktor.server.defaultHeaders)
+    implementation(managed.prometheus.metric.core)
+    implementation(managed.tms.commonLib.metrics)
+    implementation(managed.tms.commonLib.utils)
+    implementation(managed.tms.commonLib.observability)
+    implementation(managed.tms.commonLib.teamLogger)
+    implementation(managed.tms.ktorTokenSupport.userToken.exchange)
+    implementation(managed.tms.ktorTokenSupport.userToken.loginRoutes)
+    implementation(managed.tms.ktorTokenSupport.userToken.verification)
+    implementation(managed.tms.ktorTokenSupport.entraId.fetcher)
+
+    testImplementation(managed.bundles.junit)
+    testImplementation(managed.bundles.kotest)
+
+    testImplementation(managed.ktor.test.clientMock)
+    testImplementation(managed.ktor.test.server)
+    testImplementation(managed.mockk)
+    testImplementation(managed.tms.ktorTokenSupport.userToken.verificationMock)
 }
 
 application {
