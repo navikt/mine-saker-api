@@ -1,6 +1,6 @@
 [versions]
 caffeine = "3.2.3"
-graphql = "9.2.0"
+graphql = "11.0.0"
 valkey = "5.5.0"
 
 [libraries]
