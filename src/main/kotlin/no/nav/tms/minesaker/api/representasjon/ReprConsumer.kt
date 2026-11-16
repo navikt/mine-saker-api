@@ -46,6 +46,6 @@ data class KanRepresentere(
     )
 
     data class Verge(
-        val verge: String
+        val vergehaver: String
     )
 }

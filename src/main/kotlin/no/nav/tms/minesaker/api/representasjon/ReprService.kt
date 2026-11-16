@@ -21,8 +21,8 @@ class ReprService(
 
         val verger = kanRepresentere.vergemaal.map {
             Representert(
-                navn = navn[it.verge] ?: it.verge,
-                ident = it.verge,
+                navn = navn[it.vergehaver] ?: it.vergehaver,
+                ident = it.vergehaver,
                 type = Representasjonstype.Verge
             )
         }
@@ -49,7 +49,7 @@ class ReprService(
                     )
                 } ?: throw UgyldigRepresentantException("Manglende forhold", representert = giverIdent, representant = user.ident)
         } else {
-            kanRepresentere.vergemaal.find { it.verge == giverIdent }
+            kanRepresentere.vergemaal.find { it.vergehaver == giverIdent }
                 ?.let {
                     Representert(
                         navn = navnFetcher.getNavn(giverIdent),
@@ -63,7 +63,7 @@ class ReprService(
 
     private fun getNavn(kanRepresentere: KanRepresentere): Map<String, String> {
         val identer = kanRepresentere.run {
-            fullmakt.map { it.fullmaktsgiver } + vergemaal.map { it.verge }
+            fullmakt.map { it.fullmaktsgiver } + vergemaal.map { it.vergehaver }
         }
 
         return navnFetcher.getNavn(identer)

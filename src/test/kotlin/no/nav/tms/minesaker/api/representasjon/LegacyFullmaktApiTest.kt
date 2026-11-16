@@ -87,7 +87,7 @@ class LegacyFullmaktApiTest {
             json["viserRepresentertesData"].asBoolean() shouldBe true
             json["representertIdent"].asText() shouldBe representert1.ident
             json["representertNavn"].asText() shouldBe representert1.navn
-            json["forsholdstype"].asText() shouldBe Fullmakt.name
+            json["forholdstype"].asText() shouldBe Fullmakt.name
         }
 
         setRepresentert(representert2, Verge)
@@ -96,7 +96,7 @@ class LegacyFullmaktApiTest {
             json["viserRepresentertesData"].asBoolean() shouldBe true
             json["representertIdent"].asText() shouldBe representert2.ident
             json["representertNavn"].asText() shouldBe representert2.navn
-            json["forsholdstype"].asText() shouldBe Verge.name
+            json["forholdstype"].asText() shouldBe Verge.name
         }
     }
 
@@ -298,11 +298,11 @@ class LegacyFullmaktApiTest {
     private lateinit var _reprResponse: String
 
     private fun updateReprResponse(verger: List<String>, fullmaktsgivere: List<String>) {
-        _reprResponse = reprTestResponse(verger, fullmaktsgivere)
+        _reprResponse = reprTestResponse(ident, verger, fullmaktsgivere)
     }
 
     private fun ApplicationTestBuilder.setupReprApi() {
-        _reprResponse = reprTestResponse(emptyList(), emptyList())
+        _reprResponse = reprTestResponse(ident, emptyList(), emptyList())
 
         externalServices {
             hosts(reprApiUrl) {

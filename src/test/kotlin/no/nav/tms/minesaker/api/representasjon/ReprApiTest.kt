@@ -85,7 +85,7 @@ class ReprApiTest {
             json["viserRepresentertesData"].asBoolean() shouldBe true
             json["representertIdent"].asText() shouldBe representert1.ident
             json["representertNavn"].asText() shouldBe representert1.navn
-            json["forsholdstype"].asText() shouldBe Fullmakt.name
+            json["forholdstype"].asText() shouldBe Fullmakt.name
         }
 
         setRepresentert(representert2, Verge)
@@ -94,7 +94,7 @@ class ReprApiTest {
             json["viserRepresentertesData"].asBoolean() shouldBe true
             json["representertIdent"].asText() shouldBe representert2.ident
             json["representertNavn"].asText() shouldBe representert2.navn
-            json["forsholdstype"].asText() shouldBe Verge.name
+            json["forholdstype"].asText() shouldBe Verge.name
         }
     }
 
@@ -122,6 +122,9 @@ class ReprApiTest {
             json["navn"].asText() shouldBe navn
             json["fullmaktsGivere"].size() shouldBe 2
             json["verger"].size() shouldBe 1
+            json["verger"][0]["ident"].asText() shouldBe representert3.ident
+            json["verger"][0]["navn"].asText() shouldBe representert3.navn
+            json["verger"][0]["type"].asText() shouldBe Verge.name
         }
     }
 
@@ -296,11 +299,11 @@ class ReprApiTest {
     private lateinit var _reprResponse: String
 
     private fun updateReprResponse(verger: List<String>, fullmaktsgivere: List<String>) {
-        _reprResponse = reprTestResponse(verger, fullmaktsgivere)
+        _reprResponse = reprTestResponse(ident, verger, fullmaktsgivere)
     }
 
     private fun ApplicationTestBuilder.setupReprApi() {
-        _reprResponse = reprTestResponse(emptyList(), emptyList())
+        _reprResponse = reprTestResponse(ident, emptyList(), emptyList())
 
         externalServices {
             hosts(reprApiUrl) {

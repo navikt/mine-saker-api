@@ -1,9 +1,9 @@
 package no.nav.tms.minesaker.api.representasjon
 
-fun reprTestResponse(verger: List<String>, fullmaktsgivere: List<String>) = """
+fun reprTestResponse(representant: String, verger: List<String>, fullmaktsgivere: List<String>) = """
 {
     "fullmakt": [${fullmaktsgivere.joinToString { "{ \"fullmaktsgiver\": \"$it\"}" }}],
-    "vergemaal": [${verger.joinToString { "{ \"verge\": \"$it\"}" }}]
+    "vergemaal": [${verger.joinToString { "{ \"vergehaver\": \"$it\", \"verge\": \"$representant\"}" }}]
 }
 """
 
