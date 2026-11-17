@@ -39,13 +39,13 @@ class ReprConsumer(
 
 data class KanRepresentere(
     val fullmakt: List<Fullmaktsgiver>,
-    val vergemaal: List<Verge>
+    val vergemaal: List<Vergehaver>
 ) {
     data class Fullmaktsgiver(
         val fullmaktsgiver: String
     )
 
-    data class Verge(
+    data class Vergehaver(
         val vergehaver: String
     )
 }

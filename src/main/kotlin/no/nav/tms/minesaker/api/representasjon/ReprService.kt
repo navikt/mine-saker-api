@@ -19,7 +19,7 @@ class ReprService(
             )
         }
 
-        val verger = kanRepresentere.vergemaal.map {
+        val vergehavere = kanRepresentere.vergemaal.map {
             Representert(
                 navn = navn[it.vergehaver] ?: it.vergehaver,
                 ident = it.vergehaver,
@@ -30,8 +30,8 @@ class ReprService(
         return Representantforhold(
             navn = navnFetcher.getNavn(user),
             ident = user.ident,
-            fullmaktsGivere = fullmaktsGivere,
-            verger = verger
+            fullmaktsgivere = fullmaktsGivere,
+            vergehavere = vergehavere
         )
     }
 
@@ -75,9 +75,12 @@ class ReprService(
 data class Representantforhold(
     val navn: String,
     val ident: String,
-    val fullmaktsGivere: List<Representert>,
-    val verger: List<Representert>
-)
+    val fullmaktsgivere: List<Representert>,
+    val vergehavere: List<Representert>
+) {
+    @Deprecated("Feilaktig stor bokstav") val fullmaktsGivere = fullmaktsgivere
+    @Deprecated("Feiltolkning av ord") val verger = vergehavere
+}
 
 data class Representert(
     val navn: String,

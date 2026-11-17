@@ -120,11 +120,21 @@ class ReprApiTest {
         client.get("/repr/forhold").validateResponse { json ->
             json["ident"].asText() shouldBe ident
             json["navn"].asText() shouldBe navn
-            json["fullmaktsGivere"].size() shouldBe 2
-            json["verger"].size() shouldBe 1
-            json["verger"][0]["ident"].asText() shouldBe representert3.ident
-            json["verger"][0]["navn"].asText() shouldBe representert3.navn
-            json["verger"][0]["type"].asText() shouldBe Verge.name
+
+            json["fullmaktsgivere"].size() shouldBe 2
+            json["fullmaktsgivere"][0]["ident"].asText() shouldBe representert1.ident
+            json["fullmaktsgivere"][0]["navn"].asText() shouldBe representert1.navn
+            json["fullmaktsgivere"][0]["type"].asText() shouldBe Fullmakt.name
+
+            json["fullmaktsgivere"][1]["ident"].asText() shouldBe representert2.ident
+            json["fullmaktsgivere"][1]["navn"].asText() shouldBe representert2.navn
+            json["fullmaktsgivere"][1]["type"].asText() shouldBe Fullmakt.name
+
+
+            json["vergehavere"].size() shouldBe 1
+            json["vergehavere"][0]["ident"].asText() shouldBe representert3.ident
+            json["vergehavere"][0]["navn"].asText() shouldBe representert3.navn
+            json["vergehavere"][0]["type"].asText() shouldBe Verge.name
         }
     }
 
@@ -299,11 +309,11 @@ class ReprApiTest {
     private lateinit var _reprResponse: String
 
     private fun updateReprResponse(verger: List<String>, fullmaktsgivere: List<String>) {
-        _reprResponse = reprTestResponse(ident, verger, fullmaktsgivere)
+        _reprResponse = reprTestResponse(verger, fullmaktsgivere)
     }
 
     private fun ApplicationTestBuilder.setupReprApi() {
-        _reprResponse = reprTestResponse(ident, emptyList(), emptyList())
+        _reprResponse = reprTestResponse(emptyList(), emptyList())
 
         externalServices {
             hosts(reprApiUrl) {
