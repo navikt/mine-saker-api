@@ -19,10 +19,10 @@ class ReprService(
             )
         }
 
-        val verger = kanRepresentere.vergemaal.map {
+        val vergehavere = kanRepresentere.vergemaal.map {
             Representert(
-                navn = navn[it.verge] ?: it.verge,
-                ident = it.verge,
+                navn = navn[it.vergehaver] ?: it.vergehaver,
+                ident = it.vergehaver,
                 type = Representasjonstype.Verge
             )
         }
@@ -30,8 +30,8 @@ class ReprService(
         return Representantforhold(
             navn = navnFetcher.getNavn(user),
             ident = user.ident,
-            fullmaktsGivere = fullmaktsGivere,
-            verger = verger
+            fullmaktsgivere = fullmaktsGivere,
+            vergehavere = vergehavere
         )
     }
 
@@ -49,7 +49,7 @@ class ReprService(
                     )
                 } ?: throw UgyldigRepresentantException("Manglende forhold", representert = giverIdent, representant = user.ident)
         } else {
-            kanRepresentere.vergemaal.find { it.verge == giverIdent }
+            kanRepresentere.vergemaal.find { it.vergehaver == giverIdent }
                 ?.let {
                     Representert(
                         navn = navnFetcher.getNavn(giverIdent),
@@ -63,7 +63,7 @@ class ReprService(
 
     private fun getNavn(kanRepresentere: KanRepresentere): Map<String, String> {
         val identer = kanRepresentere.run {
-            fullmakt.map { it.fullmaktsgiver } + vergemaal.map { it.verge }
+            fullmakt.map { it.fullmaktsgiver } + vergemaal.map { it.vergehaver }
         }
 
         return navnFetcher.getNavn(identer)
@@ -75,9 +75,12 @@ class ReprService(
 data class Representantforhold(
     val navn: String,
     val ident: String,
-    val fullmaktsGivere: List<Representert>,
-    val verger: List<Representert>
-)
+    val fullmaktsgivere: List<Representert>,
+    val vergehavere: List<Representert>
+) {
+    @Deprecated("Feilaktig stor bokstav") val fullmaktsGivere = fullmaktsgivere
+    @Deprecated("Feiltolkning av ord") val verger = vergehavere
+}
 
 data class Representert(
     val navn: String,

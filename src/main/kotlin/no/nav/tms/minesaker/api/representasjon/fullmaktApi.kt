@@ -91,21 +91,21 @@ private data class RepresentertRequest(
 
 private data class Representasjonsinfo(
     val viserRepresentertesData: Boolean,
-    val forsholdstype: Representasjonstype?,
+    val forholdstype: Representasjonstype?,
     val representertNavn: String?,
     val representertIdent: String?,
 ) {
     companion object {
         fun viserEgne() = Representasjonsinfo(
             viserRepresentertesData = false,
-            forsholdstype = null,
+            forholdstype = null,
             representertNavn = null,
             representertIdent = null,
         )
 
         fun viserRepresentert(representert: Representert) = Representasjonsinfo(
             viserRepresentertesData = true,
-            forsholdstype = representert.type,
+            forholdstype = representert.type,
             representertNavn = representert.navn,
             representertIdent = representert.ident,
         )

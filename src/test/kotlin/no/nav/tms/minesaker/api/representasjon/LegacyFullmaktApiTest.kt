@@ -87,7 +87,7 @@ class LegacyFullmaktApiTest {
             json["viserRepresentertesData"].asBoolean() shouldBe true
             json["representertIdent"].asText() shouldBe representert1.ident
             json["representertNavn"].asText() shouldBe representert1.navn
-            json["forsholdstype"].asText() shouldBe Fullmakt.name
+            json["forholdstype"].asText() shouldBe Fullmakt.name
         }
 
         setRepresentert(representert2, Verge)
@@ -96,7 +96,7 @@ class LegacyFullmaktApiTest {
             json["viserRepresentertesData"].asBoolean() shouldBe true
             json["representertIdent"].asText() shouldBe representert2.ident
             json["representertNavn"].asText() shouldBe representert2.navn
-            json["forsholdstype"].asText() shouldBe Verge.name
+            json["forholdstype"].asText() shouldBe Verge.name
         }
     }
 
@@ -114,7 +114,7 @@ class LegacyFullmaktApiTest {
                 representert1.ident,
                 representert2.ident,
             ),
-            verger = listOf(
+            vergehavere = listOf(
                 representert3.ident
             )
         )
@@ -130,7 +130,7 @@ class LegacyFullmaktApiTest {
     @Test
     fun `setter fullmaktsgiver for sesjon hvis fullmaktsforhold er gyldig`() = fullmaktApiTest {
         updateReprResponse(
-            verger = emptyList(),
+            vergehavere = emptyList(),
             fullmaktsgivere = listOf(representert1.ident)
         )
 
@@ -150,7 +150,7 @@ class LegacyFullmaktApiTest {
     @Test
     fun `setter verge for sesjon hvis forhold er gyldig`() = fullmaktApiTest {
         updateReprResponse(
-            verger = listOf(representert2.ident),
+            vergehavere = listOf(representert2.ident),
             fullmaktsgivere = emptyList()
         )
 
@@ -170,7 +170,7 @@ class LegacyFullmaktApiTest {
     @Test
     fun `bruker fullmakt som default representasjonstype dersom intet annet er spesifisert`() = fullmaktApiTest {
         updateReprResponse(
-            verger = emptyList(),
+            vergehavere = emptyList(),
             fullmaktsgivere = listOf(representert1.ident)
         )
 
@@ -188,7 +188,7 @@ class LegacyFullmaktApiTest {
     @Test
     fun `svarer med feil dersom en setter aktivt forhold som ikke er gyldig`() = fullmaktApiTest {
         updateReprResponse(
-            verger = emptyList(),
+            vergehavere = emptyList(),
             fullmaktsgivere = listOf(representert3.ident)
         )
 
@@ -297,8 +297,8 @@ class LegacyFullmaktApiTest {
 
     private lateinit var _reprResponse: String
 
-    private fun updateReprResponse(verger: List<String>, fullmaktsgivere: List<String>) {
-        _reprResponse = reprTestResponse(verger, fullmaktsgivere)
+    private fun updateReprResponse(vergehavere: List<String>, fullmaktsgivere: List<String>) {
+        _reprResponse = reprTestResponse(vergehavere, fullmaktsgivere)
     }
 
     private fun ApplicationTestBuilder.setupReprApi() {

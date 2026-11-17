@@ -85,7 +85,7 @@ class ReprApiTest {
             json["viserRepresentertesData"].asBoolean() shouldBe true
             json["representertIdent"].asText() shouldBe representert1.ident
             json["representertNavn"].asText() shouldBe representert1.navn
-            json["forsholdstype"].asText() shouldBe Fullmakt.name
+            json["forholdstype"].asText() shouldBe Fullmakt.name
         }
 
         setRepresentert(representert2, Verge)
@@ -94,7 +94,7 @@ class ReprApiTest {
             json["viserRepresentertesData"].asBoolean() shouldBe true
             json["representertIdent"].asText() shouldBe representert2.ident
             json["representertNavn"].asText() shouldBe representert2.navn
-            json["forsholdstype"].asText() shouldBe Verge.name
+            json["forholdstype"].asText() shouldBe Verge.name
         }
     }
 
@@ -120,8 +120,21 @@ class ReprApiTest {
         client.get("/repr/forhold").validateResponse { json ->
             json["ident"].asText() shouldBe ident
             json["navn"].asText() shouldBe navn
-            json["fullmaktsGivere"].size() shouldBe 2
-            json["verger"].size() shouldBe 1
+
+            json["fullmaktsgivere"].size() shouldBe 2
+            json["fullmaktsgivere"][0]["ident"].asText() shouldBe representert1.ident
+            json["fullmaktsgivere"][0]["navn"].asText() shouldBe representert1.navn
+            json["fullmaktsgivere"][0]["type"].asText() shouldBe Fullmakt.name
+
+            json["fullmaktsgivere"][1]["ident"].asText() shouldBe representert2.ident
+            json["fullmaktsgivere"][1]["navn"].asText() shouldBe representert2.navn
+            json["fullmaktsgivere"][1]["type"].asText() shouldBe Fullmakt.name
+
+
+            json["vergehavere"].size() shouldBe 1
+            json["vergehavere"][0]["ident"].asText() shouldBe representert3.ident
+            json["vergehavere"][0]["navn"].asText() shouldBe representert3.navn
+            json["vergehavere"][0]["type"].asText() shouldBe Verge.name
         }
     }
 
