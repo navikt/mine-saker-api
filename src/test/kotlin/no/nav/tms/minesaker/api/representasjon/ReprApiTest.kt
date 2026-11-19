@@ -213,6 +213,42 @@ class ReprApiTest {
         sessionStore.getCurrentRepresentert(ident).shouldBeNull()
     }
 
+    @Test
+    fun `bruker personens navn som fallback dersom navn ikke finnes i pdl`() = fullmaktApiTest {
+        updateReprResponse(
+            verger = listOf(representert1.ident, representert3.ident),
+            fullmaktsgivere = listOf(representert1.ident, representert3.ident)
+        )
+
+        val pdlResponse = """
+        {
+            "data": {
+                "hentPersonBolk": [
+                  ${bolkPerson(representert1)},
+                  ${bolkPersonUtenNavn(representert3)}
+                ]
+            }
+        }
+        """
+
+        updateHentPersonerResponse { _ ->
+            pdlResponse
+        }
+
+        client.get("/repr/forhold").validateResponse { json ->
+            json["ident"].asText() shouldBe ident
+            json["navn"].asText() shouldBe navn
+
+            json["fullmaktsgivere"].size() shouldBe 2
+            json["fullmaktsgivere"][0]["navn"].asText() shouldBe representert1.navn
+            json["fullmaktsgivere"][1]["navn"].asText() shouldBe representert3.ident
+
+            json["vergehavere"].size() shouldBe 2
+            json["vergehavere"][0]["navn"].asText() shouldBe representert1.navn
+            json["vergehavere"][1]["navn"].asText() shouldBe representert3.ident
+        }
+    }
+
     private suspend fun setRepresentert(person: Person, type: Representasjonstype) {
         sessionStore.setRepresentert(ident, Representert(person.navn, person.ident, type))
     }
@@ -235,11 +271,21 @@ class ReprApiTest {
             systemTokenFetcher = tokenFetcher
         )
 
+        _reprResponse = reprTestResponse(emptyList(), emptyList())
+
         val reprConsumer = ReprConsumer(
             httpClient = testClient,
             tokendingsExchange = tokenExchanger,
             reprApi = reprApiUrl
         )
+
+        _hentPersonResponse = {
+            hentPersonTestResponse(it)
+        }
+
+        _hentPersonerResponse = {
+            hentPersonBolkTestResponse(it)
+        }
 
         setupPdlApi(
             Person(ident, navn),
@@ -275,6 +321,13 @@ class ReprApiTest {
         testBlock(testClient)
     }
 
+    private lateinit var _hentPersonResponse: (Person) -> String
+    private lateinit var _hentPersonerResponse: (List<Person>) -> String
+
+    private fun updateHentPersonerResponse(provider: (List<Person>) -> String) {
+        _hentPersonerResponse = provider
+    }
+
     private fun ApplicationTestBuilder.setupPdlApi(vararg personer: Person) {
         externalServices {
             hosts(pdlApiUrl) {
@@ -292,11 +345,11 @@ class ReprApiTest {
                         val response = if (query.variant == PdlRequest.Variant.HentPerson) {
                             val responsePerson = personer.first { it.ident == query.ident }
 
-                            hentPersonTestResponse(responsePerson)
+                            _hentPersonResponse(responsePerson)
                         } else {
                             val responsePersoner = personer.filter { query.identer.contains(it.ident) }
 
-                            hentPersonBolkTestResponse(responsePersoner)
+                            _hentPersonerResponse(responsePersoner)
                         }
 
                         call.respondText(response, contentType = ContentType.Application.Json)

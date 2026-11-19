@@ -28,7 +28,7 @@ class ReprService(
         }
 
         return Representantforhold(
-            navn = navnFetcher.getNavn(user),
+            navn = navnFetcher.getNavn(user) ?: user.ident,
             ident = user.ident,
             fullmaktsgivere = fullmaktsGivere,
             vergehavere = vergehavere
@@ -42,7 +42,7 @@ class ReprService(
             kanRepresentere.fullmakt.find { it.fullmaktsgiver == giverIdent }
                 ?.let {
                     Representert(
-                        navn = navnFetcher.getNavn(giverIdent),
+                        navn = navnFetcher.getNavn(giverIdent) ?: giverIdent,
                         ident = giverIdent,
                         type = Representasjonstype.Fullmakt
 
@@ -52,7 +52,7 @@ class ReprService(
             kanRepresentere.vergemaal.find { it.vergehaver == giverIdent }
                 ?.let {
                     Representert(
-                        navn = navnFetcher.getNavn(giverIdent),
+                        navn = navnFetcher.getNavn(giverIdent) ?: giverIdent,
                         ident = giverIdent,
                         type = Representasjonstype.Verge
 

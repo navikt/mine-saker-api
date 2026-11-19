@@ -98,7 +98,7 @@ fun Application.mineSakerApi(
                 }
 
                 else -> {
-                    log.error { "Kall til ${call.request.uri}" }
+                    log.error { "Kall til ${call.request.uri} feiler." }
                     teamLog.error(cause) { "Kall til ${call.request.uri} feiler." }
                     call.respond(HttpStatusCode.InternalServerError)
                 }

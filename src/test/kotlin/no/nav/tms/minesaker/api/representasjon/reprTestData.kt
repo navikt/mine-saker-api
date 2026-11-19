@@ -42,7 +42,7 @@ fun hentPersonBolkTestResponse(personer: List<Person>) = """
 }
 """
 
-private fun bolkPerson(person: Person): String = """
+fun bolkPerson(person: Person): String = """
 {
     "ident": "${person.ident}",
     "code": "ok",
@@ -54,6 +54,16 @@ private fun bolkPerson(person: Person): String = """
                 "etternavn": ${person.etternavn?.let {"\"$it\""}} 
             }
         ]
+    }
+}
+"""
+
+fun bolkPersonUtenNavn(person: Person): String = """
+{
+    "ident": "${person.ident}",
+    "code": "ok",
+    "person": {
+        "navn": []
     }
 }
 """

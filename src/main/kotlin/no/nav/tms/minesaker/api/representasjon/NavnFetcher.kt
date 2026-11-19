@@ -25,12 +25,12 @@ class NavnFetcher(
     private val cache = Caffeine.newBuilder()
         .maximumSize(50000)
         .expireAfterWrite(Duration.ofMinutes(60))
-        .build<String, String>()
+        .build<String, String?>()
 
     private val log = KotlinLogging.logger {}
     private val teamLog = TeamLogs.logger { }
 
-    fun getNavn(user: UserPrincipal): String {
+    fun getNavn(user: UserPrincipal): String? {
         return cache.get(user.ident) {
             fetchNavnForUser(user)
         }
@@ -48,22 +48,22 @@ class NavnFetcher(
         }
     }
 
-    fun getNavn(ident: String): String {
+    fun getNavn(ident: String): String? {
         return cache.get(ident) {
             runBlocking {
                 queryForNavn(ident, systemTokenFetcher.pdlApiToken())
                     .let { checkForErrors(it) }
                     .hentPerson
-                    .fullnavn
+                    .fullnavn()
             }
         }
     }
 
-    private fun fetchNavnForUser(user: UserPrincipal): String = runBlocking(Dispatchers.IO) {
+    private fun fetchNavnForUser(user: UserPrincipal): String? = runBlocking(Dispatchers.IO) {
         tokendingsExchange.pdlApiToken(user.accessToken)
             .let { token -> queryForNavn(user.ident, token) }
             .let { response -> checkForErrors(response) }
-            .hentPerson.fullnavn
+            .hentPerson.fullnavn()
     }
 
     private suspend fun queryForNavn(ident: String, token: String): HentNavnResponse {
@@ -205,7 +205,7 @@ private data class HentNavnResponse(
     data class Person (
         val navn: List<Navn>
     ) {
-        val fullnavn = navn.first().let {
+        fun fullnavn() = navn.firstOrNull()?.let {
             listOf(it.fornavn, it.mellomnavn, it.etternavn)
                 .filter { navn -> !navn.isNullOrBlank() }
                 .joinToString(" ")
@@ -233,7 +233,7 @@ private data class HentNavnBolkResponse(
         private val person: PersonNavn?
     ) {
         val responseCode = ResponseCode.entries.find { it.code == code }
-        val fullnavn = if (person == null) {
+        val fullnavn = if (person == null || person.navn.isEmpty()) {
             ident
         } else {
             person.navn.first().let {
