@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test
 internal class SafConsumerTest {
 
     private val objectMapper = jacksonObjectMapper()
-    private val safDummyEndpoint = createUrl("https://www.dummy.no")
+    private val safDummyEndpoint = createUrl("https://www.dummy")
     private val dummyToken = "<access_token>"
     private val dummyIdent = "123"
 

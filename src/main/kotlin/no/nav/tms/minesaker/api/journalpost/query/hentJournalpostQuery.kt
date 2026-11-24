@@ -11,7 +11,6 @@ import no.nav.tms.minesaker.api.journalpost.DokumentHeader
 import no.nav.tms.minesaker.api.journalpost.Journalpost
 import no.nav.tms.minesaker.api.journalpost.Sakstema
 import no.nav.tms.minesaker.api.journalpost.Tilgangssperre
-import java.time.ZonedDateTime
 
 class HentJournalpostV2Request(override val variables: HentJournalpostV2RequestVariables) : GraphQLRequest {
 
@@ -115,8 +114,4 @@ private fun dokumenter(dokumenter: List<DokumentInfo?>?): List<DokumentHeader> {
             log.warn { "Mottok journalpost uten dokumenter" }
             listOf(DokumentHeader.blank())
         }
-}
-
-private fun sorteringsdato(datoSortering: String): ZonedDateTime {
-    return ZonedDateTime.parse("${datoSortering}Z")
 }
