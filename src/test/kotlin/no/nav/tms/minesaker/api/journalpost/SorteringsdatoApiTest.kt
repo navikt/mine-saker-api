@@ -42,27 +42,30 @@ class SorteringsdatoApiTest {
     private val forventetDatoFraApi = "2025-01-14T23:30:00Z"
 
     @Test
-    fun `alle journalposter returnerer sorteringsdato fra SAF konvertert fra norsk tid til UTC`() =
+    fun `alle journalposter returnerer sorteringsdato og opprettet fra SAF konvertert fra norsk tid til UTC`() =
         journalpostApiTest(safSvar = alleJournalposterFraSaf(datoFraSaf)) { client ->
             val journalpost = client.get("v2/journalposter/alle").json().first()
 
             journalpost["sorteringsdato"].asText() shouldBe forventetDatoFraApi
+            journalpost["opprettet"].asText() shouldBe forventetDatoFraApi
         }
 
     @Test
-    fun `hent journalpost returnerer sorteringsdato fra SAF konvertert fra norsk tid til UTC`() =
+    fun `hent journalpost returnerer sorteringsdato og opprettet fra SAF konvertert fra norsk tid til UTC`() =
         journalpostApiTest(safSvar = hentJournalpostFraSaf(datoFraSaf)) { client ->
             val journalpost = client.get("v2/journalposter/journalpost/123").json()
 
             journalpost["sorteringsdato"].asText() shouldBe forventetDatoFraApi
+            journalpost["opprettet"].asText() shouldBe forventetDatoFraApi
         }
 
     @Test
-    fun `siste journalposter returnerer sorteringsdato fra SAF konvertert fra norsk tid til UTC`() =
+    fun `siste journalposter returnerer sorteringsdato og opprettet fra SAF konvertert fra norsk tid til UTC`() =
         journalpostApiTest(safSvar = alleJournalposterFraSaf(datoFraSaf)) { client ->
             val journalpost = client.get("v2/journalposter/siste").json().first()
 
             journalpost["sorteringsdato"].asText() shouldBe forventetDatoFraApi
+            journalpost["opprettet"].asText() shouldBe forventetDatoFraApi
         }
 
     private suspend fun HttpResponse.json(): JsonNode {
