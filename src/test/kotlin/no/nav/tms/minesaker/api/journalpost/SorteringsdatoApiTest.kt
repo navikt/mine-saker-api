@@ -115,7 +115,7 @@ class SorteringsdatoApiTest {
         }
 
         val safService = SafService(
-            safConsumer = SafConsumer(safHttpClient, safEndpoint = createUrl("https://www.dummy.no")),
+            safConsumer = SafConsumer(safHttpClient, safEndpoint = createUrl("http://dummy")),
             tokendingsExchange = mockk<TokendingsExchange>().also {
                 coEvery { it.safToken(any()) } returns "<dummytoken>"
             }
