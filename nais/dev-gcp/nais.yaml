@@ -61,6 +61,7 @@ spec:
   ingresses:
     - "https://www.intern.dev.nav.no/mine-saker-api"
     - "https://www.ansatt.dev.nav.no/mine-saker-api"
+    - "https://min-side-staging.ansatt.dev.nav.no/mine-saker-api"
   resources:
     limits:
       cpu: "1"
