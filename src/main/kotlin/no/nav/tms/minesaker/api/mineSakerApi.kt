@@ -112,6 +112,7 @@ fun Application.mineSakerApi(
         allowHost(corsAllowedOrigins)
         allowCredentials = true
         allowHeader(HttpHeaders.ContentType)
+        allowMethod(HttpMethod.Options)
     }
 
     authConfig()

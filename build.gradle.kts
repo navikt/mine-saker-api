@@ -26,7 +26,6 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.caffeine)
     implementation(libs.graphql.client)
     implementation(libs.graphql.ktorClient)
     implementation(libs.valkey)
@@ -35,12 +34,13 @@ dependencies {
     implementation(managed.bundles.ktorServer)
     implementation(managed.bundles.ktorClient)
 
+    implementation(managed.caffeine)
     implementation(managed.kotlinx.coroutines)
     implementation(managed.kotlinLogging)
     implementation(managed.ktor.serialization.jackson)
     implementation(managed.ktor.server.cors)
     implementation(managed.ktor.server.defaultHeaders)
-    implementation(managed.prometheus.metric.core)
+    implementation(managed.prometheus.metricsCore)
     implementation(managed.tms.commonLib.metrics)
     implementation(managed.tms.commonLib.utils)
     implementation(managed.tms.commonLib.observability)

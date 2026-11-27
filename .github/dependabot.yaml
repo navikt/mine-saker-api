@@ -1,8 +1,51 @@
 version: 2
+
+registries:
+  nav-maven:
+    type: maven-repository
+    url: https://github-package-registry-mirror.gc.nav.no/cached/maven-release
+
 updates:
-  - package-ecosystem: "gradle"
+  - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
       time: "08:00"
       timezone: "Europe/Oslo"
+    groups:
+      github:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 3
+    labels:
+      - github-actions
+      - tms-backend
+
+  - package-ecosystem: "gradle"
+    directory: "/"
+    registries:
+      - nav-maven
+    schedule:
+      interval: "weekly"
+      time: "08:00"
+      timezone: "Europe/Oslo"
+    groups:
+      min-side-catalog:
+        patterns:
+          - "no.nav.tms:tms-dependency-admin:*"
+      local-dependencies:
+        patterns:
+          - "com.expediagroup:*"
+          - "io.valkey:*"
+        update-types:
+          - "minor"
+          - "patch"
+      gradle-major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+    labels:
+      - gradle-dependency
+      - tms-backend
